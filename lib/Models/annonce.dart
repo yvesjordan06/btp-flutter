@@ -1,26 +1,51 @@
 class AnnonceModel {
   final String intitule;
+  final String lieu;
   final String description;
-  final User annonceur;
   final DateTime createAt;
-  final Tache taches;
 
-  AnnonceModel(this.intitule, this.description, this.annonceur, this.createAt, this.taches);
+
+  AnnonceModel(this.intitule, this.description, this.createAt, this.lieu);
 }
 
-class Tache {
+class TacheModel {
   final String intitule;
   final String metier;
   final String description;
 
-  Tache(this.intitule, this.metier, this.description);
+  TacheModel(this.intitule, this.metier, this.description);
 }
 
-class User {
+class UserModel {
   final String nom;
   final String prenom;
+  final String telephone;
+  // ignore: non_constant_identifier_names
+  final String mot_de_passe;
   final DateTime dateDeNaissance;
   final String status;
+  final String accountType;
+  final String userType;
 
+  UserModel(this.nom, this.prenom, this.dateDeNaissance, this.status, this.accountType, this.userType, this.telephone, this.mot_de_passe);
 
-  User(this.nom, this.prenom, this.dateDeNaissance, this.status);}
+}
+
+class AccountType {
+  static final String particulier = 'Particulier';
+  static final String entreprise = 'Entreprise';
+
+}
+
+class UserType {
+  static final String annonceur = 'Annonceur';
+  static final String travailleur = 'Travailleur';
+
+  static String toggleType(String type) {
+    if (type == annonceur) {
+      return travailleur;
+    }
+    return annonceur;
+  }
+}
+

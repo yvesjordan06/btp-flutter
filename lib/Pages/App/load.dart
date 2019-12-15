@@ -1,4 +1,4 @@
-import 'package:btpp/Pages/Annonces/main.dart';
+import 'package:btpp/State/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -21,29 +21,25 @@ class LoadingPage extends StatefulWidget {
 }
 
 class _LoadingPage extends State<LoadingPage> {
-  int _counter = 0;
-  String _appStatus = '';
-
-  void _incrementCounter() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AnnoncePage()));
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  initState() {
+    super.initState();
+    print('init method');
+    appUser.loadSavedUser().then((user){
+      _loadPage();
     });
+  }
+  void _loadPage() {
+
+    if (appUser.currentUser != null) {
+      Navigator.pushReplacementNamed(context, 'app');
+    } else {
+      Navigator.pushReplacementNamed(context, 'auth');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -66,20 +62,28 @@ class _LoadingPage extends State<LoadingPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Text(
-              'BTP is loading:',
+            Image.asset(
+                'images/favicon.png',
+              width: 200,
             ),
+            CircularProgressIndicator(),
             Text(
-              'BY MOS'
+              'BY MOS',
+              style: TextStyle(
+                fontSize: 24,
+                letterSpacing: 2,
+                fontWeight: FontWeight.w600,
+                color: Colors.blueGrey,
+                shadows: [Shadow(
+                  color: Colors.grey,
+                  offset: Offset.zero,
+                  blurRadius: 0.8
+                )]
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

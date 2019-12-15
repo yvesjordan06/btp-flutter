@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Pages/App/load.dart';
+import 'Functions/route_generator.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,8 +10,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        primaryColor: Colors.blue,
+
       ),
-      home: LoadingPage(title: 'BTP Partnerships'),
+      initialRoute: 'loading',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
