@@ -16,8 +16,8 @@ class AuthApp extends StatelessWidget {
             unselectedLabelColor: Colors.grey[700],
             labelColor: AppColors.primary,
             tabs: [
-              TabButton(text: Text('Connexion'), icon: Icon(Icons.person),),
-              TabButton(text: Text('Inscription'), icon: Icon(Icons.add_circle_outline),),
+              TabButton(text: 'Connexion', icon: Icon(Icons.person),),
+              TabButton(text: 'Inscription', icon: Icon(Icons.add_circle_outline),),
             ],
           ),
           body: TabBarView(children: [

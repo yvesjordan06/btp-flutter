@@ -16,10 +16,10 @@ class MainApp extends StatelessWidget {
             unselectedLabelColor: Colors.grey[700],
             labelColor: AppColors.primary,
             tabs: [
-              TabButton(text: Text('Annonce'), icon: Icon(Icons.home),),
-              TabButton(text: Text('Actu'), icon: Icon(Icons.public),),
-              TabButton(text: Text('Chat'), icon: Icon(Icons.chat_bubble),),
-              TabButton(text: Text('Compte'), icon: Icon(Icons.person_outline),),
+              TabButton(text: 'Annonce', icon: Icon(Icons.home),),
+              TabButton(text: 'Actu', icon: Icon(Icons.public),),
+              TabButton(text: 'Chat', icon: Icon(Icons.chat_bubble),),
+              TabButton(text: 'Compte', icon: Icon(Icons.person_outline),),
             ],
           ),
           body: TabBarView(children: [

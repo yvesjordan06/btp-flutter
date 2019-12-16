@@ -49,7 +49,7 @@ class SeeAnnonce extends StatelessWidget {
                     ),
                     SizedBox(height: 10,),
                     Text(
-                      'Publié '+timeAgo(annonce.createAt),
+                      'Publié '+timeAgo(annonce.createdAt),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold

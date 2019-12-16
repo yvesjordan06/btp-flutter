@@ -14,35 +14,35 @@ class _AnnoncePageState extends State<AnnoncePage> {
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List<AnnonceModel> annonces = [
-    AnnonceModel('Maison de Osakas', 'Je veux une maison dans osaka au japon',
-        DateTime(2006), 'Japon, Tokyo'),
+    AnnonceModel(intitule:'Maison de Osakas', description:'Je veux une maison dans osaka au japon',
+        createdAt:DateTime(2006), lieu:'Japon, Tokyo'),
     AnnonceModel(
-        'Imeuble Rouge a very long title to this annonce is made by me to test the following behaviors',
-        'If i pass the more than 3  again it is not sufficient for all those lineslines it becomes an overflow and i dont know what will happen I do speak some english and chinese but i really prefere to be an engineer because here it is not easy to get work',
-        DateTime(2014),
-        'USA, New York'),
+        intitule:'Imeuble Rouge a very long title to this annonce is made by me to test the following behaviors',
+        description:'If i pass the more than 3  again it is not sufficient for all those lineslines it becomes an overflow and i dont know what will happen I do speak some english and chinese but i really prefere to be an engineer because here it is not easy to get work',
+        createdAt:DateTime(2014),
+        lieu:'USA, New York'),
     AnnonceModel(
-        'Macabo Bar', 'J\'ai rien a dire', DateTime(2018), 'Bamenda, my17'),
+        intitule:'Macabo Bar', description:'J\'ai rien a dire', createdAt:DateTime(2018), lieu:'Bamenda, my17'),
     AnnonceModel(
-        'Gratte cielle',
-        'Je ne sais pas ce que je veux mais je suis tres fort avec les gens quand je commence a travailler',
-        DateTime(2020),
-        'Japon, Tokyo'),
+        intitule:'Gratte cielle',
+        description:'Je ne sais pas ce que je veux mais je suis tres fort avec les gens quand je commence a travailler',
+        createdAt:DateTime(2020),
+        lieu:'Japon, Tokyo'),
     AnnonceModel(
-        'Masonnerie',
-        'Je suis un maçon tres veillant et je cherche un emploie',
-        DateTime(2019),
-        'Yaounde, Tokyo'),
+        intitule:'Masonnerie',
+        description:'Je suis un maçon tres veillant et je cherche un emploie',
+        createdAt:DateTime(2019),
+        lieu:'Yaounde, Tokyo'),
     AnnonceModel(
-        'Masonnerie',
-        'Je suis un maçon tres veillant et je cherche un emploie',
-        DateTime(2019),
-        'Yaounde, Tokyo'),
+        intitule:'Masonnerie',
+        description:'Je suis un maçon tres veillant et je cherche un emploie',
+        createdAt:DateTime(2019),
+        lieu:'Yaounde, Tokyo'),
     AnnonceModel(
-        'Masonnerie',
-        'Je suis un maçon tres veillant et je cherche un emploie',
-        DateTime(2019),
-        'Yaounde, Tokyo'),
+        intitule:'Masonnerie',
+        description:'Je suis un maçon tres veillant et je cherche un emploie',
+        createdAt:DateTime(2019),
+        lieu:'Yaounde, Tokyo'),
   ]; // Annonces de l'api
   List<AnnonceModel> filteredAnnonces = List();
   Icon _searchIcon = Icon(Icons.search);

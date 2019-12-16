@@ -22,7 +22,7 @@ class UserState extends ChangeNotifier {
     print(telephone);
     if (telephone.trim() == "1234567") {
       _error = '';
-      _user = UserModel('Hiro', 'Hamada', DateTime.now(), 'status', AccountType.particulier, UserType.annonceur, '694842185', '123456');
+      _user = UserModel(nom:'Hiro', prenom:'Hamada', dateDeNaissance:DateTime.now(), status:'status', accountType:AccountType.particulier, userType:UserType.annonceur, telephone:'694842185', motDePasse:'123456');
     } else {
       _error = 'Mot de passe incorrect';
     }
@@ -39,13 +39,13 @@ class UserState extends ChangeNotifier {
   
   void changeAccount([String motDePasse = '']) {
     if (motDePasse.length == 0) {
-      motDePasse = _user.mot_de_passe;
+      motDePasse = _user.motDePasse;
   }
     login(_user.telephone, motDePasse, type: UserType.toggleType(_user.userType));
   }
 
   void setExampleUser() {
-    _user = UserModel('Hiro', 'Hamada', DateTime.now(), 'status', AccountType.particulier, UserType.annonceur, '694842185', '123456');
+    _user = UserModel(nom:'Hiro', prenom:'Hamada', dateDeNaissance:DateTime.now(), status:'status', accountType:AccountType.particulier, userType:UserType.annonceur, telephone:'694842185', motDePasse:'123456');
     notifyListeners();
   }
 

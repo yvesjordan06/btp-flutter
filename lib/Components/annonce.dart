@@ -56,7 +56,7 @@ class SingleAnnonce extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text(timeAgo(annonce.createAt), style: TextStyle(fontSize: 11, color: Colors.grey),),
+                      Text(timeAgo(annonce.createdAt), style: TextStyle(fontSize: 11, color: Colors.grey),),
                       SizedBox(height: 10.0,),
                       Container(
                         width: 40,

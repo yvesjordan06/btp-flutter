@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TabButton extends StatelessWidget {
   final Icon icon;
-  final Text text;
+  final String text;
   const TabButton({Key key, this.icon, this.text}) : super(key: key);
 
   @override
@@ -15,7 +15,12 @@ class TabButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           icon,
-          text
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 8
+            ),
+          )
         ],
       ),
     );
