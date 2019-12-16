@@ -1,4 +1,5 @@
 import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/Pages/Annonces/create.dart';
 import 'package:btpp/Pages/Annonces/see.dart';
 import 'package:btpp/Pages/App/auth.dart';
 import 'package:btpp/Pages/App/load.dart';
@@ -18,8 +19,7 @@ class RouteGenerator {
       case 'auth':
       return MaterialPageRoute(builder: (_) => AuthApp());
       case 'annonce/see':
-      // Validation of correct data type
-        print('see annonce');
+      // Validation of correct data typ
         if (args is AnnonceModel) {
           return MaterialPageRoute(
             builder: (_) => SeeAnnonce(
@@ -30,6 +30,8 @@ class RouteGenerator {
         // If args is not of the correct type, return an error page.
         // You can also throw an exception while in development.
         return _errorRoute();
+      case 'annonce/create':
+        return MaterialPageRoute(builder: (_) => CreateAnnonce());
       default:
       // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

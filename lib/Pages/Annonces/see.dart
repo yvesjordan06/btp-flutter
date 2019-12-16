@@ -1,3 +1,4 @@
+import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Functions/Colors.dart';
@@ -19,11 +20,47 @@ class SeeAnnonce extends StatelessWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
-            floating: true,
-            title: Text(
-              annonce.intitule,
-              overflow: TextOverflow.ellipsis,
+            title: Text(annonce.intitule, overflow: TextOverflow.ellipsis,),
+            expandedHeight: 200,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Colors.grey[300],
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      annonce.intitule,
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blueGrey,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+                    Text(
+                      annonce.lieu,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+                    Text(
+                      'Publié '+timeAgo(annonce.createAt),
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+            pinned: true,
+
             actions: <Widget>[
               PopupMenuButton(
                   icon: Icon(Icons.more_vert),
@@ -42,71 +79,45 @@ class SeeAnnonce extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                          annonce.intitule,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.blueGrey,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1
-                        ),
-                      ),
-                      SizedBox(height: 10,),
-                      Text(
-                        annonce.lieu,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey
-                        ),
-                      ),
-                      SizedBox(height: 10,),
-                      Text(
-                        'Publié '+timeAgo(annonce.createAt),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      SizedBox(height: 20,),
-                      Card(
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                            child: annonceSummary(annonce)
-                        ),
+                      Container(
+                          child: annonceSummary(annonce)
                       )
                     ],
                   ),
                 ),
                 Container(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Details',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, letterSpacing: 1.5),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20,),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(annonce.description),
-                          )
-                        ],
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Center(
+                          child: horizontalDivider(text: 'Details')
+                        ),
+                        SizedBox(height: 20,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(annonce.description),
+                        )
+                      ],
                     ),
                   ),
-                )
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(height: 10,),
+                      horizontalDivider(),
+                      SizedBox(height: 10,),
+                    ],
+                  ),
+                ),
+
               ]
             ),
           ),
@@ -114,8 +125,83 @@ class SeeAnnonce extends StatelessWidget {
               delegate:  SliverChildBuilderDelegate((context, index) =>Container(
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: tacheTravailleur(),
-              )),
+              ),
+              childCount: 6),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                horizontalDivider(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      AdditionalInfo(),
+                      SizedBox(height: 20,),
+                      horizontalDivider(text: 'L\'annonceur'),
+                      AboutClient()
+                    ],
+                  ),
+                )
+              ]
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+                [
+                  SizedBox(
+                    height: 20,
+                    child: Container(color: Colors.grey[200],),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AnnonceSimilaire(),
+                  )
+                ]
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.all(13.0),
+                  child: Row(
+                    children: <Widget>[
+                      Text('Annonce '+index.toString()),
+                      SizedBox(width: 5,),
+                      Text('Lorem Ipsum ...')
+                    ],
+                  ),
+                ),
+              childCount: 4
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        child: RaisedButton(
+                          onPressed: (){},
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            child:  Text(
+                                'Postuler',
+                                style: TextStyle(fontSize: 20, color: Colors.white)
+                            )
+                          ),
 
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              ]
+            ),
           )
         ],
       )
@@ -126,33 +212,14 @@ class SeeAnnonce extends StatelessWidget {
 Widget annonceSummary(AnnonceModel annonce) => Container(
   child: Column(
     children: <Widget>[
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              height: 1,
-              color: Colors.black,
-              margin: EdgeInsets.symmetric(horizontal: 5),
-            ),
-          ),
-          Text('Résumé'),
-          Expanded(
-            child: Container(
-              height: 1,
-              color: Colors.black,
-              margin: EdgeInsets.symmetric(horizontal: 5),
-            ),
-          ),
-        ],
-      ),
+      horizontalDivider(text: 'Résumé'),
       SizedBox(height: 10,),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.person_outline, size: 50, color: AppColors.accent,),
+              Icon(Icons.person_outline, size: 50, color: AppColors.primary,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,14 +233,14 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.format_paint, size: 50, color: AppColors.accent,),
+              Icon(Icons.people_outline, size: 50, color: AppColors.primary,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('10'),
+                  Text('0'),
                   SizedBox(height: 5,),
-                  Text('Taches', style: TextStyle(color: Colors.grey),),
+                  Text('Demandes', style: TextStyle(color: Colors.grey),),
                 ],
               )
             ],
@@ -186,21 +253,22 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.people_outline, size: 50, color: AppColors.accent,),
+              Icon(Icons.format_paint, size: 50, color: AppColors.primary,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('0'),
+                  Text('10'),
                   SizedBox(height: 5,),
-                  Text('Demandes', style: TextStyle(color: Colors.grey),),
+                  Text('Taches', style: TextStyle(color: Colors.grey),),
                 ],
               )
             ],
           ),
+
           Row(
             children: <Widget>[
-              Icon(Icons.done_outline, size: 50, color: AppColors.accent,),
+              Icon(Icons.done_outline, size: 50, color: AppColors.primary,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +306,97 @@ Widget tacheTravailleur() {
             Text('Pas encore attribuer', style: TextStyle(fontSize: 12, color: Colors.grey),)
           ],
         )
+      ],
+    ),
+  );
+}
+
+Widget AdditionalInfo() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 5),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+       Text(
+         'Temp Restant :',
+         style: TextStyle(
+           fontWeight: FontWeight.bold
+         ),
+       ),
+        Text(
+         '8 Mois'
+       ),
+      ],
+    ),
+  );
+
+
+}
+
+Widget AboutClient() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 5),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Nationalité :',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+            Text(
+                'Cameroun'
+            ),
+          ],
+        ),
+        SizedBox(height: 10,),
+        Text(
+          '10 Annonces publié',
+        ),
+        SizedBox(height: 5,),
+        Text(
+          '1 Annonces active',
+        ),
+        SizedBox(height: 5,),
+        Text(
+            '4% Taux d\'embauchement'
+        ),
+        SizedBox(height: 10,),
+        Text(
+            'Membre depuis octobre 2012',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12
+          ),
+        ),
+      ],
+    ),
+  );
+}
+Widget AnnonceSimilaire() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 5),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+
+        Text(
+          'Annonces Similaire',
+          style: TextStyle(
+              fontWeight: FontWeight.bold
+          ),
+        ),
+        SizedBox(height: 10,),
+        horizontalDivider(margin: 0),
+        SizedBox(height: 10,),
       ],
     ),
   );

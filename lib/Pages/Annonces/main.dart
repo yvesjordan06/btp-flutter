@@ -143,7 +143,7 @@ class _AnnoncePageState extends State<AnnoncePage> {
           opacity: isEnabled ? 1.0 : 0,
           duration: Duration(milliseconds: 300),
           child: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {Navigator.pushNamed(context, 'annonce/create');},
             tooltip: 'Increment',
             child: new Icon(Icons.add),
           ),
