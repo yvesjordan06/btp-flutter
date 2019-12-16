@@ -18,8 +18,16 @@ class UserState extends ChangeNotifier {
   Future<void> login(String telephone, String motDePasse, {String type = 'Annonceur'}) {
     // TODO Call login function and set User or Error
     // This call tells the widgets that are listening to this model to rebuild.
-    _user = UserModel('Hiro', 'Hamada', DateTime.now(), 'status', AccountType.particulier, UserType.annonceur, '694842185', '123456');
-    return Future.delayed(Duration(seconds: 10), (){
+    print('voici le tel');
+    print(telephone);
+    if (telephone.trim() == "1234567") {
+      _error = '';
+      _user = UserModel('Hiro', 'Hamada', DateTime.now(), 'status', AccountType.particulier, UserType.annonceur, '694842185', '123456');
+    } else {
+      _error = 'Mot de passe incorrect';
+    }
+
+    return Future.delayed(Duration(seconds: 3), (){
       notifyListeners();
     });
   }

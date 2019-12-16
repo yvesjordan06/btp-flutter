@@ -1,3 +1,7 @@
+import 'package:btpp/Functions/Colors.dart';
+import 'package:btpp/Functions/Colors.dart';
+import 'package:btpp/Functions/Colors.dart';
+import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,30 +16,109 @@ class SeeAnnonce extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          annonce.intitule,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: <Widget>[
-          PopupMenuButton(
-            icon: Icon(Icons.more_vert),
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(child: Text('See')),
-                PopupMenuItem(child: Text('Add')),
-                PopupMenuItem(child: Text('Manage')),
-                PopupMenuItem(child: Text('Delete')),
-              ];
-            }
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            floating: true,
+            title: Text(
+              annonce.intitule,
+              overflow: TextOverflow.ellipsis,
+            ),
+            actions: <Widget>[
+              PopupMenuButton(
+                  icon: Icon(Icons.more_vert),
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(child: Text('See')),
+                      PopupMenuItem(child: Text('Add')),
+                      PopupMenuItem(child: Text('Manage')),
+                      PopupMenuItem(child: Text('Delete')),
+                    ];
+                  }
+              ),
+            ],
           ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                          annonce.intitule,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.blueGrey,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      Text(
+                        annonce.lieu,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      Text(
+                        'Publié '+timeAgo(annonce.createAt),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      Card(
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                            child: annonceSummary(annonce)
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Details',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, letterSpacing: 1.5),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20,),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(annonce.description),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ]
+            ),
+          ),
+          SliverList(
+              delegate:  SliverChildBuilderDelegate((context, index) =>Container(
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: tacheTravailleur(),
+              )),
+
+          )
         ],
-      ),
-      body: SingleChildScrollView(
-        child: Text(
-         'Hiro'
-        ),
-      ),
+      )
     );
   }
 }
@@ -65,11 +148,11 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
       ),
       SizedBox(height: 10,),
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.person, size: 60,),
+              Icon(Icons.person_outline, size: 50, color: AppColors.accent,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +166,7 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.build, size: 60,),
+              Icon(Icons.format_paint, size: 50, color: AppColors.accent,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,11 +182,11 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
       ),
       SizedBox(height: 20,),
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.people_outline, size: 60,),
+              Icon(Icons.people_outline, size: 50, color: AppColors.accent,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +200,7 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.done_outline, size: 60,),
+              Icon(Icons.done_outline, size: 50, color: AppColors.accent,),
               SizedBox(width: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

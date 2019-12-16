@@ -1,4 +1,6 @@
+import 'package:btpp/Functions/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'Functions/route_generator.dart';
 
 void main() => runApp(MyApp());
@@ -10,7 +12,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        primaryColor: Colors.blue,
+        primaryColor: AppColors.primary,
+        accentColor: AppColors.accent,
+        buttonColor: AppColors.primaryDark,
+        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: AppColors.accent),
 
       ),
       initialRoute: 'loading',

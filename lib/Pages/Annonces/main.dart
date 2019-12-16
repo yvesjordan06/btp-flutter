@@ -1,7 +1,9 @@
 import 'package:btpp/Components/annonceList.dart';
+import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 
 class AnnoncePage extends StatefulWidget {
   @override
@@ -31,10 +33,28 @@ class _AnnoncePageState extends State<AnnoncePage> {
         'Je suis un maçon tres veillant et je cherche un emploie',
         DateTime(2019),
         'Yaounde, Tokyo'),
+    AnnonceModel(
+        'Masonnerie',
+        'Je suis un maçon tres veillant et je cherche un emploie',
+        DateTime(2019),
+        'Yaounde, Tokyo'),
+    AnnonceModel(
+        'Masonnerie',
+        'Je suis un maçon tres veillant et je cherche un emploie',
+        DateTime(2019),
+        'Yaounde, Tokyo'),
   ]; // Annonces de l'api
   List<AnnonceModel> filteredAnnonces = List();
   Icon _searchIcon = Icon(Icons.search);
   Widget _appBar = Text('Annonces');
+  bool isEnabled = true;
+  ScrollController _scroll;
+
+  initState() {
+    super.initState();
+
+  }
+
 
   Widget _showAnnonces() {
     if (_searchText.isNotEmpty) {
@@ -102,15 +122,31 @@ class _AnnoncePageState extends State<AnnoncePage> {
             IconButton(icon: _searchIcon, onPressed: _searchPressed)
           ],
         ),
-        body: _showAnnonces(),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.orange,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: IconButton(icon: Icon(Icons.add), onPressed: null),
-            ),
-            onPressed: null));
+        body: NotificationListener<ScrollNotification>(
+            child: _showAnnonces(),
+          onNotification: (scroll) {
+              if (scroll is UserScrollNotification) {
+                if (scroll.direction == ScrollDirection.reverse) {
+                  setState(() {
+                    isEnabled = false;
+                  });
+                }else if (scroll.direction == ScrollDirection.forward){
+                  setState(() {
+                    isEnabled = true;
+                  });
+                }
+              }
+              return true;
+          },
+        ),
+        floatingActionButton: AnimatedOpacity(
+          opacity: isEnabled ? 1.0 : 0,
+          duration: Duration(milliseconds: 300),
+          child: FloatingActionButton(
+            onPressed: () {},
+            tooltip: 'Increment',
+            child: new Icon(Icons.add),
+          ),
+        ));
   }
 }

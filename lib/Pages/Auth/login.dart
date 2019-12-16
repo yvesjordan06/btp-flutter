@@ -1,4 +1,5 @@
 import 'package:btpp/Components/loginFormCard.dart';
+import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/State/user.dart';
 import 'package:flutter/material.dart';
 
@@ -8,16 +9,119 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isSelected = false;
   bool _isLoading =false;
   String _error = '';
+  bool visiblePassword = false;
+  final phone = TextEditingController();
+  final password = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Widget horizontalLine() => Padding(
-    padding: EdgeInsets.symmetric(horizontal: 16.0),
-    child: Container(
-      width: 120,
-      height: 1.0,
-      color: Colors.black26.withOpacity(.2),
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    phone.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  void _login() {
+    if (_formKey.currentState.validate()) {
+      print(phone.value.text);
+      print(password.value.text) ;
+      setState(() {
+        _isLoading = true;
+        _error = '';
+      });
+      appUser.login(phone.value.text, password.value.text);
+    }
+
+  }
+
+  Widget appForm() => Form(
+    key: _formKey,
+    autovalidate: true,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        TextFormField(
+          // ignore: missing_return
+          validator: (value) {
+            if(int.tryParse(value) == null) {
+              return 'Entrez un numero de telephone valide';
+            }
+            if (value.length < 1) {
+              return 'Le numéro de téléphone est necessaire';
+            }
+            if (value.length < 7) {
+              return 'Le numéro de téléphone trop court';
+            }
+          },
+          keyboardType: TextInputType.phone,
+          obscureText: false,
+          controller: phone,
+          decoration: InputDecoration(
+            enabled: !_isLoading,
+            labelText: 'Numéro de Telephone',
+            hintText: 'Mot de passe',
+            hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(
+              Icons.person,
+              size: 20,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        TextFormField(
+          enabled: !_isLoading,
+          // ignore: missing_return
+          validator: (value) {
+            if (value.length < 1) {
+              return 'Le mot de passe est necessaire';
+            }
+          },
+          obscureText: visiblePassword,
+          controller: password,
+          decoration: InputDecoration(
+              labelText: 'Mot de passe',
+              hintText: 'Mot de passe',
+              hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(
+                Icons.lock,
+                size: 20,
+              ),
+              suffix: GestureDetector(
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  width: 20,
+                  child: visiblePassword ? Icon(Icons.visibility, size: 20,) : Icon(Icons.visibility_off, size: 20,),
+                ),
+                onTap: () {
+                  setState(() {
+                    print('see');
+                    visiblePassword = !visiblePassword;
+                  });
+                },
+              )),
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Text('Mot de passe oublié?',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontFamily: 'Poppins-Medium',
+                  fontSize: 12,
+                ))
+          ],
+        )
+      ],
     ),
   );
 
@@ -28,27 +132,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _checkAuthStatus() {
-    if (appUser.currentUser != null) {
+
       if (appUser.error.isNotEmpty) {
-        print('erro happend');
         setState(() {
           _error = appUser.error;
           _isLoading = false;
         });
-      } else {
+      } else if (appUser.currentUser != null) {
         Navigator.pushReplacementNamed(context, 'app');
       }
-    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    void _login() {
-      setState(() {
-        _isLoading = true;
-      });
-      appUser.login('telephone', 'motDePasse');
-    }
 
     print(_isLoading.toString());
     return new Scaffold(
@@ -71,10 +168,20 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: (35),
+                        Container(
+                          child: _error.isNotEmpty ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                  _error,
+                                style: TextStyle(color: Colors.red, fontSize: 12),
+                              ),
+                            ),
+                          ) : SizedBox(
+                            height: (35),
+                          ),
                         ),
-                        FormCard(disableInput:_isLoading,),
+                        appForm(),
                         SizedBox(
                           height: (20),
                         ),
@@ -91,10 +198,10 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   child: !_isLoading ? Text(
                                       'Se Connecter',
-                                      style: TextStyle(fontSize: 20)
+                                      style: TextStyle(fontSize: 20, color: Colors.white)
                                   ): CircularProgressIndicator(backgroundColor: Colors.white,),
                                 ),
-                                color: Colors.blue,
+
                               ),
                             ),
                           ],
@@ -117,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                                   'Creer un compte',
                                   style: TextStyle(
                                     fontFamily: 'Poppins-Bold',
-                                    color: Color(0xFF5d74e3),
+                                    color: AppColors.primary,
                                   )
                               ),
                             )

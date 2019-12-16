@@ -1,3 +1,4 @@
+import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +23,7 @@ class SingleAnnonce extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   CircleAvatar(
+
                     radius: 24,
                     child: Text(annonce.intitule[0]),
                   ),
@@ -44,7 +46,7 @@ class SingleAnnonce extends StatelessWidget {
                         SizedBox(height: 5,),
                         Row(
                             children: <Widget> [
-                                Icon(Icons.location_on, color: Colors.orange, size: 11,),
+                                Icon(Icons.location_on, color: AppColors.accent, size: 11,),
                                 Text(annonce.lieu, style: TextStyle(fontSize: 11))
                               ],
                         ),
