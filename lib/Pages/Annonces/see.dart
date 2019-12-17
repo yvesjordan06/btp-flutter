@@ -1,11 +1,7 @@
 import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -24,36 +20,41 @@ class SeeAnnonce extends StatelessWidget {
             expandedHeight: 200,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                color: Colors.grey[300],
+                color: Colors.lightBlue[900],
                 padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: <Widget>[
-                    Text(
-                      annonce.intitule,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blueGrey,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Text(
-                      annonce.lieu,
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Text(
-                      'Publié '+timeAgo(annonce.createdAt),
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold
-                      ),
+                    Center(child: Opacity(child: Image.asset('images/favicon.png'), opacity: 0.4,)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          annonce.intitule,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Text(
+                          annonce.lieu,
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Text(
+                          'Publié '+timeAgo(annonce.createdAt),
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -66,7 +67,19 @@ class SeeAnnonce extends StatelessWidget {
                   icon: Icon(Icons.more_vert),
                   itemBuilder: (context) {
                     return [
-                      PopupMenuItem(child: Text('See')),
+                      PopupMenuItem(
+                          child: GestureDetector(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.edit, color: Colors.grey,),
+                                SizedBox(width: 5,),
+                                Text('Modifier'),
+                              ],
+                            ),
+                            onTap: (){Navigator.pushNamed(context, 'annonce/edit', arguments: annonce);},
+                          ),
+
+                      ),
                       PopupMenuItem(child: Text('Add')),
                       PopupMenuItem(child: Text('Manage')),
                       PopupMenuItem(child: Text('Delete')),
@@ -185,7 +198,7 @@ class SeeAnnonce extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: RaisedButton(
-                          onPressed: (){},
+                          onPressed: (){Navigator.pushNamed(context, 'annonce/postuler', arguments: annonce);},
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 15),
                             child:  Text(

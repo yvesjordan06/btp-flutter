@@ -5,9 +5,10 @@ class AnnonceModel {
    DateTime createdAt;
    DateTime dateDebut;
    DateTime dateFin;
+   List<TacheModel> taches = [];
 
 
-  AnnonceModel({this.intitule, this.description, this.createdAt, this.lieu, this.dateDebut, this.dateFin});
+  AnnonceModel({this.intitule, this.description, this.createdAt, this.lieu, this.dateDebut, this.dateFin, this.taches});
 }
 
 class TacheModel {

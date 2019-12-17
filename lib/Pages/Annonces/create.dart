@@ -50,6 +50,9 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
 
   void _nextPage() {
     if (_formKey.currentState.validate() && _pageController.hasClients) {
+      _formKey.currentState.save();
+      data.dateDebut = debut;
+      data.dateFin = fin;
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.linear,
@@ -115,7 +118,7 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
         physics: new NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
         controller: _pageController,
-        children: [MainDetailPage(), TacheSelectPage()],
+        children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
       ),
     );
   }
@@ -196,7 +199,15 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                   child: Text('Suivant'),
                   onPressed: () {
                     if (selectedTache.length > 0 && _pageController.hasClients) {
-                      tacheError = false;
+                      setState(() {
+                        tacheError = false;
+                      });
+                      data.taches = selectedTache.map((id) => TacheModel(id: id)).toList();
+                      print(data.taches);
+                      print(data.intitule);
+                      print(data.description);
+                      print(data.dateDebut);
+                      print(data.dateFin);
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.linear,
@@ -382,7 +393,38 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
       ),
     );
   }
+
+  Widget PaymentPage() {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Payement'),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+              child: Column(
+                children: <Widget>[
+                  horizontalDivider(text: 'Payements'),
+                  SizedBox(height: 20,),
+                  RaisedButton(child: Container(
+                    width: double.infinity,
+                    child: Center(
+                        child: Text('Acheter')
+                    ),
+                  ),)
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
+
+
 
 class _InputDropdown extends StatelessWidget {
   const _InputDropdown(
