@@ -1,5 +1,5 @@
-import 'package:btpp/Components/annonce.dart';
-import 'package:btpp/Models/annonce.dart';
+import '../Components/annonce.dart';
+import '../Models/annonce.dart';
 import 'package:flutter/material.dart';
 
 class AnnoncesList extends StatelessWidget {

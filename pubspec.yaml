@@ -1,5 +1,5 @@
 name: btpp
-description: A new Flutter project.
+description: Le travail n'a jamais été aussi simple.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -24,6 +24,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   intl: ^0.15.7
+  settings_ui: ^0.1.1
 
 dev_dependencies:
   flutter_test:

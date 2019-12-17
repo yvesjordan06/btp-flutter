@@ -1,5 +1,5 @@
-import 'package:btpp/Components/horizontalDivider.dart';
-import 'package:btpp/Models/annonce.dart';
+import '../../Components/horizontalDivider.dart';
+import '../../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -266,14 +266,15 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               hintText: 'Un titre pour votre annonce',
                               labelText: 'Titre',
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 8),
+                                  EdgeInsets.all(16),
+                                border: OutlineInputBorder()
                             ),
                             onSaved: (value) {
                               data.intitule = value;
                             },
                           ),
                           SizedBox(
-                            height: 5,
+                            height: 10,
                           ),
                           TextFormField(
                             initialValue: data.lieu,
@@ -288,20 +289,21 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                                   'Le lieu de votre annonce ex: USA, New York',
                               labelText: 'Lieu',
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 8),
+                                  EdgeInsets.all(16),
+                                border: OutlineInputBorder()
                             ),
                             onSaved: (value) {
                               data.lieu = value;
                             },
                           ),
                           SizedBox(
-                            height: 5,
+                            height: 10,
                           ),
                           TextFormField(
                             textCapitalization: TextCapitalization.sentences,
                             initialValue: data.description,
                             maxLines: 4,
-                            minLines: 1,
+                            minLines: 4,
                             maxLength: 1000,
                             validator: (value) {
                               if (value.length < 1) {
@@ -313,10 +315,11 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               return null;
                             },
                             decoration: new InputDecoration(
-                              hintText: 'Decrivez ce qu\'il y-a a faire',
+                              hintText: 'Decrivez votre annonce',
                               labelText: 'Description',
+                                border: OutlineInputBorder(),
                               contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 8),
+                                  EdgeInsets.all(16),
                             ),
                             onSaved: (value) {
                               data.description = value;
@@ -342,7 +345,7 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                                 fontWeight: FontWeight.bold, letterSpacing: 1),
                           ),
                           SizedBox(
-                            height: 10,
+                            height: 20,
                           ),
                           _InputDropdown(
                             labelText: 'Date de Debut',
@@ -357,6 +360,7 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               });
                             },
                           ),
+                          SizedBox(height: 15,),
                           _InputDropdown(
                             labelText: 'Date de Fin',
                             valueText: DateFormat.yMMMd().format(fin),
@@ -449,6 +453,7 @@ class _InputDropdown extends StatelessWidget {
       child: new InputDecorator(
         decoration: new InputDecoration(
           labelText: labelText,
+          border: OutlineInputBorder()
         ),
         baseStyle: valueStyle,
         child: new Row(

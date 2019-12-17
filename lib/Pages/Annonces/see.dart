@@ -1,7 +1,7 @@
-import 'package:btpp/Components/horizontalDivider.dart';
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Functions/Utility.dart';
-import 'package:btpp/Models/annonce.dart';
+import '../../Components/horizontalDivider.dart';
+import '../../Functions/Colors.dart';
+import '../../Functions/Utility.dart';
+import '../../Models/annonce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -300,27 +300,10 @@ Widget annonceSummary(AnnonceModel annonce) => Container(
 );
 
 Widget tacheTravailleur() {
-  return Container(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        CircleAvatar(
-          backgroundColor: Colors.grey,
-          child: Icon(Icons.person, size: 30,),
-        ),
-        SizedBox(width: 20,),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Tache', style: TextStyle(fontWeight: FontWeight.bold),),
-            SizedBox(height: 10,),
-            Text('Pas encore attribuer', style: TextStyle(fontSize: 12, color: Colors.grey),)
-          ],
-        )
-      ],
-    ),
+  return ListTile(
+    title: Text('Carrelage'),
+    leading: CircleAvatar(child: Text('C', style: TextStyle(fontWeight: FontWeight.bold),), backgroundColor: Colors.grey[300], radius: 30,),
+    subtitle: Text(('Pas encore attribuer')),
   );
 }
 

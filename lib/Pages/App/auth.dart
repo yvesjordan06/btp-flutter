@@ -1,7 +1,7 @@
-import 'package:btpp/Components/tabButton.dart';
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Pages/Annonces/main.dart';
-import 'package:btpp/Pages/Auth/login.dart';
+import '../../Components/tabButton.dart';
+import '../../Functions/Colors.dart';
+import '../../Pages/Annonces/main.dart';
+import '../../Pages/Auth/login.dart';
 import 'package:flutter/material.dart';
 
 class AuthApp extends StatelessWidget {

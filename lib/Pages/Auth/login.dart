@@ -1,6 +1,5 @@
-import 'package:btpp/Components/loginFormCard.dart';
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/State/user.dart';
+import '../../Functions/Colors.dart';
+import '../../State/user.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {

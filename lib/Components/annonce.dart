@@ -1,6 +1,6 @@
-import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Functions/Utility.dart';
-import 'package:btpp/Models/annonce.dart';
+import '../Functions/Colors.dart';
+import '../Functions/Utility.dart';
+import '../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

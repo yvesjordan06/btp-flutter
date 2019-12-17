@@ -1,10 +1,10 @@
-import 'package:btpp/Models/annonce.dart';
-import 'package:btpp/Pages/Annonces/create.dart';
-import 'package:btpp/Pages/Annonces/postule.dart';
-import 'package:btpp/Pages/Annonces/see.dart';
-import 'package:btpp/Pages/App/auth.dart';
-import 'package:btpp/Pages/App/load.dart';
-import 'package:btpp/Pages/App/main.dart';
+import '../Models/annonce.dart';
+import '../Pages/Annonces/create.dart';
+import '../Pages/Annonces/postule.dart';
+import '../Pages/Annonces/see.dart';
+import '../Pages/App/auth.dart';
+import '../Pages/App/load.dart';
+import '../Pages/App/main.dart';
 import 'package:flutter/material.dart';
 
 class RouteGenerator {

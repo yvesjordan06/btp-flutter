@@ -1,5 +1,5 @@
-import 'package:btpp/Components/horizontalDivider.dart';
-import 'package:btpp/Models/annonce.dart';
+import '../../Components/horizontalDivider.dart';
+import '../../Models/annonce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
