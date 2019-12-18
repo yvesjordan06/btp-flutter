@@ -1,23 +1,32 @@
 import 'package:btpp/Functions/Utility.dart';
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 
 class SingleChatPage extends StatefulWidget {
-  SingleChatPage({Key key}) : super(key: key);
-
   @override
   _SingleChatPageState createState() => _SingleChatPageState();
 }
 
 class _SingleChatPageState extends State<SingleChatPage> {
-  List<String> message = [];
-  final TextEditingController messageController = TextEditingController();
+  final List<String> message = [
+    'Salut',
+    'Bonjour, qui est-ce svp',
+    'Je suis M. Hiro',
+    'Daccord ravi de vous connaitre'
+  ].reversed.toList();
 
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    messageController.dispose();
-    super.dispose();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
+  TextEditingController messageController = TextEditingController();
+
+  void _send() {
+    print('sending');
+    String text = messageController.text;
+    if (text.isNotEmpty) {
+      message.insert(0, text.trim());
+      _listKey.currentState.insertItem(0);
+    }
+    messageController.clear();
   }
 
   @override
@@ -41,65 +50,140 @@ class _SingleChatPageState extends State<SingleChatPage> {
             subtitle: Text('Construction'),
           ),
         ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                // physics: NeverScrollableScrollPhysics(),
-                itemCount: message.length,
-                itemBuilder: (context, index) {
-                  return Container(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  reverse: true,
+                  children: <Widget>[
+                    AnimatedList(
+                      key: _listKey,
+                      reverse: true,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      initialItemCount: message.length,
+                      itemBuilder: (context, index, animation) {
+                        return SlideTransition(
+                          position: animation.drive(
+                              Tween(begin: Offset(0, 1), end: Offset.zero)),
+                          child: Bubble(
+                            child: Column(
+                                crossAxisAlignment: index % 4 == 0
+                                    ? CrossAxisAlignment.start
+                                    : CrossAxisAlignment.end,
+                                children: [
+                                  Text(message[index].trim()),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(
+                                          '12:10',
+                                          style: TextStyle(
+                                              fontSize: 8,
+                                              color: Colors.grey[800]),
+                                        ),
+                                        Icon(
+                                          Icons.done,
+                                          color: Colors.grey[800],
+                                          size: 8,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ]),
+                            stick: true,
+                            margin: index % 4 == 0
+                                ? BubbleEdges.only(top: 10, right: 30)
+                                : BubbleEdges.only(top: 10, left: 30),
+                            nip: index % 4 == 0
+                                ? BubbleNip.leftTop
+                                : BubbleNip.rightTop,
+                            alignment: index % 4 == 0
+                                ? Alignment.topLeft
+                                : Alignment.topRight,
+                            color: index % 4 == 0
+                                ? ThemeData().primaryColor
+                                : AppColor().accentColor(),
+                          ),
+                        );
+                      },
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height - 60,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text(timeAgo(DateTime.now())),
-                          Text(message.reversed.toList()[index]),
+                          Bubble(
+                            color: Colors.indigo[300],
+                            child: Text('Hiro a postuler aux taches'),
+                            alignment: Alignment.center,
+                            margin: BubbleEdges.all(8),
+                          ),
+                          Wrap(
+                            children: List<Widget>.generate(
+                                4,
+                                (index) => Container(
+                                      margin: EdgeInsets.all(4),
+                                      child: Chip(
+                                        avatar: Icon(
+                                          Icons.done,
+                                          size: 12,
+                                          color: Colors.lime,
+                                        ),
+                                        backgroundColor: Colors.lightBlue,
+                                        label: Text(
+                                          'macon',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                      ),
+                                    )),
+                          ),
                         ],
                       ),
-                      margin: EdgeInsets.only(
-                          right: 80, bottom: 12, top: 12, left: 8),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                        ),
-                        color: Theme.of(context).primaryColor,
-                      ));
-                },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            TextField(
-              controller: messageController,
-              textCapitalization: TextCapitalization.sentences,
-              autocorrect: true,
-              minLines: 1,
-              maxLines: 3,
-              decoration: InputDecoration(
-                  hintText: 'Votre message',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.send),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.attach_file),
                     onPressed: () {
                       String text = messageController.text;
                       if (text.isNotEmpty) {
-                        setState(() {
-                          message.add(text);
-                          messageController.clear();
-                        });
+                        message.insert(0, text.trim());
+                        _listKey.currentState.insertItem(0);
                       }
+                      messageController.clear();
                     },
                   ),
-                  prefixIcon: IconButton(
-                    icon: Icon(Icons.attach_file),
-                    onPressed: () {},
-                  )),
-            )
-          ],
+                  Expanded(
+                    child: TextField(
+                      controller: messageController,
+                      textCapitalization: TextCapitalization.sentences,
+                      autocorrect: true,
+                      minLines: 1,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Votre message',
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: _send,
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

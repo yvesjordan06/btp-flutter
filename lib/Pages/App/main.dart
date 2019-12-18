@@ -1,4 +1,6 @@
 import 'package:btpp/Pages/Chat/main.dart';
+import 'package:btpp/Pages/Settings/index.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
 import '../../Components/tabButton.dart';
 import '../../Functions/Colors.dart';
@@ -35,12 +37,17 @@ class MainApp extends StatelessWidget {
             ),
           ],
         ),
-        body: TabBarView(children: [
-          AnnoncePage(),
-          LoginPage(),
-          ChatListScreen(),
-          Text('Page 3'),
-        ]),
+        body: DoubleBackToCloseApp(
+          snackBar: const SnackBar(
+            content: Text('Appuyez de nouveau pour quitter'),
+          ),
+          child: TabBarView(children: [
+            AnnoncePage(),
+            LoginPage(),
+            ChatListScreen(),
+            UserSettingPage(),
+          ]),
+        ),
       ),
     );
   }
