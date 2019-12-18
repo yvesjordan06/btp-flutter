@@ -1,3 +1,8 @@
+import 'package:btpp/Pages/Annonces/demandes.dart';
+import 'package:btpp/Pages/Auth/passwordreset.dart';
+import 'package:btpp/Pages/Chat/main.dart';
+import 'package:btpp/Pages/Chat/see.dart';
+
 import '../Models/annonce.dart';
 import '../Pages/Annonces/create.dart';
 import '../Pages/Annonces/postule.dart';
@@ -18,9 +23,15 @@ class RouteGenerator {
       case 'app':
         return MaterialPageRoute(builder: (_) => MainApp());
       case 'auth':
-      return MaterialPageRoute(builder: (_) => AuthApp());
+        return MaterialPageRoute(builder: (_) => AuthApp());
+      case 'auth/reset':
+        return MaterialPageRoute(builder: (_) => ResetPasswordPage());
+      case 'chat':
+        return MaterialPageRoute(builder: (_) => ChatListScreen());
+      case 'chats/see':
+        return MaterialPageRoute(builder: (_) => SingleChatPage());
       case 'annonce/see':
-      // Validation of correct data typ
+        // Validation of correct data typ
         if (args is AnnonceModel) {
           return MaterialPageRoute(
             builder: (_) => SeeAnnonce(
@@ -34,7 +45,7 @@ class RouteGenerator {
       case 'annonce/create':
         return MaterialPageRoute(builder: (_) => CreateAnnonce());
       case 'annonce/postuler':
-      // Validation of correct data typ
+        // Validation of correct data typ
         if (args is AnnonceModel) {
           return MaterialPageRoute(
             builder: (_) => PostulerPage(
@@ -46,7 +57,7 @@ class RouteGenerator {
         // You can also throw an exception while in development.
         return _errorRoute();
       case 'annonce/edit':
-      // Validation of correct data typ
+        // Validation of correct data typ
         if (args is AnnonceModel) {
           return MaterialPageRoute(
             builder: (_) => CreateAnnonce(
@@ -57,8 +68,20 @@ class RouteGenerator {
         // If args is not of the correct type, return an error page.
         // You can also throw an exception while in development.
         return _errorRoute();
+      case 'annonce/demandes':
+        // Validation of correct data typ
+        if (args is AnnonceModel) {
+          return MaterialPageRoute(
+            builder: (_) => DemandesAnnoncePage(
+              annonce: args,
+            ),
+          );
+        }
+        // If args is not of the correct type, return an error page.
+        // You can also throw an exception while in development.
+        return _errorRoute();
       default:
-      // If there is no such named route in the switch statement, e.g. /third
+        // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
     }
   }

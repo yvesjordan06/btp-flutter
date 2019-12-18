@@ -5,36 +5,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class CreateAnnonce extends StatefulWidget {
-  final AnnonceModel annonce;
-
   const CreateAnnonce({Key key, this.annonce}) : super(key: key);
+
+  final AnnonceModel annonce;
 
   @override
   _CreateAnnonceState createState() => _CreateAnnonceState(annonce: annonce);
 }
 
 class _CreateAnnonceState extends State<CreateAnnonce> {
-  AnnonceModel data;
-  final AnnonceModel annonce;
-  final _pageController = PageController(initialPage: 0);
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  List<int> selectedTache = List();
-
   _CreateAnnonceState({this.annonce});
 
-  @override
-  void initState() {
-    data = annonce == null ? AnnonceModel() : annonce;
-    super.initState();
-  }
+  final AnnonceModel annonce;
+  AnnonceModel data;
+  DateTime debut;
+  DateTime fin;
+  ValueChanged<DateTime> selectDate;
+  List<int> selectedTache = List();
+  bool tacheError = false;
+  DateTime today;
+
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final _pageController = PageController(initialPage: 0);
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    data = annonce == null ? AnnonceModel() : annonce;
+    debut = DateTime.now();
+    fin = debut;
+    today = debut;
+    super.initState();
   }
 
   bool checkpage() {
@@ -78,7 +86,8 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
-            ),new FlatButton(
+            ),
+            new FlatButton(
               child: new Text("Annuler"),
               onPressed: () {
                 Navigator.pop(context);
@@ -91,12 +100,6 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
     return false;
   }
 
-  DateTime today = DateTime.now();
-  DateTime debut = DateTime.now();
-  DateTime fin = DateTime.now();
-  bool tacheError = false;
-  ValueChanged<DateTime> selectDate;
-
   Future<void> _selectDate(BuildContext context, DateTime value,
       {DateTime min, DateTime max, @required Function onChange}) async {
     final DateTime picked = await showDatePicker(
@@ -107,20 +110,6 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
     if (picked != null) {
       onChange(picked);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return WillPopScope(
-      onWillPop: () => Future.sync(checkpage),
-      child: PageView(
-        physics: new NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        controller: _pageController,
-        children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
-      ),
-    );
   }
 
   Widget TacheSelectPage() {
@@ -187,10 +176,17 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
           ),
           SliverList(
               delegate: SliverChildListDelegate([
-                tacheError ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Selectionnez aumoin une tache',style: TextStyle(color: Colors.red),),
-                ): SizedBox(height: 0,),
+            tacheError
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Selectionnez aumoin une tache',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  )
+                : SizedBox(
+                    height: 0,
+                  ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -198,11 +194,14 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                 child: RaisedButton(
                   child: Text('Suivant'),
                   onPressed: () {
-                    if (selectedTache.length > 0 && _pageController.hasClients) {
+                    if (selectedTache.length > 0 &&
+                        _pageController.hasClients) {
                       setState(() {
                         tacheError = false;
                       });
-                      data.taches = selectedTache.map((id) => TacheModel(id: id)).toList();
+                      data.taches = selectedTache
+                          .map((id) => TacheModel(id: id))
+                          .toList();
                       print(data.taches);
                       print(data.intitule);
                       print(data.description);
@@ -263,12 +262,10 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               return null;
                             },
                             decoration: new InputDecoration(
-                              hintText: 'Un titre pour votre annonce',
-                              labelText: 'Titre',
-                              contentPadding:
-                                  EdgeInsets.all(16),
-                                border: OutlineInputBorder()
-                            ),
+                                hintText: 'Un titre pour votre annonce',
+                                labelText: 'Titre',
+                                contentPadding: EdgeInsets.all(16),
+                                border: OutlineInputBorder()),
                             onSaved: (value) {
                               data.intitule = value;
                             },
@@ -285,13 +282,11 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               return null;
                             },
                             decoration: new InputDecoration(
-                              hintText:
-                                  'Le lieu de votre annonce ex: USA, New York',
-                              labelText: 'Lieu',
-                              contentPadding:
-                                  EdgeInsets.all(16),
-                                border: OutlineInputBorder()
-                            ),
+                                hintText:
+                                    'Le lieu de votre annonce ex: USA, New York',
+                                labelText: 'Lieu',
+                                contentPadding: EdgeInsets.all(16),
+                                border: OutlineInputBorder()),
                             onSaved: (value) {
                               data.lieu = value;
                             },
@@ -317,9 +312,8 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                             decoration: new InputDecoration(
                               hintText: 'Decrivez votre annonce',
                               labelText: 'Description',
-                                border: OutlineInputBorder(),
-                              contentPadding:
-                                  EdgeInsets.all(16),
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.all(16),
                             ),
                             onSaved: (value) {
                               data.description = value;
@@ -360,7 +354,9 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                               });
                             },
                           ),
-                          SizedBox(height: 15,),
+                          SizedBox(
+                            height: 15,
+                          ),
                           _InputDropdown(
                             labelText: 'Date de Fin',
                             valueText: DateFormat.yMMMd().format(fin),
@@ -407,17 +403,20 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
         child: Container(
           child: Card(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Column(
                 children: <Widget>[
                   horizontalDivider(text: 'Payements'),
-                  SizedBox(height: 20,),
-                  RaisedButton(child: Container(
-                    width: double.infinity,
-                    child: Center(
-                        child: Text('Acheter')
+                  SizedBox(
+                    height: 20,
+                  ),
+                  RaisedButton(
+                    child: Container(
+                      width: double.infinity,
+                      child: Center(child: Text('Acheter')),
                     ),
-                  ),)
+                    onPressed: () {},
+                  )
                 ],
               ),
             ),
@@ -426,9 +425,18 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) => WillPopScope(
+        onWillPop: () => Future.sync(checkpage),
+        child: PageView(
+          physics: new NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          controller: _pageController,
+          children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
+        ),
+      );
 }
-
-
 
 class _InputDropdown extends StatelessWidget {
   const _InputDropdown(
@@ -440,11 +448,11 @@ class _InputDropdown extends StatelessWidget {
       this.onPressed})
       : super(key: key);
 
-  final String labelText;
-  final String valueText;
-  final TextStyle valueStyle;
-  final VoidCallback onPressed;
   final Widget child;
+  final String labelText;
+  final VoidCallback onPressed;
+  final TextStyle valueStyle;
+  final String valueText;
 
   @override
   Widget build(BuildContext context) {
@@ -452,9 +460,7 @@ class _InputDropdown extends StatelessWidget {
       onTap: onPressed,
       child: new InputDecorator(
         decoration: new InputDecoration(
-          labelText: labelText,
-          border: OutlineInputBorder()
-        ),
+            labelText: labelText, border: OutlineInputBorder()),
         baseStyle: valueStyle,
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -15,7 +15,8 @@ class SingleAnnonce extends StatelessWidget {
     return GestureDetector(
       child: Card(
         child: Container(
-          padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 10),
+          padding:
+              const EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 10),
           child: Column(
             children: <Widget>[
               Row(
@@ -23,7 +24,6 @@ class SingleAnnonce extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   CircleAvatar(
-
                     radius: 24,
                     child: Text(annonce.intitule[0]),
                   ),
@@ -35,20 +35,25 @@ class SingleAnnonce extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                           annonce.intitule,
+                          annonce.intitule,
                           style: TextStyle(
-                            color: Colors.blueGrey,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w500
-                          ),
+                              color: Colors.blueGrey,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 5,),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Row(
-                            children: <Widget> [
-                                Icon(Icons.location_on, color: AppColors.accent, size: 11,),
-                                Text(annonce.lieu, style: TextStyle(fontSize: 11))
-                              ],
+                          children: <Widget>[
+                            Icon(
+                              Icons.location_on,
+                              color: AppColors.accent,
+                              size: 11,
+                            ),
+                            Text(annonce.lieu, style: TextStyle(fontSize: 11))
+                          ],
                         ),
                       ],
                     ),
@@ -56,15 +61,19 @@ class SingleAnnonce extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text(timeAgo(annonce.createdAt), style: TextStyle(fontSize: 11, color: Colors.grey),),
-                      SizedBox(height: 10.0,),
+                      Text(
+                        timeAgo(annonce.createdAt),
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       Container(
                         width: 40,
                         height: 20,
                         decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(30)
-                        ),
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(30)),
                         alignment: Alignment.center,
                         child: Text(
                           'New',
@@ -75,14 +84,17 @@ class SingleAnnonce extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 0),
                 alignment: Alignment.topLeft,
                 child: Text(
                   annonce.description,
                   style: TextStyle(
-                      fontSize: 12,
+                    fontSize: 12,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 3,
@@ -91,9 +103,10 @@ class SingleAnnonce extends StatelessWidget {
             ],
           ),
         ),
-
       ),
-      onTap: (){Navigator.pushNamed(context, 'annonce/see', arguments: annonce);},
+      onTap: () {
+        Navigator.pushNamed(context, 'annonce/see', arguments: annonce);
+      },
     );
   }
 }

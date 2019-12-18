@@ -14,12 +14,11 @@ class MyApp extends StatelessWidget {
         primaryColor: AppColors.primary,
         accentColor: AppColors.accent,
         buttonColor: AppColors.primaryDark,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: AppColors.accent),
+        floatingActionButtonTheme:
+            FloatingActionButtonThemeData(backgroundColor: AppColors.accent),
       ),
       initialRoute: 'loading',
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
-
-

@@ -1,3 +1,14 @@
+import 'package:flutter/material.dart';
+
+class AppColor {
+  Color primaryColor() => hexToColor(code: '#2962ff');
+  Color accentColor() => hexToColor(code: '#ef6c00');
+}
+
+Color hexToColor({String code}) {
+  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+}
+
 String timeAgo(DateTime datetime) {
   final intervals = {
     'an': 31536000,
@@ -8,20 +19,26 @@ String timeAgo(DateTime datetime) {
     'minute': 60,
     // 'seconde': 1
   };
-  final diff =datetime.difference(DateTime.now()).inSeconds * -1;
+  final diff = datetime.difference(DateTime.now()).inSeconds * -1;
   if (diff < 59 && diff > 0) {
     return 'A l\instant';
   }
 
-  for(int i=0; i<intervals.length; i++) {
+  for (int i = 0; i < intervals.length; i++) {
     int current = (diff / intervals.values.toList()[i]).floor();
     if (current >= 1) {
       if (current == 1 || intervals.keys.toList()[i] == 'mois') {
-        return 'Il y\'a '+current.toString()+' '+intervals.keys.toList()[i];
+        return 'Il y\'a ' +
+            current.toString() +
+            ' ' +
+            intervals.keys.toList()[i];
       }
-      return 'Il y\'a '+current.toString()+' '+intervals.keys.toList()[i]+'s';
+      return 'Il y\'a ' +
+          current.toString() +
+          ' ' +
+          intervals.keys.toList()[i] +
+          's';
     }
-
   }
   return 'Dans le future';
 }
