@@ -1,4 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+
+Future<Uint8List> assetToByte(Asset asset) async {
+  ByteData temp = await asset.getByteData();
+
+  return temp.buffer.asUint8List();
+}
 
 class AppColor {
   Color primaryColor() => hexToColor(code: '#2962ff');

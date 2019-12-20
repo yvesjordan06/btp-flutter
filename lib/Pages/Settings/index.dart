@@ -1,4 +1,5 @@
-import 'package:btpp/Components/horizontalDivider.dart';
+import 'package:btpp/Components/headerText.dart';
+import 'package:btpp/Components/menuTiles.dart';
 import 'package:flutter/material.dart';
 
 class UserSettingPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
         extendBodyBehindAppBar: true,
         extendBody: true,
         body: Stack(
+          //fit: StackFit.expand,
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
@@ -25,9 +27,15 @@ class _UserSettingPageState extends State<UserSettingPage> {
             Container(
               color: Color.fromRGBO(0, 0, 0, 0.7),
             ),
+            Positioned.fill(
+              top: 300,
+              child: Container(
+                color: Colors.white,
+              ),
+            ),
             Container(
               padding: EdgeInsets.only(top: 80),
-              width: double.infinity,
+              //width: double.infinity,
               child: SingleChildScrollView(
                 child: SettingDecorationPage(
                   child: Padding(
@@ -35,55 +43,92 @@ class _UserSettingPageState extends State<UserSettingPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          'Parametre Profile',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey[800]),
+                        HeaderText(
+                          text: 'Parametre Profiles',
+                        ),
+                        MenuTile(
+                          text: 'Nom',
+                          value: 'Hiro',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Prénom',
+                          value: 'Hamada',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Télephone',
+                          value: '694842185',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Email',
+                          value: 'Aucun',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Anniversaire',
+                          value: '12 Juillet 1998',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Pays',
+                          value: 'Cameroun',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Ville',
+                          value: 'Yaoundé',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Quartier',
+                          value: 'Nkomkana',
+                          onTap: () {},
                         ),
                         SizedBox(
-                          height: 5,
+                          height: 10,
                         ),
-                        horizontalDivider(margin: 0),
-                        ListTile(
-                          contentPadding: EdgeInsets.all(0),
-                          title: Text(
-                            'Sauvegarde',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          trailing: Switch(
-                            onChanged: (bool value) {},
-                            value: true,
-                          ),
+                        HeaderText(
+                          text: 'Compte',
                         ),
-                        ListTile(
-                            contentPadding: EdgeInsets.all(0),
-                            title: Text(
-                              'Mode',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            trailing: FlatButton(
-                              onPressed: () {},
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    'Annonceur',
-                                    style: TextStyle(
-                                        fontSize: 15, color: Colors.grey),
-                                  ),
-                                  SizedBox(
-                                    width: 2,
-                                  ),
-                                  Icon(
-                                    Icons.text_rotation_angledown,
-                                    size: 16,
-                                    color: Colors.grey,
-                                  )
-                                ],
-                              ),
-                            )),
+                        MenuToggle(
+                          text: 'Desactiver',
+                          value: true,
+                          onToggle: (value) {},
+                        ),
+                        MenuTile(
+                          text: 'Type',
+                          value: 'Annonceur',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Abonnement',
+                          value: 'Gratuit',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Mot de passe',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Se deconnecter',
+                          onTap: () {},
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        HeaderText(
+                          text: 'Support',
+                        ),
+                        MenuTile(
+                          text: 'Nous appeler',
+                          onTap: () {},
+                        ),
+                        MenuTile(
+                          text: 'Feedback',
+                          onTap: () {},
+                        ),
                       ],
                     ),
                   ),
@@ -126,9 +171,6 @@ class SettingDecorationPage extends StatelessWidget {
                 topRight: Radius.circular(30),
                 topLeft: Radius.circular(30),
               )),
-          constraints: BoxConstraints(
-              minWidth: double.infinity,
-              minHeight: MediaQuery.of(context).size.height),
           child: Padding(
             padding: EdgeInsets.only(top: 50),
             child: child,

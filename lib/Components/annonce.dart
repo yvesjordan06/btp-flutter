@@ -11,7 +11,6 @@ class SingleAnnonce extends StatelessWidget {
   const SingleAnnonce({Key key, this.annonce}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return GestureDetector(
       child: Card(
         child: Container(

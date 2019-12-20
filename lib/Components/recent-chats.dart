@@ -37,13 +37,19 @@ class _RecentChatsState extends State<RecentChats> {
                     Navigator.pushNamed(context, 'chats/see');
                   }
                 },
-                title: Text(recentsChat[index].sender.name),
+                title: Hero(
+                  child: Text(recentsChat[index].sender.name),
+                  tag: 'username$index',
+                ),
                 leading: Container(
                   constraints: BoxConstraints.expand(width: 50),
                   child: Stack(children: [
                     CircleAvatar(
                       radius: 30,
-                      child: Image.asset('images/userfallback.png'),
+                      child: Hero(
+                        child: Image.asset('images/userfallback.png'),
+                        tag: 'userinfo$index',
+                      ),
                     ),
                     Positioned(
                       bottom: 5,

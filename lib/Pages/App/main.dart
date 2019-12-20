@@ -1,23 +1,24 @@
+import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Settings/index.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
 import '../../Components/tabButton.dart';
-import '../../Functions/Colors.dart';
 import '../../Pages/Annonces/main.dart';
-import '../../Pages/Auth/login.dart';
 import 'package:flutter/material.dart';
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
         bottomNavigationBar: TabBar(
-          indicatorColor: AppColors.primaryDark,
-          unselectedLabelColor: Colors.grey[700],
-          labelColor: AppColors.primary,
           tabs: [
             TabButton(
               text: 'Annonce',
@@ -43,7 +44,7 @@ class MainApp extends StatelessWidget {
           ),
           child: TabBarView(children: [
             AnnoncePage(),
-            LoginPage(),
+            ImageViewer(),
             ChatListScreen(),
             UserSettingPage(),
           ]),

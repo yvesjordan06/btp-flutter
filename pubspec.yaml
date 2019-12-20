@@ -14,7 +14,7 @@ description: Le travail n'a jamais été aussi simple.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -28,6 +28,11 @@ dependencies:
   double_back_to_close_app: ^0.1.2
   badges: ^1.1.0
   bubble: ^1.1.9+1
+  # image_picker_modern: ^0.4.12+2
+  multi_image_picker: ^4.6.0
+  image_picker: ^0.6.2+3
+  flutter_local_notifications: ^0.9.0+1
+  dio: ^3.0.7
 
 dev_dependencies:
   flutter_test:

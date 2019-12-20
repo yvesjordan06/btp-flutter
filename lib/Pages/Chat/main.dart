@@ -1,7 +1,6 @@
 import 'package:btpp/Components/recent-chats.dart';
 import 'package:btpp/Components/recent-contacts.dart';
 import 'package:btpp/Functions/Colors.dart';
-import 'package:btpp/Models/message-model.dart';
 
 import 'package:flutter/material.dart';
 
@@ -34,9 +33,19 @@ class ChatListScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 // color: AppColor().accentColor(),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[RecentContacts()],
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage('images/chatback.png'))),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[RecentContacts()],
+                    ),
+                  ],
                 ),
               ),
             ),

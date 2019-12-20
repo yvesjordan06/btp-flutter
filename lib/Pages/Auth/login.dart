@@ -10,7 +10,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String _error = '';
-  bool visiblePassword = false;
+  bool hiddenPassword = true;
   final phone = TextEditingController();
   final password = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                   return 'Le mot de passe est necessaire';
                 }
               },
-              obscureText: visiblePassword,
+              obscureText: hiddenPassword,
               controller: password,
               decoration: InputDecoration(
                   labelText: 'Mot de passe',
@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       alignment: Alignment.centerRight,
                       width: 20,
-                      child: visiblePassword
+                      child: hiddenPassword
                           ? Icon(
                               Icons.visibility,
                               size: 20,
@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       setState(() {
                         print('see');
-                        visiblePassword = !visiblePassword;
+                        hiddenPassword = !hiddenPassword;
                       });
                     },
                   )),

@@ -7,19 +7,19 @@ class TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
-      height: 40,
-      margin: EdgeInsets.symmetric(vertical: 5),
+      constraints: BoxConstraints(maxHeight: 40),
+      margin: EdgeInsets.all(2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           icon,
           Text(
             text,
-            style: TextStyle(
-              fontSize: 8
-            ),
+            style: TextStyle(fontSize: 12),
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            maxLines: 1,
           )
         ],
       ),
