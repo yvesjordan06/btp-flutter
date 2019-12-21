@@ -10,8 +10,15 @@ Future<Uint8List> assetToByte(Asset asset) async {
 }
 
 class AppColor {
-  Color primaryColor() => hexToColor(code: '#2962ff');
-  Color accentColor() => hexToColor(code: '#ef6c00');
+  // Color primaryColor() => hexToColor(code: '#2962ff');
+  // Color accentColor() => hexToColor(code: '#ef6c00');
+
+  static Color get primaryColor => Color.fromRGBO(43, 82, 216, 1);
+  static Color get accentColor => Color.fromRGBO(253, 137, 37, 1);
+  static Color get background => Color.fromRGBO(245, 249, 252, 1);
+  static Color get basic => Color.fromRGBO(143, 155, 179, 1);
+  static Color primaryColorsOpacity(double opacity) =>
+      Color.fromRGBO(43, 82, 216, opacity);
 }
 
 Color hexToColor({String code}) {

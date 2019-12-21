@@ -1,4 +1,3 @@
-import '../Functions/Colors.dart';
 import '../Functions/Utility.dart';
 import '../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +22,7 @@ class SingleAnnonce extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   CircleAvatar(
+                    backgroundColor: AppColor.primaryColor,
                     radius: 24,
                     child: Text(annonce.intitule[0]),
                   ),
@@ -35,10 +35,7 @@ class SingleAnnonce extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           annonce.intitule,
-                          style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.title,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
@@ -48,7 +45,7 @@ class SingleAnnonce extends StatelessWidget {
                           children: <Widget>[
                             Icon(
                               Icons.location_on,
-                              color: AppColors.accent,
+                              color: AppColor.accentColor,
                               size: 11,
                             ),
                             Text(annonce.lieu, style: TextStyle(fontSize: 11))
@@ -71,7 +68,7 @@ class SingleAnnonce extends StatelessWidget {
                         width: 40,
                         height: 20,
                         decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: AppColor.primaryColor,
                             borderRadius: BorderRadius.circular(30)),
                         alignment: Alignment.center,
                         child: Text(
@@ -92,9 +89,7 @@ class SingleAnnonce extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Text(
                   annonce.description,
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
+                  style: Theme.of(context).textTheme.body1,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 3,
                 ),

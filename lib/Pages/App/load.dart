@@ -1,3 +1,5 @@
+import 'package:btpp/State/index.dart';
+
 import '../../State/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -24,14 +26,11 @@ class _LoadingPage extends State<LoadingPage> {
   @override
   initState() {
     super.initState();
-    print('init method');
-    appUser.loadSavedUser().then((user){
-      _loadPage();
-    });
+    AppState.loadState().then((x) => this._loadPage());
   }
-  void _loadPage() {
 
-    if (appUser.currentUser != null) {
+  void _loadPage() {
+    if (AppState.userState.currentUser != null) {
       Navigator.pushReplacementNamed(context, 'app');
     } else {
       Navigator.pushReplacementNamed(context, 'auth');
@@ -62,23 +61,23 @@ class _LoadingPage extends State<LoadingPage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             Image.asset(
-                'images/favicon.png',
+              'images/favicon.png',
               width: 200,
             ),
             CircularProgressIndicator(),
             Text(
               'BY MOS',
               style: TextStyle(
-                fontSize: 24,
-                letterSpacing: 2,
-                fontWeight: FontWeight.w600,
-                color: Colors.blueGrey,
-                shadows: [Shadow(
-                  color: Colors.grey,
-                  offset: Offset.zero,
-                  blurRadius: 0.8
-                )]
-              ),
+                  fontSize: 24,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blueGrey,
+                  shadows: [
+                    Shadow(
+                        color: Colors.grey,
+                        offset: Offset.zero,
+                        blurRadius: 0.8)
+                  ]),
             ),
           ],
         ),

@@ -10,12 +10,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(MyApp());
-  var initializationSettingsAndroid =
-      new AndroidInitializationSettings('app_icon');
-  var initializationSettingsIOS = IOSInitializationSettings();
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 class MyApp extends StatelessWidget {

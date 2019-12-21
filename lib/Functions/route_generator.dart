@@ -1,5 +1,7 @@
 import 'package:btpp/Pages/Annonces/demandes.dart';
+import 'package:btpp/Pages/Auth/login.dart';
 import 'package:btpp/Pages/Auth/passwordreset.dart';
+import 'package:btpp/Pages/Auth/signup.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Chat/see.dart';
 
@@ -24,6 +26,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => MainApp());
       case 'auth':
         return MaterialPageRoute(builder: (_) => AuthApp());
+      case 'auth/login':
+        return MaterialPageRoute(builder: (_) => LoginPage());
+      case 'auth/signup':
+        return MaterialPageRoute(builder: (_) => SignupPage());
       case 'auth/reset':
         return MaterialPageRoute(builder: (_) => ResetPasswordPage());
       case 'chat':

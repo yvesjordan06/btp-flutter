@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/utils/notifications.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +18,7 @@ class ImageViewer extends StatefulWidget {
 }
 
 class _ImageViewerState extends State<ImageViewer> {
-  List<Asset> images = List<Asset>();
+  List images = List();
   @override
   void initState() {
     super.initState();
@@ -80,11 +81,19 @@ class _ImageViewerState extends State<ImageViewer> {
       ),
       body: buildGridView(),
       floatingActionButton: FloatingActionButton(
-        onPressed: loadAssets,
+        onPressed: testImage,
         tooltip: 'Pick Image',
         child: Icon(Icons.add_a_photo),
       ),
     );
+  }
+
+  testImage() {
+    multiImagePicker().then((result) {
+      setState(() {
+        images = result;
+      });
+    });
   }
 }
 

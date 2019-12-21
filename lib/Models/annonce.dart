@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class AnnonceModel {
   String intitule = '';
   String lieu = '';
@@ -43,16 +45,29 @@ class UserModel {
   String status = '';
   String accountType = '';
   String userType = '';
+  File localPicture;
+  String pictureLink = '';
+  String pays = '';
+  String ville = '';
+  String quartier = '';
+  String boitePostal = '';
 
-  UserModel(
-      {this.nom,
-      this.prenom,
-      this.telephone,
-      this.dateDeNaissance,
-      this.status,
-      this.accountType,
-      this.userType,
-      this.motDePasse});
+  UserModel({
+    this.nom = '',
+    this.prenom,
+    this.telephone,
+    this.dateDeNaissance,
+    this.status,
+    this.accountType,
+    this.userType,
+    this.motDePasse,
+    this.localPicture,
+    this.pictureLink,
+    this.pays,
+    this.ville,
+    this.quartier = '',
+    this.boitePostal = '',
+  });
 }
 
 class AccountType {

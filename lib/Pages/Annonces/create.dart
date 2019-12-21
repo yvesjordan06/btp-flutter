@@ -45,15 +45,16 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
     super.initState();
   }
 
-  bool checkpage() {
+  Future<bool> checkpage() async {
     if (_pageController.page.round() == _pageController.initialPage)
-      _closeDialog();
+      return await _closeDialog();
     else {
       _pageController.previousPage(
         duration: Duration(milliseconds: 400),
         curve: Curves.linear,
       );
     }
+    return false;
   }
 
   void _nextPage() {
@@ -68,9 +69,9 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
     }
   }
 
-  bool _closeDialog() {
+  Future<bool> _closeDialog() {
     // flutter defined function
-    showDialog(
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
@@ -83,21 +84,19 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
             new FlatButton(
               child: new Text("Abandoner"),
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               },
             ),
             new FlatButton(
               child: new Text("Annuler"),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context, false);
               },
             ),
           ],
         );
       },
     );
-    return false;
   }
 
   Future<void> _selectDate(BuildContext context, DateTime value,
@@ -428,7 +427,7 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
 
   @override
   Widget build(BuildContext context) => WillPopScope(
-        onWillPop: () => Future.sync(checkpage),
+        onWillPop: checkpage,
         child: PageView(
           physics: new NeverScrollableScrollPhysics(),
           scrollDirection: Axis.vertical,

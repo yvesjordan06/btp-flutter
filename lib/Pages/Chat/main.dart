@@ -1,14 +1,38 @@
 import 'package:btpp/Components/recent-chats.dart';
 import 'package:btpp/Components/recent-contacts.dart';
-import 'package:btpp/Functions/Colors.dart';
+import 'package:btpp/Functions/Utility.dart';
+import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/State/index.dart';
+import 'package:btpp/State/user.dart';
 
 import 'package:flutter/material.dart';
 
-class ChatListScreen extends StatelessWidget {
+class ChatListScreen extends StatefulWidget {
+  @override
+  _ChatListScreenState createState() => _ChatListScreenState();
+}
+
+class _ChatListScreenState extends State<ChatListScreen> {
+  UserState userState = AppState.userState;
+
+  UserModel currentUser = AppState.userState.currentUser;
+
+  @override
+  void initState() {
+    userState.addListener(() {
+      if (mounted)
+        setState(() {
+          UserModel newstate = AppState.userState.currentUser;
+          if (newstate != null) currentUser = AppState.userState.currentUser;
+        });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.primary,
+      color: AppColor.primaryColor,
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -39,7 +63,12 @@ class ChatListScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               fit: BoxFit.cover,
-                              image: AssetImage('images/chatback.png'))),
+                              image: currentUser.localPicture == null
+                                  ? NetworkImage(currentUser.pictureLink)
+                                  : FileImage(currentUser.localPicture))),
+                    ),
+                    Container(
+                      color: AppColor.primaryColorsOpacity(0.8),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.end,

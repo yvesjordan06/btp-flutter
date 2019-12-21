@@ -1,4 +1,3 @@
-import 'package:btpp/Functions/Colors.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:flutter/material.dart';
 
@@ -70,7 +69,6 @@ class DemandesAnnoncePage extends StatelessWidget {
                     child: FlatButton(
                       child: Text('Enregistrer'),
                       onPressed: () {},
-                      color: AppColors.primaryDark,
                     ),
                   )
                 ],

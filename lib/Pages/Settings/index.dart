@@ -1,6 +1,13 @@
+import 'dart:io';
+
 import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Components/menuTiles.dart';
+import 'package:btpp/Functions/Images.dart';
+import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/State/index.dart';
+import 'package:btpp/State/user.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class UserSettingPage extends StatefulWidget {
   @override
@@ -8,6 +15,26 @@ class UserSettingPage extends StatefulWidget {
 }
 
 class _UserSettingPageState extends State<UserSettingPage> {
+  UserState userState = AppState.userState;
+  UserModel currentUser = AppState.userState.currentUser;
+
+  @override
+  void initState() {
+    userState.addListener(() {
+      if (mounted)
+        setState(() {
+          UserModel newstate = AppState.userState.currentUser;
+          if (newstate != null) currentUser = AppState.userState.currentUser;
+        });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +48,9 @@ class _UserSettingPageState extends State<UserSettingPage> {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(
-                          'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg'))),
+                      image: currentUser.localPicture == null
+                          ? NetworkImage(currentUser.pictureLink)
+                          : FileImage(currentUser.localPicture))),
             ),
             Container(
               color: Color.fromRGBO(0, 0, 0, 0.7),
@@ -38,6 +66,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
               //width: double.infinity,
               child: SingleChildScrollView(
                 child: SettingDecorationPage(
+                  user: currentUser,
                   child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -48,17 +77,17 @@ class _UserSettingPageState extends State<UserSettingPage> {
                         ),
                         MenuTile(
                           text: 'Nom',
-                          value: 'Hiro',
+                          value: currentUser.nom,
                           onTap: () {},
                         ),
                         MenuTile(
                           text: 'Prénom',
-                          value: 'Hamada',
+                          value: currentUser.prenom,
                           onTap: () {},
                         ),
                         MenuTile(
                           text: 'Télephone',
-                          value: '694842185',
+                          value: currentUser.prenom,
                           onTap: () {},
                         ),
                         MenuTile(
@@ -68,22 +97,22 @@ class _UserSettingPageState extends State<UserSettingPage> {
                         ),
                         MenuTile(
                           text: 'Anniversaire',
-                          value: '12 Juillet 1998',
+                          value: DateFormat('EEE').toString(),
                           onTap: () {},
                         ),
                         MenuTile(
                           text: 'Pays',
-                          value: 'Cameroun',
+                          value: currentUser.pays,
                           onTap: () {},
                         ),
                         MenuTile(
                           text: 'Ville',
-                          value: 'Yaoundé',
+                          value: currentUser.ville,
                           onTap: () {},
                         ),
                         MenuTile(
                           text: 'Quartier',
-                          value: 'Nkomkana',
+                          value: currentUser.quartier,
                           onTap: () {},
                         ),
                         SizedBox(
@@ -99,7 +128,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
                         ),
                         MenuTile(
                           text: 'Type',
-                          value: 'Annonceur',
+                          value: currentUser.userType,
                           onTap: () {},
                         ),
                         MenuTile(
@@ -113,7 +142,9 @@ class _UserSettingPageState extends State<UserSettingPage> {
                         ),
                         MenuTile(
                           text: 'Se deconnecter',
-                          onTap: () {},
+                          onTap: () {
+                            AppState.userState.logout();
+                          },
                         ),
                         SizedBox(
                           height: 10,
@@ -155,8 +186,11 @@ class _UserSettingPageState extends State<UserSettingPage> {
 }
 
 class SettingDecorationPage extends StatelessWidget {
+  final UserModel user;
   final Widget child;
-  const SettingDecorationPage({Key key, @required this.child})
+
+  const SettingDecorationPage(
+      {Key key, @required this.user, @required this.child})
       : super(key: key);
 
   @override
@@ -186,8 +220,9 @@ class SettingDecorationPage extends StatelessWidget {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 40,
-                    backgroundImage: NetworkImage(
-                        'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg'),
+                    backgroundImage: user.localPicture == null
+                        ? NetworkImage(user.pictureLink)
+                        : FileImage(user.localPicture),
                   ),
                   Positioned(
                     bottom: 0,
@@ -202,7 +237,34 @@ class SettingDecorationPage extends StatelessWidget {
                           child: IconButton(
                             padding: EdgeInsets.all(2),
                             onPressed: () {
-                              print('ok');
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return Row(
+                                      children: <Widget>[
+                                        IconButton(
+                                          icon: Icon(Icons.photo_camera),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            imageFromCamera().then((img) {
+                                              AppState.userState
+                                                  .changePicture(img);
+                                            });
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.photo_library),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            imageFromGallery().then((img) {
+                                              AppState.userState
+                                                  .changePicture(img);
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
                             },
                             icon: Icon(
                               Icons.edit,
@@ -222,7 +284,7 @@ class SettingDecorationPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Hiro Hamada'.toUpperCase(),
+                      (user.nom + ' ' + user.prenom).toUpperCase(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -242,7 +304,7 @@ class SettingDecorationPage extends StatelessWidget {
                           width: 5,
                         ),
                         Text(
-                          'Hiro, INDIA'.toUpperCase(),
+                          (user.pays + ' ' + user.ville).toUpperCase(),
                           style: TextStyle(fontSize: 10, color: Colors.grey),
                         ),
                       ],

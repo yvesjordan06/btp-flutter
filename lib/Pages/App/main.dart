@@ -1,6 +1,8 @@
+import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Settings/index.dart';
+import 'package:btpp/State/index.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
 import '../../Components/tabButton.dart';
@@ -13,6 +15,17 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    AppState.userState.addListener(_userVerification);
+    super.initState();
+  }
+
+  void _userVerification() {
+    UserModel user = AppState.userState.currentUser;
+    if (user == null) Navigator.pushReplacementNamed(context, 'auth');
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

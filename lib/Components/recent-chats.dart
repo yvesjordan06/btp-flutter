@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/message-model.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -23,7 +24,7 @@ class _RecentChatsState extends State<RecentChats> {
           BoxShadow(
               color: Colors.grey, offset: Offset.infinite, spreadRadius: 4)
         ],
-        color: Colors.white,
+        color: AppColor.background,
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
       ),

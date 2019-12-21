@@ -1,5 +1,4 @@
-import '../../Functions/Colors.dart';
-import '../../State/user.dart';
+import 'package:btpp/State/index.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final phone = TextEditingController();
   final password = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final userState = AppState.userState;
 
   @override
   void dispose() {
@@ -21,17 +21,16 @@ class _LoginPageState extends State<LoginPage> {
     phone.dispose();
     password.dispose();
     super.dispose();
+    AppState.userState.removeListener(_checkAuthStatus);
   }
 
   void _login() {
     if (_formKey.currentState.validate()) {
-      print(phone.value.text);
-      print(password.value.text);
       setState(() {
         _isLoading = true;
         _error = '';
       });
-      appUser.login(phone.value.text, password.value.text);
+      AppState.userState.login(phone.value.text, password.value.text);
     }
   }
 
@@ -57,10 +56,10 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.phone,
               obscureText: false,
               controller: phone,
+              readOnly: _isLoading,
               decoration: InputDecoration(
-                enabled: !_isLoading,
                 labelText: 'Numéro de Telephone',
-                hintText: 'Mot de passe',
+                hintText: 'Numéro de Telephone',
                 hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0),
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(
@@ -73,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 30,
             ),
             TextFormField(
-              enabled: !_isLoading,
+              readOnly: _isLoading,
               // ignore: missing_return
               validator: (value) {
                 if (value.length < 1) {
@@ -82,6 +81,7 @@ class _LoginPageState extends State<LoginPage> {
               },
               obscureText: hiddenPassword,
               controller: password,
+              keyboardType: TextInputType.visiblePassword,
               decoration: InputDecoration(
                   labelText: 'Mot de passe',
                   hintText: 'Mot de passe',
@@ -107,7 +107,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     onTap: () {
                       setState(() {
-                        print('see');
                         hiddenPassword = !hiddenPassword;
                       });
                     },
@@ -122,7 +121,6 @@ class _LoginPageState extends State<LoginPage> {
                 FlatButton(
                   child: Text('Mot de passe oublié?',
                       style: TextStyle(
-                        color: AppColors.primary,
                         fontFamily: 'Poppins-Medium',
                         fontSize: 12,
                       )),
@@ -138,17 +136,17 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    appUser.addListener(_checkAuthStatus);
+    AppState.userState.addListener(_checkAuthStatus);
     super.initState();
   }
 
   void _checkAuthStatus() {
-    if (appUser.error.isNotEmpty) {
+    if (AppState.userState.error.isNotEmpty) {
       setState(() {
-        _error = appUser.error;
+        _error = AppState.userState.error;
         _isLoading = false;
       });
-    } else if (appUser.currentUser != null) {
+    } else if (AppState.userState.currentUser != null) {
       Navigator.pushReplacementNamed(context, 'app');
     }
   }
@@ -203,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                             children: <Widget>[
                               Expanded(
                                 child: RaisedButton(
-                                  onPressed: !_isLoading ? _login : null,
+                                  onPressed: !_isLoading ? _login : () {},
                                   child: Container(
                                     padding: EdgeInsets.symmetric(vertical: 15),
                                     decoration: BoxDecoration(
@@ -212,8 +210,8 @@ class _LoginPageState extends State<LoginPage> {
                                     child: !_isLoading
                                         ? Text('Se Connecter',
                                             style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white))
+                                              fontSize: 20,
+                                            ))
                                         : CircularProgressIndicator(
                                             backgroundColor: Colors.white,
                                           ),
@@ -233,11 +231,12 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(fontFamily: 'Poppins-Medium'),
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.pushNamed(context, 'auth/signup');
+                                },
                                 child: Text('Creer un compte',
                                     style: TextStyle(
                                       fontFamily: 'Poppins-Bold',
-                                      color: AppColors.primary,
                                     )),
                               )
                             ],
