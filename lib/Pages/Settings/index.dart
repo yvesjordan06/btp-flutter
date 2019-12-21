@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Components/menuTiles.dart';
 import 'package:btpp/Functions/Images.dart';
+import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/State/index.dart';
 import 'package:btpp/State/user.dart';
@@ -53,7 +54,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
                           : FileImage(currentUser.localPicture))),
             ),
             Container(
-              color: Color.fromRGBO(0, 0, 0, 0.7),
+              color: AppColor.primaryColorsOpacity(0.9),
             ),
             Positioned.fill(
               top: 300,

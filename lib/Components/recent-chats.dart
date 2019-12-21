@@ -26,7 +26,7 @@ class _RecentChatsState extends State<RecentChats> {
         ],
         color: AppColor.background,
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+            topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0)),
       ),
       child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),

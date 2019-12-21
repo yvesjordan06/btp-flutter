@@ -18,7 +18,7 @@ class ImageViewer extends StatefulWidget {
 }
 
 class _ImageViewerState extends State<ImageViewer> {
-  List images = List();
+  List<Asset> images = List();
   @override
   void initState() {
     super.initState();
@@ -32,8 +32,17 @@ class _ImageViewerState extends State<ImageViewer> {
       itemBuilder: (context, index) => Container(
           //constraints: BoxConstraints(maxHeight: 250, maxWidth: 175),
           padding: EdgeInsets.all(16),
-          child: AssetImageViewer(
-            asset: images[index],
+          child: InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                return GalleryView(album: images[index]);
+              }));
+            },
+            child: Hero(
+              tag: index,
+              child: AssetImageViewer(asset: images[index]),
+            ),
           )),
     );
   }
@@ -149,5 +158,31 @@ class _AssetImageViewerState extends State<AssetImageViewer>
         : Image.memory(
             image,
           );
+  }
+}
+
+class GalleryView extends StatelessWidget {
+  final Asset album;
+  GalleryView({Key key, this.album}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Dismissible(
+        key: Key(album.identifier),
+        direction: DismissDirection.vertical,
+        onDismissed: (direc) {
+          Navigator.pop(context);
+        },
+        child: Container(
+          child: Center(
+            child: Hero(
+              tag: 'x',
+              child: AssetImageViewer(asset: album),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -32,7 +32,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColor.primaryColor,
+      color: AppColor.primaryColorsOpacity(1),
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
