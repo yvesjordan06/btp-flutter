@@ -2,6 +2,9 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 
 class SingleChatPage extends StatefulWidget {
+  final chat;
+
+  const SingleChatPage({Key key, this.chat}) : super(key: key);
   @override
   _SingleChatPageState createState() => _SingleChatPageState();
 }
@@ -45,12 +48,15 @@ class _SingleChatPageState extends State<SingleChatPage> {
               //radius: 20,
               child: Hero(
                 child: Image.asset('images/userfallback.png'),
-                tag: 'userinfo1',
+                tag: 'image' + widget.chat.hashCode.toString(),
               ),
             ),
             title: Hero(
-              child: Text('Hiro Hamada'),
-              tag: 'username1',
+              child: Text(
+                widget.chat.sender.name,
+                style: Theme.of(context).textTheme.title,
+              ),
+              tag: 'nom' + widget.chat.hashCode.toString(),
             ),
             subtitle: Text('Construction'),
           ),

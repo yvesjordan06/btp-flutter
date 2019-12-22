@@ -1,4 +1,5 @@
 import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/Pages/Actu/index.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Settings/index.dart';
@@ -57,7 +58,8 @@ class _MainAppState extends State<MainApp> {
           ),
           child: TabBarView(children: [
             AnnoncePage(),
-            ImageViewer(),
+            // ImageViewer(),
+            ActuPage(),
             ChatListScreen(),
             UserSettingPage(),
           ]),

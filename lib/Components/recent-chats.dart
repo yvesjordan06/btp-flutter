@@ -35,12 +35,16 @@ class _RecentChatsState extends State<RecentChats> {
           itemBuilder: (a, index) => ListTile(
                 onTap: () {
                   {
-                    Navigator.pushNamed(context, 'chats/see');
+                    Navigator.pushNamed(context, 'chats/see',
+                        arguments: recentsChat[index]);
                   }
                 },
                 title: Hero(
-                  child: Text(recentsChat[index].sender.name),
-                  tag: 'username$index',
+                  child: Text(
+                    recentsChat[index].sender.name,
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                  tag: 'nom' + recentsChat[index].hashCode.toString(),
                 ),
                 leading: Container(
                   constraints: BoxConstraints.expand(width: 50),
@@ -49,7 +53,7 @@ class _RecentChatsState extends State<RecentChats> {
                       radius: 30,
                       child: Hero(
                         child: Image.asset('images/userfallback.png'),
-                        tag: 'userinfo$index',
+                        tag: 'image' + recentsChat[index].hashCode.toString(),
                       ),
                     ),
                     Positioned(

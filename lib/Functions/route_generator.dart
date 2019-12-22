@@ -1,9 +1,11 @@
 import 'package:btpp/Pages/Annonces/demandes.dart';
+import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Auth/login.dart';
 import 'package:btpp/Pages/Auth/passwordreset.dart';
 import 'package:btpp/Pages/Auth/signup.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Chat/see.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 import '../Models/annonce.dart';
 import '../Pages/Annonces/create.dart';
@@ -35,7 +37,10 @@ class RouteGenerator {
       case 'chat':
         return MaterialPageRoute(builder: (_) => ChatListScreen());
       case 'chats/see':
-        return MaterialPageRoute(builder: (_) => SingleChatPage());
+        return MaterialPageRoute(
+            builder: (_) => SingleChatPage(
+                  chat: args,
+                ));
       case 'annonce/see':
         // Validation of correct data typ
         if (args is AnnonceModel) {
@@ -83,8 +88,19 @@ class RouteGenerator {
             ),
           );
         }
+
         // If args is not of the correct type, return an error page.
         // You can also throw an exception while in development.
+        return _errorRoute();
+      case 'images/see':
+        if (args is Asset) {
+          return MaterialPageRoute(
+              builder: (_) => AssetImageViewer(
+                    dismissable: true,
+                    asset: args,
+                    onDismiss: (dir) => Navigator.pop(_),
+                  ));
+        }
         return _errorRoute();
       default:
         // If there is no such named route in the switch statement, e.g. /third

@@ -1,13 +1,11 @@
 import 'dart:io';
-import 'dart:async';
 import 'dart:typed_data';
 import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/utils/notifications.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<File> gallery;
@@ -24,58 +22,6 @@ class _ImageViewerState extends State<ImageViewer> {
     super.initState();
   }
 
-  Widget buildGridView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: images.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) => Container(
-          //constraints: BoxConstraints(maxHeight: 250, maxWidth: 175),
-          padding: EdgeInsets.all(16),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (BuildContext context) {
-                return GalleryView(album: images[index]);
-              }));
-            },
-            child: Hero(
-              tag: index,
-              child: AssetImageViewer(asset: images[index]),
-            ),
-          )),
-    );
-  }
-
-  Future<void> loadAssets() async {
-    setState(() {
-      images = List<Asset>();
-    });
-
-    List<Asset> resultList = List<Asset>();
-    String error = 'No error Dectected';
-
-    try {
-      resultList = await MultiImagePicker.pickImages(
-        maxImages: 10,
-        enableCamera: true,
-      );
-    } on PlatformException catch (e) {
-      error = e.message;
-    }
-    if (!mounted) return;
-
-    setState(() {
-      images = resultList;
-    });
-  }
-
-  Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    if (!mounted) return;
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,9 +34,31 @@ class _ImageViewerState extends State<ImageViewer> {
           child: Text("Notif"),
         ),
       ),
-      body: buildGridView(),
+      body: ListView.builder(
+          shrinkWrap: true,
+          itemCount: images.length,
+          itemBuilder: (context, index) {
+            print(images[index].name);
+            return AssetImageViewer(
+              asset: images[index],
+              width: 200,
+              height: 200,
+              onTap: () {
+                Navigator.pushNamed(context, 'images/see',
+                    arguments: images[index]);
+              },
+            );
+          }),
       floatingActionButton: FloatingActionButton(
-        onPressed: testImage,
+        onPressed: () {
+          multiImagePicker().then((result) {
+            print(result);
+            setState(() {
+              images = [];
+              images = result;
+            });
+          });
+        },
         tooltip: 'Pick Image',
         child: Icon(Icons.add_a_photo),
       ),
@@ -99,7 +67,9 @@ class _ImageViewerState extends State<ImageViewer> {
 
   testImage() {
     multiImagePicker().then((result) {
+      print(result);
       setState(() {
+        images.clear();
         images = result;
       });
     });
@@ -110,12 +80,28 @@ class AssetImageViewer extends StatefulWidget {
   final Asset asset;
   final double width;
   final double height;
+  final GestureTapCallback onTap;
+  final bool dismissable;
+  final DismissDirectionCallback onDismiss;
   const AssetImageViewer(
-      {Key key, @required this.asset, this.width, this.height})
+      {Key key,
+      @required this.asset,
+      this.width,
+      this.height,
+      this.onTap,
+      this.dismissable = false,
+      this.onDismiss})
       : super(key: key);
 
   @override
-  _AssetImageViewerState createState() => _AssetImageViewerState();
+  _AssetImageViewerState createState() => _AssetImageViewerState(
+        asset: asset,
+        onTap: onTap,
+        onDismiss: onDismiss,
+        dismissable: dismissable,
+        height: height,
+        width: width,
+      );
 }
 
 class _AssetImageViewerState extends State<AssetImageViewer>
@@ -124,17 +110,35 @@ class _AssetImageViewerState extends State<AssetImageViewer>
   bool get wantKeepAlive => true;
 
   Uint8List image;
-  double width, height;
+  final Asset asset;
+  final double width;
+  final double height;
+  final GestureTapCallback onTap;
+  final bool dismissable;
+  final DismissDirectionCallback onDismiss;
+  _AssetImageViewerState({
+    @required this.asset,
+    this.width,
+    this.height,
+    this.onTap,
+    this.dismissable = false,
+    this.onDismiss,
+  });
 
   @override
   void initState() {
-    width = widget.width == null
-        ? widget.asset.originalWidth.toDouble()
-        : widget.width;
-    height = widget.height == null
-        ? widget.asset.originalHeight.toDouble()
-        : widget.height;
     super.initState();
+    if (!mounted) return;
+    _init();
+  }
+
+  @override
+  void didUpdateWidget(AssetImageViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.asset != widget.asset) _init();
+  }
+
+  void _init() {
     if (!mounted) return;
     assetToByte(widget.asset).then((img) => {
           setState(() {
@@ -144,43 +148,124 @@ class _AssetImageViewerState extends State<AssetImageViewer>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
     return image == null
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : Image.memory(
-            image,
+        : Material(
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DismissableImage.memory(
+                            image,
+                            tag: widget.asset.name,
+                          )),
+                );
+              },
+              child: widget.dismissable
+                  ? Dismissible(
+                      crossAxisEndOffset: 0,
+                      dragStartBehavior: DragStartBehavior.down,
+                      movementDuration: Duration(seconds: 0),
+                      direction:
+                          widget.dismissable ? DismissDirection.vertical : null,
+                      onDismissed: widget.onDismiss,
+                      key: Key(widget.asset.identifier),
+                      child: Hero(
+                        transitionOnUserGestures: true,
+                        tag: widget.asset.name,
+                        child: Image.memory(
+                          image,
+                          width: widget.width == null
+                              ? double.infinity
+                              : widget.width,
+                          height: widget.height == null
+                              ? double.infinity
+                              : widget.height,
+                        ),
+                      ),
+                    )
+                  : Hero(
+                      transitionOnUserGestures: true,
+                      tag: widget.asset.name,
+                      child: Image.memory(
+                        image,
+                        width: widget.width == null
+                            ? double.infinity
+                            : widget.width,
+                        height: widget.height == null
+                            ? double.infinity
+                            : widget.height,
+                      ),
+                    ),
+            ),
           );
   }
 }
 
-class GalleryView extends StatelessWidget {
-  final Asset album;
-  GalleryView({Key key, this.album}) : super(key: key);
+class DismissableImage extends StatelessWidget {
+  final String url;
+  final File file;
+  final Uint8List memory;
+  final Object tag;
+
+  const DismissableImage.network(this.url, {this.tag = 'none'})
+      : file = null,
+        memory = null;
+  const DismissableImage.file(this.file, {this.tag = 'none'})
+      : url = null,
+        memory = null;
+  const DismissableImage.memory(this.memory, {this.tag = 'none'})
+      : url = null,
+        file = null;
+
+  Widget builder(context, {small = false}) {
+    double scale = small ? 2 : 1.0;
+    if (url != null) {
+      return Image.network(
+        url,
+        scale: scale,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+      );
+    } else if (file != null) {
+      return Image.file(
+        file,
+        scale: scale,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+      );
+    }
+    return Image.memory(
+      memory,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      scale: scale,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Dismissible(
-        key: Key(album.identifier),
-        direction: DismissDirection.vertical,
-        onDismissed: (direc) {
-          Navigator.pop(context);
-        },
-        child: Container(
-          child: Center(
-            child: Hero(
-              tag: 'x',
-              child: AssetImageViewer(asset: album),
-            ),
+    return Container(
+      child: Center(
+        child: Draggable(
+          axis: Axis.vertical,
+          affinity: Axis.vertical,
+          // key: Key(DateTime.now().toString()),
+          child: Hero(child: builder(context), tag: tag),
+          feedback: builder(context, small: true),
+          childWhenDragging: Opacity(
+            opacity: 0.2,
+            child: builder(context),
           ),
+          onDragEnd: (deta) {
+            print(deta.offset);
+            if (deta.offset.dy > 100) Navigator.pop(context);
+          },
         ),
       ),
     );
