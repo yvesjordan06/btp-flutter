@@ -6,11 +6,11 @@ class AnnoncesList extends StatelessWidget {
   final List<AnnonceModel> annonceList;
   final bool search;
 
-  const AnnoncesList({Key key, this.annonceList, this.search = false}) : super(key: key);
+  const AnnoncesList({Key key, this.annonceList, this.search = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (annonceList == null || annonceList.length == 0) {
       if (this.search) {
         return Center(
@@ -25,6 +25,7 @@ class AnnoncesList extends StatelessWidget {
     return ListView.builder(
       itemCount: annonceList.length,
       itemBuilder: (BuildContext context, int index) {
+        print('Annonce $index : ' + annonceList[index].hashCode.toString());
         return SingleAnnonce(
           annonce: annonceList[index],
         );

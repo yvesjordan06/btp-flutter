@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 class AnnonceModel {
+  String id = '';
   String intitule = '';
   String lieu = '';
   String description = '';
@@ -9,14 +12,16 @@ class AnnonceModel {
   DateTime dateFin;
   List<TacheModel> taches = [];
 
-  AnnonceModel(
-      {this.intitule,
-      this.description,
-      this.createdAt,
-      this.lieu,
-      this.dateDebut,
-      this.dateFin,
-      this.taches});
+  AnnonceModel({
+    this.intitule,
+    this.description,
+    this.createdAt,
+    this.lieu,
+    this.dateDebut,
+    this.dateFin,
+    this.taches,
+    @required this.id,
+  });
 }
 
 class TacheModel {
@@ -148,41 +153,55 @@ List<TacheModel> exampleTache = [];
 
 List<AnnonceModel> annonces = [
   AnnonceModel(
-      intitule: 'Maison de Osakas',
-      description: 'Je veux une maison dans osaka au japon',
-      createdAt: DateTime(2006),
-      lieu: 'Japon, Tokyo'),
+    intitule: 'Maison de Osakas',
+    description: 'Je veux une maison dans osaka au japon',
+    createdAt: DateTime(2006),
+    lieu: 'Japon, Tokyo',
+    id: '1',
+  ),
   AnnonceModel(
-      intitule:
-          'Imeuble Rouge a very long title to this annonce is made by me to test the following behaviors',
-      description:
-          'If i pass the more than 3  again it is not sufficient for all those lineslines it becomes an overflow and i dont know what will happen I do speak some english and chinese but i really prefere to be an engineer because here it is not easy to get work',
-      createdAt: DateTime(2014),
-      lieu: 'USA, New York'),
+    intitule:
+        'Imeuble Rouge a very long title to this annonce is made by me to test the following behaviors',
+    description:
+        'If i pass the more than 3  again it is not sufficient for all those lineslines it becomes an overflow and i dont know what will happen I do speak some english and chinese but i really prefere to be an engineer because here it is not easy to get work',
+    createdAt: DateTime(2014),
+    lieu: 'USA, New York',
+    id: '2',
+  ),
   AnnonceModel(
-      intitule: 'Macabo Bar',
-      description: 'J\'ai rien a dire',
-      createdAt: DateTime(2018),
-      lieu: 'Bamenda, my17'),
+    intitule: 'Macabo Bar',
+    description: 'J\'ai rien a dire',
+    createdAt: DateTime(2018),
+    lieu: 'Bamenda, my17',
+    id: '3',
+  ),
   AnnonceModel(
-      intitule: 'Gratte cielle',
-      description:
-          'Je ne sais pas ce que je veux mais je suis tres fort avec les gens quand je commence a travailler',
-      createdAt: DateTime(2020),
-      lieu: 'Japon, Tokyo'),
+    intitule: 'Gratte cielle',
+    description:
+        'Je ne sais pas ce que je veux mais je suis tres fort avec les gens quand je commence a travailler',
+    createdAt: DateTime(2020),
+    lieu: 'Japon, Tokyo',
+    id: '4',
+  ),
   AnnonceModel(
-      intitule: 'Masonnerie',
-      description: 'Je suis un maçon tres veillant et je cherche un emploie',
-      createdAt: DateTime(2019),
-      lieu: 'Yaounde, Tokyo'),
+    intitule: 'Masonnerie',
+    description: 'Je suis un maçon tres veillant et je cherche un emploie',
+    createdAt: DateTime(2019),
+    lieu: 'Yaounde, Tokyo',
+    id: '5',
+  ),
   AnnonceModel(
-      intitule: 'Masonnerie',
-      description: 'Je suis un maçon tres veillant et je cherche un emploie',
-      createdAt: DateTime(2019),
-      lieu: 'Yaounde, Tokyo'),
+    intitule: 'Masonnerie',
+    description: 'Je suis un maçon tres veillant et je cherche un emploie',
+    createdAt: DateTime(2019),
+    lieu: 'Yaounde, Tokyo',
+    id: '6',
+  ),
   AnnonceModel(
-      intitule: 'Masonnerie',
-      description: 'Je suis un maçon tres veillant et je cherche un emploie',
-      createdAt: DateTime(2019),
-      lieu: 'Yaounde, Tokyo'),
+    intitule: 'Masonnerie',
+    description: 'Je suis un maçon tres veillant et je cherche un emploie',
+    createdAt: DateTime(2019),
+    lieu: 'Yaounde, Tokyo',
+    id: '7',
+  ),
 ]; // Annonces de l'api

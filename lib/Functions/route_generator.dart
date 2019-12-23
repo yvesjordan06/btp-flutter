@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:btpp/Pages/Annonces/demandes.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Auth/login.dart';
@@ -5,6 +7,8 @@ import 'package:btpp/Pages/Auth/passwordreset.dart';
 import 'package:btpp/Pages/Auth/signup.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Chat/see.dart';
+import 'package:btpp/Pages/Settings/index.dart';
+import 'package:btpp/Pages/User/cv.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 import '../Models/annonce.dart';
@@ -24,6 +28,8 @@ class RouteGenerator {
     switch (settings.name) {
       case 'loading':
         return MaterialPageRoute(builder: (_) => LoadingPage());
+      case 'settings':
+        return MaterialPageRoute(builder: (_) => UserSettingPage());
       case 'app':
         return MaterialPageRoute(builder: (_) => MainApp());
       case 'auth':
@@ -92,14 +98,42 @@ class RouteGenerator {
         // If args is not of the correct type, return an error page.
         // You can also throw an exception while in development.
         return _errorRoute();
-      case 'images/see':
-        if (args is Asset) {
+      case 'cv':
+        // Validation of correct data typ
+        if (args is UserModel) {
           return MaterialPageRoute(
-              builder: (_) => AssetImageViewer(
-                    dismissable: true,
-                    asset: args,
-                    onDismiss: (dir) => Navigator.pop(_),
-                  ));
+            builder: (_) => CVPage(
+              user: args,
+            ),
+          );
+        }
+
+        // If args is not of the correct type, return an error page.
+        // You can also throw an exception while in development.
+        return _errorRoute();
+      case 'images/see':
+        if (args is ImageViewerRouteArgument) {
+          if (args.isFile)
+            return MaterialPageRoute(
+              builder: (_) => DismissableImage.file(
+                args.image,
+                tag: args.tag,
+              ),
+            );
+          if (args.isMemory)
+            return MaterialPageRoute(
+              builder: (_) => DismissableImage.memory(
+                args.image,
+                tag: args.tag,
+              ),
+            );
+          if (args.isNetwork)
+            return MaterialPageRoute(
+              builder: (_) => DismissableImage.network(
+                args.image,
+                tag: args.tag,
+              ),
+            );
         }
         return _errorRoute();
       default:

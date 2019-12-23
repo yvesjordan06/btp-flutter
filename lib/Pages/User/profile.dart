@@ -1,6 +1,8 @@
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
+import 'package:btpp/Pages/App/imageViewer.dart';
+import 'package:btpp/State/index.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -14,17 +16,50 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         iconTheme: Theme.of(context).iconTheme.copyWith(color: AppColor.basic),
         elevation: 0,
+        actions: <Widget>[
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  child: ListTile(
+                    dense: true,
+                    title: Text('Parametres'),
+                    leading: Icon(
+                      Icons.settings,
+                    ),
+                    onTap: () {
+                      Navigator.popAndPushNamed(context, 'settings');
+                    },
+                  ),
+                )
+              ];
+            },
+          )
+        ],
       ),
       body: Container(
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Hero(
-                  tag: 'uniquetag1',
-                  child: UserImage(
-                    user: user,
-                    radius: 100,
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      'images/see',
+                      arguments: ImageViewerRouteArgument(
+                          image: user.localPicture != null
+                              ? user.localPicture
+                              : user.pictureLink,
+                          tag: 'uniquetag1'),
+                    );
+                  },
+                  child: Hero(
+                    tag: 'uniquetag12',
+                    child: UserImage(
+                      user: user,
+                      radius: 100,
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -86,7 +121,10 @@ class ProfilePage extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: RaisedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'cv',
+                            arguments: AppState.userState.currentUser);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text('Voir le CV'),

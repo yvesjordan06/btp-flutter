@@ -271,3 +271,21 @@ class DismissableImage extends StatelessWidget {
     );
   }
 }
+
+class ImageViewerRouteArgument {
+  ImageViewerRouteArgument({this.image, this.tag});
+  final dynamic image;
+  final String tag;
+
+  bool get isFile {
+    return image is File;
+  }
+
+  bool get isNetwork {
+    return image is String;
+  }
+
+  bool get isMemory {
+    return image is Uint8List;
+  }
+}

@@ -3,6 +3,7 @@ import 'package:btpp/Pages/Actu/index.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Settings/index.dart';
+import 'package:btpp/Pages/User/profile.dart';
 import 'package:btpp/State/index.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
@@ -61,7 +62,7 @@ class _MainAppState extends State<MainApp> {
             // ImageViewer(),
             ActuPage(),
             ChatListScreen(),
-            UserSettingPage(),
+            ProfilePage(user: AppState.userState.currentUser),
           ]),
         ),
       ),
