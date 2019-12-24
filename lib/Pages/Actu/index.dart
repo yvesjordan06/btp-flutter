@@ -1,9 +1,11 @@
 import 'package:btpp/Components/horizontalDivider.dart';
+import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/User/profile.dart';
 import 'package:btpp/State/index.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ActuPage extends StatelessWidget {
   final ScrollController controller = ScrollController();
@@ -14,9 +16,134 @@ class ActuPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Actualités'),
       ),
-      body: ListView.builder(
-        itemCount: 15,
-        itemBuilder: (context, index) => ActuTile(),
+      body: ListView(
+        children: <Widget>[
+          CreateActu(),
+         
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 15,
+            itemBuilder: (context, index) => ActuTile(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CreateActu extends StatefulWidget {
+  const CreateActu({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _CreateActuState createState() => _CreateActuState();
+}
+
+class _CreateActuState extends State<CreateActu> {
+  bool createMode = false;
+  List<Asset> images = List<Asset>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top:16, left: 8, right: 8),
+      decoration: BoxDecoration(border: createMode ? Border.all(color: Colors.black, width: 2) : null),
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: <Widget>[
+          if (!createMode)
+         UserImage(user: AppState.userState.currentUser,radius: 15,),
+         Expanded(child: Padding(
+           padding: const EdgeInsets.symmetric(horizontal: 8.0),
+           child: Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: <Widget>[
+               if(createMode)
+               Align(
+                 alignment: Alignment.topRight,
+                 child: IconButton(icon: Icon(Icons.close, color: Colors.red,), onPressed: () {setState(() {
+                   createMode = false;
+                 });},),
+               ),
+               if(createMode)
+                TextField(
+                 decoration: InputDecoration(
+                   hintText: 'Titre', 
+                   // border: InputBorder.none,
+                   ),
+                 
+               ),
+               TextField(
+                 onTap: () {setState(() {
+                   createMode = true;
+                 });},
+                 showCursor: createMode,
+                 decoration: InputDecoration(
+                   hintText: 'Nouvelle Réalisation', 
+                   border: InputBorder.none,
+            
+                   ),
+                   maxLines: 3,
+                   minLines: 1,
+                 
+               ),
+               if(createMode)
+                 TextField(
+                   onTap: () {
+                     showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(1820), lastDate: DateTime.now()).then((v){});
+                   },
+                   showCursor: false,
+                 decoration: InputDecoration(
+                   hintText: 'Date', 
+                   suffixIcon: Icon(Icons.arrow_drop_down),
+                   
+                   ),
+                   
+                 
+               ),
+               if (createMode)
+               Wrap(
+                 children:  List<Widget>.generate(images.length, (index) => 
+                 Stack(
+                   children: <Widget>[
+                    
+                     Container(
+                       width: 60, 
+                       height: 60,
+                       
+                       margin: EdgeInsets.all(8),
+                       child: AssetImageViewer(asset: images[index],),
+                       ),
+                       Positioned(
+                         top: 0,
+                         right: 0,
+                         child: IconButton(icon: Icon(Icons.delete), iconSize: 12, color: Colors.red, onPressed: (){ setState(() {
+                           images.removeAt(index);
+                         });},),
+                       )
+                       
+                   ],
+                 )),
+               ),
+               if (createMode)
+               FlatButton.icon(icon: Icon(Icons.add_a_photo), onPressed: (){multiImagePicker().then((assets) {
+                 if (assets.length>0) setState(() {
+                   images.addAll(assets);
+                 });
+               });}, label: Text('Ajoutez des images'),), 
+               if(createMode)
+               Align(
+      alignment: Alignment.topRight,
+      child: FlatButton.icon(icon: Icon(Icons.create), label: Text('Create'), onPressed: (){},),
+    ),
+             ],
+           ),
+         ),
+           
+         )
+        ],
       ),
     );
   }
@@ -169,11 +296,12 @@ class _ActuTileState extends State<ActuTile> {
 }
 
 class UserImage extends StatefulWidget {
-  final UserModel user;
-  final double radius;
   UserImage({Key key, @required this.user, this.radius = 30})
       : assert(user != null),
         super(key: key);
+
+  final double radius;
+  final UserModel user;
 
   @override
   _UserImageState createState() => _UserImageState();

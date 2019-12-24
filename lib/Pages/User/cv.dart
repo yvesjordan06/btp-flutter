@@ -1,5 +1,4 @@
 import 'package:btpp/Components/headerText.dart';
-import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
@@ -70,63 +69,127 @@ class _CVPageState extends State<CVPage> {
                   SizedBox(
                     height: 5,
                   ),
-                  Material(
-                    child: ListTile(
-                      title: Text('Anglais'),
-                      subtitle: Text('Langues'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {},
-                      ),
-                    ),
+                  CompetenceTile(
+                    type: 'Langues',
+                    value: 'Français',
+                  ),
+                  CompetenceTile(
+                    type: 'Secretariat',
+                    value: 'Word',
+                  ),
+                  CompetenceTile(
+                    type: 'Eglise',
+                    value: 'Pasteur',
                   ),
                   Material(
-                    child: ListTile(
-                      title: Text('Anglais'),
-                      subtitle: Text('Langues'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
-                  Material(
-                    child: ListTile(
-                      title: Text('Anglais'),
-                      subtitle: Text('Langues'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
-                  Material(
-                    child: ListTile(
-                      title: Text('Anglais'),
-                      subtitle: Text('Langues'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
-                  Material(
-                    child: ListTile(
-                      title: Text('Anglais'),
-                      subtitle: Text('Langues'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
+                      child: ListTile(
+                    title: Text('Ajouter'),
+                    leading: Icon(Icons.add_circle_outline),
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(30),
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30)),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        maxHeight:
+                                            MediaQuery.of(context).size.height /
+                                                2),
+                                    child: Scaffold(
+                                      appBar: AppBar(
+                                        title: Text('Nouvelle Competence'),
+                                      ),
+                                      body: Container(
+                                        margin: const EdgeInsets.all(8.0),
+                                        child: Center(
+                                          child: ListView(
+                                            shrinkWrap: true,
+                                            children: <Widget>[
+                                              TextField(
+                                                autocorrect: true,
+                                                decoration: InputDecoration(
+                                                    hintText:
+                                                        'Type de competences',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    labelText: 'Type'),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              TextField(
+                                                autocorrect: true,
+                                                decoration: InputDecoration(
+                                                    hintText:
+                                                        'Competences',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    labelText: 'Competence'),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              RaisedButton.icon(
+                                                icon: Icon(Icons.done),
+                                                label: Text('Ajouter'),
+                                                onPressed: () {},
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ));
+                    },
+                  )),
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
+                  HeaderText(text: 'Cursus')
                 ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class CompetenceTile extends StatelessWidget {
+  final String type;
+  final String value;
+  const CompetenceTile({
+    Key key,
+    @required this.type,
+    @required this.value,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: ListTile(
+        title: Text(value),
+        subtitle: Text(type),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {},
         ),
       ),
     );

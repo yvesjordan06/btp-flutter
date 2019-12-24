@@ -1,3 +1,4 @@
+import 'package:btpp/Functions/Images.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 
@@ -180,7 +181,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
                   children: <Widget>[
                     IconButton(
                       icon: Icon(Icons.photo_camera),
-                      onPressed: () {},
+                      onPressed: () {
+                        multiImagePicker().then((value) => {});                      
+                        },
                     ),
                     Expanded(
                       child: Container(

@@ -156,95 +156,93 @@ class _LoginPageState extends State<LoginPage> {
     print(_isLoading.toString());
     return new Scaffold(
         backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
+        // resizeToAvoidBottomInset: true,
         body: Center(
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              SingleChildScrollView(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.only(left: 28.0, right: 28.0, top: 60.0),
-                      child: Column(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Image.asset(
-                                'images/favicon.png',
-                                width: 160,
-                                height: 160,
-                              ),
-                            ],
-                          ),
-                          Container(
-                            child: _error.isNotEmpty
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        _error,
-                                        style: TextStyle(
-                                            color: Colors.red, fontSize: 12),
-                                      ),
+          child: SingleChildScrollView(
+              child: Container(
+                  padding: EdgeInsets.only(
+                    left: 28.0,
+                    right: 28.0,
+                  ),
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        Column(
+                          children: <Widget>[
+                            Image.asset(
+                              'images/favicon.png',
+                              width: 160,
+                              height: 160,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: _error.isNotEmpty
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      _error,
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
                                     ),
-                                  )
-                                : SizedBox(
-                                    height: (35),
                                   ),
-                          ),
-                          appForm(),
-                          SizedBox(
-                            height: (20),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Expanded(
-                                child: RaisedButton(
-                                  onPressed: !_isLoading ? _login : () {},
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100)),
-                                    child: !_isLoading
-                                        ? Text('Se Connecter',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                            ))
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.white,
-                                          ),
-                                  ),
+                                )
+                              : SizedBox(
+                                  height: (35),
+                                ),
+                        ),
+                        appForm(),
+                        SizedBox(
+                          height: (20),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              child: RaisedButton(
+                                onPressed: !_isLoading ? _login : () {},
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100)),
+                                  child: !_isLoading
+                                      ? Text('Se Connecter',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                          ))
+                                      : CircularProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                        ),
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: (20),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'Nouveau ? ',
-                                style: TextStyle(fontFamily: 'Poppins-Medium'),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(context, 'auth/signup');
-                                },
-                                child: Text('Creer un compte',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Bold',
-                                    )),
-                              )
-                            ],
-                          )
-                        ],
-                      ))),
-            ],
-          ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: (20),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              'Nouveau ? ',
+                              style: TextStyle(fontFamily: 'Poppins-Medium'),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(context, 'auth/signup');
+                              },
+                              child: Text('Creer un compte',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                  )),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ))),
         ));
   }
 }

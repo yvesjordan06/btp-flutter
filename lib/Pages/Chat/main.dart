@@ -59,17 +59,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 // color: AppColor().accentColor(),
                 child: Stack(
                   children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: currentUser.localPicture == null
-                                  ? NetworkImage(currentUser.pictureLink)
-                                  : FileImage(currentUser.localPicture))),
-                    ),
-                    Container(
-                      color: AppColor.primaryColorsOpacity(0.8),
-                    ),
+                    
+                    
                     Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[RecentContacts()],

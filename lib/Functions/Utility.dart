@@ -19,6 +19,8 @@ class AppColor {
   static Color get basic => Color.fromRGBO(143, 155, 179, 1);
   static Color primaryColorsOpacity(double opacity) =>
       Color.fromRGBO(43, 82, 216, opacity);
+  static Color accentColorsOpacity(double opacity) =>
+      Color.fromRGBO(253, 137, 37, opacity);
 }
 
 Color hexToColor({String code}) {

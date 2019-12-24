@@ -11,7 +11,7 @@
 <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="btpp"
+        android:label="BTP Partnership"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
