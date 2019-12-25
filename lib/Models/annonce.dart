@@ -42,6 +42,7 @@ class MetierModel {
 }
 
 class UserModel {
+  String id = '';
   String nom = '';
   String prenom = '';
   String telephone = '';
@@ -58,6 +59,7 @@ class UserModel {
   String boitePostal = '';
 
   UserModel({
+    this.id,
     this.nom = '',
     this.prenom,
     this.telephone,
@@ -73,6 +75,11 @@ class UserModel {
     this.quartier = '',
     this.boitePostal = '',
   });
+
+  @override
+  String toString() {
+    return 'id :$id, type: $userType, name: $nom';
+  }
 }
 
 class AccountType {
