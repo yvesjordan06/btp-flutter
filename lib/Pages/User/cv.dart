@@ -25,8 +25,7 @@ class _CVPageState extends State<CVPage> {
         actions: <Widget>[
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: UserImage(
-              user: AppState.userState.currentUser,
+            child: CurrentUserImage(
               radius: 20,
             ),
           )
@@ -131,8 +130,7 @@ class _CVPageState extends State<CVPage> {
                                               TextField(
                                                 autocorrect: true,
                                                 decoration: InputDecoration(
-                                                    hintText:
-                                                        'Competences',
+                                                    hintText: 'Competences',
                                                     border: OutlineInputBorder(
                                                       borderRadius:
                                                           BorderRadius.circular(

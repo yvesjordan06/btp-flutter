@@ -155,3 +155,15 @@ class RouteGenerator {
     });
   }
 }
+
+void navigateTo(BuildContext context, String page, {arguments}) {
+  switch (page) {
+    case 'settings':
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return UserSettingPage();
+      }));
+      break;
+    default:
+  }
+}

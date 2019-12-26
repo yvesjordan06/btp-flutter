@@ -74,3 +74,13 @@ class UserState extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+UserModel otherUser = UserModel(
+    nom: 'Cristophe',
+    prenom: 'Colombre',
+    dateDeNaissance: DateTime.now(),
+    status: 'status',
+    accountType: AccountType.particulier,
+    userType: UserType.annonceur,
+    telephone: '694842185',
+    motDePasse: '123456');

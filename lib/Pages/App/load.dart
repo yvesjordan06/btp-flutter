@@ -1,6 +1,8 @@
+import 'package:btpp/Functions/route_generator.dart';
 import 'package:btpp/Pages/App/auth.dart';
 import 'package:btpp/Pages/App/main.dart';
 import 'package:btpp/bloc/bloc.dart';
+import 'package:btpp/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,17 +14,15 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthenticationBloc>(
-      create: (context) {
-        return AuthenticationBloc()..add(AppStarted());
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      builder: (BuildContext context, AuthenticationState state) {
+        if (state is AuthenticationUninitialized) return SplashScreen();
+        if (state is AuthenticationUnauthenticated) {
+          print('Unauthenticated');
+          return AuthApp();
+        }
+        return MainApp();
       },
-      child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-        builder: (BuildContext context, AuthenticationState state) {
-          if (state is AuthenticationUnauthenticated) return AuthApp();
-          if (state is AuthenticationAuthenticated) return MainApp();
-          return SplashScreen();
-        },
-      ),
     );
   }
 }

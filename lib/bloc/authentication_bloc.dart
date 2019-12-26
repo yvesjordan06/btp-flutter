@@ -7,7 +7,7 @@ import './bloc.dart';
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final UserRepository userRepository = UserRepository();
-
+  UserModel currentUser;
   AuthenticationBloc();
 
   @override
@@ -18,7 +18,7 @@ class AuthenticationBloc
     AuthenticationEvent event,
   ) async* {
     if (event is AppStarted) {
-      final UserModel currentUser = await userRepository.loggedInUser();
+      currentUser = await userRepository.loggedInUser();
 
       if (currentUser != null) {
         yield AuthenticationAuthenticated(currentUser);
@@ -27,16 +27,29 @@ class AuthenticationBloc
       }
     }
 
-    if (event is LoggedIn) {
-      yield AuthenticationLoading();
+    if (event is ChangePicture) {
+      currentUser.localPicture = event.image;
+      yield AuthenticationAuthenticated(currentUser);
+      yield ChangingPicture(currentUser);
       await userRepository.persist();
-      yield AuthenticationAuthenticated(event.user);
+      yield PictureChanged(currentUser);
+    }
+    if (event is LoggedIn) {
+      // await userRepository.persist();
+      currentUser = event.user;
+      yield AuthenticationAuthenticated(currentUser);
     }
 
     if (event is LoggedOut) {
-      yield AuthenticationLoading();
-      await userRepository.logout();
       yield AuthenticationUnauthenticated();
+      currentUser = null;
+      await userRepository.logout();
+    }
+
+    if (event is EditUser) {
+      yield EditingUser(currentUser);
+      currentUser = await userRepository.editUser(event.user);
+      yield UserEdited(currentUser);
     }
   }
 }

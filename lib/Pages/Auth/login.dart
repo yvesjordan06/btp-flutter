@@ -1,244 +1,172 @@
-import 'package:btpp/State/index.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:btpp/bloc/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatelessWidget {
+  final GlobalKey<LoginFormState> _formKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: SingleChildScrollView(
-              child: Container(
-                  padding: EdgeInsets.only(
-                    left: 28.0,
-                    right: 28.0,
-                  ),
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        Column(
+    String _error = '';
+    bool _isLoading = false;
+    return BlocProvider<LoginBloc>(
+      create: (BuildContext context) {
+        return LoginBloc(
+            authenticationBloc: BlocProvider.of<AuthenticationBloc>(context));
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Container(
+            child: Center(
+              child: SingleChildScrollView(
+                child: BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                  print(state.toString());
+                  return Stack(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: <Widget>[
-                            Image.asset(
-                              'images/favicon.png',
-                              width: 160,
-                              height: 160,
-                            ),
-                          ],
-                        ),
-                        Container(
-                          child: _error.isNotEmpty
-                              ? Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      _error,
-                                      style: TextStyle(
-                                          color: Colors.red, fontSize: 12),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: (35),
+                            Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  'images/favicon.png',
+                                  width: 160,
+                                  height: 160,
                                 ),
-                        ),
-                        appForm(),
-                        SizedBox(
-                          height: (20),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                              child: RaisedButton(
-                                onPressed: !_isLoading ? _login : () {},
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 15),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100)),
-                                  child: !_isLoading
-                                      ? Text('Se Connecter',
+                              ],
+                            ),
+                            Container(
+                              child: state is LoginFailure
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                          state.error,
                                           style: TextStyle(
-                                            fontSize: 20,
-                                          ))
-                                      : CircularProgressIndicator(
-                                          backgroundColor: Colors.white,
+                                              color: Colors.red, fontSize: 12),
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      height: (35),
+                                    ),
+                            ),
+                            LoginForm(
+                              key: _formKey,
+                            ),
+                            SizedBox(
+                              height: (20),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Expanded(
+                                  child: !(state is LoginLoading)
+                                      ? RaisedButton(
+                                          onPressed: () {
+                                            Credential values = _formKey
+                                                .currentState
+                                                .getCredential();
+                                            if (values != null)
+                                              BlocProvider.of<LoginBloc>(
+                                                      context)
+                                                  .add(
+                                                LoginButtonPressed(
+                                                  telephone: values.telephone,
+                                                  motDePasse: values.password,
+                                                ),
+                                              );
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 15),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(100)),
+                                            child: !_isLoading
+                                                ? Text('Se Connecter',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                    ))
+                                                : CircularProgressIndicator(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                  ),
+                                          ),
+                                        )
+                                      : RaisedButton(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                          onPressed: () {},
                                         ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: (20),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Nouveau ? ',
-                              style: TextStyle(fontFamily: 'Poppins-Medium'),
+                            SizedBox(
+                              height: (20),
                             ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, 'auth/signup');
-                              },
-                              child: Text('Creer un compte',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                  )),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Nouveau ? ',
+                                  style:
+                                      TextStyle(fontFamily: 'Poppins-Medium'),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, 'auth/signup');
+                                  },
+                                  child: Text('Creer un compte',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-Bold',
+                                      )),
+                                )
+                              ],
                             )
                           ],
-                        )
-                      ],
-                    ),
-                  ))),
-        ));
-  }
-}
-
-class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = false;
-  String _error = '';
-  bool hiddenPassword = true;
-  final phone = '';
-  final password = '';
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final userState = AppState.userState;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void _login() {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-    }
-  }
-
-  @override
-  void initState() {
-    AppState.userState.addListener(_checkAuthStatus);
-    super.initState();
-  }
-
-  void _checkAuthStatus() {
-    if (AppState.userState.error.isNotEmpty) {
-      setState(() {
-        _error = AppState.userState.error;
-        _isLoading = false;
-      });
-    } else if (AppState.userState.currentUser != null) {
-      Navigator.pushReplacementNamed(context, 'app');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-      create: (context) => LoginBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context)),
-      child: new Scaffold(
-          backgroundColor: Colors.white,
-          // resizeToAvoidBottomInset: true,
-          body: Center(
-            child: SingleChildScrollView(
-                child: Container(
-                    padding: EdgeInsets.only(
-                      left: 28.0,
-                      right: 28.0,
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Image.asset(
-                                'images/favicon.png',
-                                width: 160,
-                                height: 160,
-                              ),
-                            ],
-                          ),
-                          Container(
-                            child: _error.isNotEmpty
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        _error,
-                                        style: TextStyle(
-                                            color: Colors.red, fontSize: 12),
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox(
-                                    height: (35),
-                                  ),
-                          ),
-                          appForm(),
-                          SizedBox(
-                            height: (20),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Expanded(
-                                child: RaisedButton(
-                                  onPressed: !_isLoading ? _login : () {},
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100)),
-                                    child: !_isLoading
-                                        ? Text('Se Connecter',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                            ))
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.white,
-                                          ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: (20),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'Nouveau ? ',
-                                style: TextStyle(fontFamily: 'Poppins-Medium'),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(context, 'auth/signup');
-                                },
-                                child: Text('Creer un compte',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Bold',
-                                    )),
-                              )
-                            ],
-                          )
-                        ],
+                        ),
                       ),
-                    ))),
+                      if (state is LoginLoading)
+                        Positioned.fill(
+                          child: Container(
+                            color: Color.fromRGBO(0, 0, 0, 0),
+                          ),
+                        )
+                    ],
+                  );
+                }),
+              ),
+            ),
           )),
     );
   }
 }
 
-class LoginForm extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  const LoginForm({Key key, @required this.formKey}) : super(key: key);
+class LoginForm extends StatefulWidget {
+  final void Function(String telphone, String password) onSubmit;
+  LoginForm({@required Key key, this.onSubmit}) : super(key: key);
+
+  @override
+  LoginFormState createState() => LoginFormState();
+}
+
+class LoginFormState extends State<LoginForm> {
+  bool hide = true;
+  final GlobalKey<FormState> formKey = GlobalKey();
+  String telephone, password;
+
+  Credential getCredential() {
+    if (formKey.currentState.validate()) {
+      formKey.currentState.save();
+      return Credential(telephone: telephone, password: password);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,9 +191,12 @@ class LoginForm extends StatelessWidget {
                 return null;
               },
               keyboardType: TextInputType.phone,
+              onSaved: (value) {
+                telephone = value;
+              },
               obscureText: false,
-              controller: phone,
-              readOnly: _isLoading,
+              //controller: phone,
+              readOnly: false,
               decoration: InputDecoration(
                 labelText: 'Numéro de Telephone',
                 hintText: 'Numéro de Telephone',
@@ -281,16 +212,23 @@ class LoginForm extends StatelessWidget {
               height: 30,
             ),
             TextFormField(
-              readOnly: _isLoading,
+              readOnly: false,
               // ignore: missing_return
               validator: (value) {
                 if (value.length < 1) {
                   return 'Le mot de passe est necessaire';
                 }
               },
-              obscureText: hiddenPassword,
-              controller: password,
+              obscureText: hide,
               keyboardType: TextInputType.visiblePassword,
+              onSaved: (value) {
+                password = value;
+              },
+              onFieldSubmitted: (value) {
+                if (formKey.currentState.validate()) {
+                  formKey.currentState.save();
+                }
+              },
               decoration: InputDecoration(
                   labelText: 'Mot de passe',
                   hintText: 'Mot de passe',
@@ -304,7 +242,7 @@ class LoginForm extends StatelessWidget {
                     child: Container(
                       alignment: Alignment.centerRight,
                       width: 20,
-                      child: hiddenPassword
+                      child: hide
                           ? Icon(
                               Icons.visibility,
                               size: 20,
@@ -316,7 +254,7 @@ class LoginForm extends StatelessWidget {
                     ),
                     onTap: () {
                       setState(() {
-                        hiddenPassword = !hiddenPassword;
+                        hide = !hide;
                       });
                     },
                   )),
@@ -344,4 +282,11 @@ class LoginForm extends StatelessWidget {
       ),
     );
   }
+}
+
+class Credential {
+  final String telephone;
+  final String password;
+
+  Credential({this.telephone, this.password});
 }

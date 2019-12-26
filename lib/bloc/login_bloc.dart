@@ -25,10 +25,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoginLoading();
 
       try {
+        // print(event.telephone + ' ' + event.motDePasse);
         final user = await userRepository.authenticate(
-            username: event.username,
-            password: event.password,
+            telephone: event.telephone,
+            motDePasse: event.motDePasse,
             type: event.type);
+
         authenticationBloc.add(LoggedIn(user: user));
         yield LoginInitial();
       } catch (error) {

@@ -62,7 +62,7 @@ class _MainAppState extends State<MainApp> {
             // ImageViewer(),
             ActuPage(),
             ChatListScreen(),
-            ProfilePage(user: AppState.userState.currentUser),
+            ProfilePage.currentUser(),
           ]),
         ),
       ),
