@@ -1,6 +1,9 @@
 import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Components/horizontalDivider.dart';
+import 'package:btpp/Repository/AnnoncesRepository.dart';
+import 'package:btpp/bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../Functions/Utility.dart';
 import '../../Models/annonce.dart';
 import 'package:flutter/material.dart';
@@ -14,180 +17,201 @@ class SeeAnnonce extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: CustomScrollView(slivers: <Widget>[
-      SliverAppBar(
-        title: Text(
-          annonce.intitule,
-          overflow: TextOverflow.ellipsis,
-        ),
-        expandedHeight: 200,
-        flexibleSpace: FlexibleSpaceBar(
-          background: Container(
-            padding: EdgeInsets.all(16),
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      annonce.intitule,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      annonce.lieu,
-                      style: TextStyle(fontSize: 11, color: Colors.grey),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Publié ' + timeAgo(annonce.createdAt),
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+    return BlocListener<AnnoncesBloc, AnnoncesState>(
+      bloc: annoncesBloc,
+      listener: (context, state) {
+        if (state is AnnonceDeleteRequest || state is AnnonceTaskSuccess)
+          Navigator.pop(context);
+      },
+      child: Scaffold(
+          body: CustomScrollView(slivers: <Widget>[
+        SliverAppBar(
+          title: Text(
+            annonce.intitule,
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        pinned: true,
-        actions: <Widget>[
-          PopupMenuButton(
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Modifier'),
-                      leading: Icon(Icons.mode_edit),
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, 'annonce/edit',
-                            arguments: annonce);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Demandes'),
-                      leading: Icon(Icons.people),
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, 'annonce/demandes',
-                            arguments: annonce);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Gerer'),
-                      leading: Icon(Icons.settings),
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, 'annonce/demandes',
-                            arguments: annonce);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    enabled: false,
-                    child: HorizontalDivider(
-                      margin: 0,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Partager'),
-                      leading: Icon(Icons.share),
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, 'annonce/demandes',
-                            arguments: annonce);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Supprimer'),
-                      leading: Icon(Icons.delete_forever),
-                      onTap: () {
-                        Navigator.popAndPushNamed(context, 'annonce/demandes',
-                            arguments: annonce);
-                      },
-                    ),
-                  ),
-                ];
-              }),
-        ],
-      ),
-      SliverList(
-        delegate: SliverChildListDelegate([
-          Container(
-            color: AppColor.primaryColor,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: AppColor.background,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30))),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Container(
+              padding: EdgeInsets.all(16),
+              child: Stack(
                 children: <Widget>[
-                  Container(
-                    child: annonceSummary(context, annonce),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        annonce.intitule,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        annonce.lieu,
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Publié ' + timeAgo(annonce.createdAt),
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  HeaderText(
-                    text: 'Details',
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(annonce.description),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  HeaderText(
-                    text: 'Taches',
-                  ),
-                  ...List<Widget>.generate(
-                    4,
-                    (index) => Container(
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-                      child: tacheTravailleur(),
-                    ),
-                  ),
-                  HeaderText(
-                    text: 'Plus d\info',
-                  ),
-                  AdditionalInfo(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  HeaderText(
-                    text: 'L\'annonceur',
-                  ),
-                  AboutClient(),
-                  AnnonceSimilaire
                 ],
               ),
             ),
-          )
-        ]),
-      ),
-    ]));
+          ),
+          pinned: true,
+          actions: <Widget>[
+            PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Modifier'),
+                        leading: Icon(Icons.mode_edit),
+                        onTap: () {
+                          Navigator.popAndPushNamed(context, 'annonce/edit',
+                              arguments: annonce);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Demandes'),
+                        leading: Icon(Icons.people),
+                        onTap: () {
+                          Navigator.popAndPushNamed(context, 'annonce/demandes',
+                              arguments: annonce);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Gerer'),
+                        leading: Icon(Icons.settings),
+                        onTap: () {
+                          Navigator.popAndPushNamed(context, 'annonce/demandes',
+                              arguments: annonce);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      enabled: false,
+                      child: HorizontalDivider(
+                        margin: 0,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Partager'),
+                        leading: Icon(Icons.share),
+                        onTap: () {
+                          Navigator.popAndPushNamed(context, 'annonce/demandes',
+                              arguments: annonce);
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Supprimer'),
+                        leading: Icon(Icons.delete_forever),
+                        onTap: () {
+                          Navigator.pop(context);
+                          annoncesBloc.add(DeleteAnnonce(annonce));
+                        },
+                      ),
+                    ),
+                  ];
+                }),
+          ],
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Container(
+              color: AppColor.primaryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: AppColor.background,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30))),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: annonceSummary(context, annonce),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HeaderText(
+                      text: 'Details',
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(annonce.description),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HeaderText(
+                      text: 'Taches',
+                    ),
+                    ...List<Widget>.generate(
+                      4,
+                      (index) => Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                        child: tacheTravailleur(),
+                      ),
+                    ),
+                    HeaderText(
+                      text: 'Plus d\info',
+                    ),
+                    AdditionalInfo(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HeaderText(
+                      text: 'L\'annonceur',
+                    ),
+                    AboutClient(),
+                    AnnonceSimilaire,
+                    Container(
+                      width: double.infinity,
+                      child: RaisedButton(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text('Postuler'),
+                        ),
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'annonce/postuler',
+                              arguments: annonce);
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ]),
+        ),
+      ])),
+    );
   }
 }
 
@@ -414,7 +438,7 @@ Widget get AnnonceSimilaire {
           height: 20,
         ),
         ...List<Widget>.generate(
-            3,
+            0,
             (index) => SingleAnnonce(
                   annonce: annonces[index],
                 ))

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Models/annonce.dart';
@@ -214,20 +215,20 @@ class _ActuTileState extends State<ActuTile> {
         child: Column(
           children: <Widget>[
             ListTile(
-              title: Text('Name Here'),
+              title: Text('Une realisation superbe'),
               subtitle: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Location here'),
+                  Text('Douala, Cameroun'),
                   Text(
-                    'just now',
+                    'Mars 2001',
                     textAlign: TextAlign.end,
                   ),
                 ],
               ),
-              leading: CurrentUserImage(
+              /*leading: CurrentUserImage(
                 radius: 25,
-              ),
+              ), */
             ),
             SizedBox(
               height: 10,
@@ -250,22 +251,18 @@ class _ActuTileState extends State<ActuTile> {
                                       DateTime.now().toString(),
                                 )));
                   },
-                  child: Hero(
-                    tag: 'https://picsum.photos/200/300?random=1 $index ' +
-                        DateTime.now().toString(),
-                    child: Container(
-                      margin: EdgeInsets.only(left: 16, right: 4),
-                      width: 600,
-                      height: 900,
-                      constraints: BoxConstraints(maxWidth: 250),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          color: Colors.red,
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  'https://picsum.photos/200/300?random=1'),
-                              fit: BoxFit.cover)),
-                    ),
+                  child: Container(
+                    margin: EdgeInsets.only(left: 16, right: 4),
+                    width: 600,
+                    height: 900,
+                    constraints: BoxConstraints(maxWidth: 250),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        color: Colors.red,
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                'https://picsum.photos/200/300?random=1'),
+                            fit: BoxFit.cover)),
                   ),
                 ),
               ),
@@ -427,29 +424,11 @@ class CurrentUserImage extends StatelessWidget {
                                 showModalBottomSheet(
                                     context: context,
                                     builder: (context) {
-                                      return Row(
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: Icon(Icons.photo_camera),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              imageFromCamera().then((img) {
-                                                bloc.add(
-                                                    ChangePicture(image: img));
-                                              });
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Icon(Icons.photo_library),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              imageFromGallery().then((img) {
-                                                bloc.add(
-                                                    ChangePicture(image: img));
-                                              });
-                                            },
-                                          ),
-                                        ],
+                                      return PictureSelect(
+                                        onSelected: (img) {
+                                          Navigator.pop(context);
+                                          bloc.add(ChangePicture(image: img));
+                                        },
                                       );
                                     });
                               },
@@ -489,12 +468,9 @@ class CommentBox extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ProfilePage(user: otherUser)));
         },
-        child: Hero(
-          tag: 'uniquetag1',
-          child: CurrentUserImage(
-            // user: AppState.userState.currentUser,
-            radius: 15,
-          ),
+        child: CurrentUserImage(
+          // user: AppState.userState.currentUser,
+          radius: 15,
         ),
       ),
       title: Text('Nom'),

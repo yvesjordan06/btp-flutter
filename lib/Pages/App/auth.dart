@@ -1,3 +1,5 @@
+import 'package:btpp/Pages/Auth/signup.dart';
+
 import '../../Pages/Auth/login.dart';
 import 'package:flutter/material.dart';
 

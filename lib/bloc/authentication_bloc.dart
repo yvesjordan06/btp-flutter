@@ -37,6 +37,7 @@ class AuthenticationBloc
     if (event is LoggedIn) {
       // await userRepository.persist();
       currentUser = event.user;
+      print('authenticated with id : ' + currentUser.id);
       yield AuthenticationAuthenticated(currentUser);
     }
 

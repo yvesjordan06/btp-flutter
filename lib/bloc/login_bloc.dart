@@ -37,5 +37,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginFailure(error: error.toString());
       }
     }
+
+    if (event is SignUpPressed) {
+      yield LoginLoading();
+      try {
+        // print(event.telephone + ' ' + event.motDePasse);
+        final user = await userRepository.create(user: event.user);
+
+        authenticationBloc.add(LoggedIn(user: user));
+        yield LoginInitial();
+      } catch (error) {
+        yield LoginFailure(error: error.toString());
+      }
+    }
   }
 }

@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:btpp/Functions/Images.dart';
+
 import '../Functions/Utility.dart';
 import '../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,9 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class SingleAnnonce extends StatelessWidget {
+  const SingleAnnonce({Key key, this.annonce}) : super(key: key);
+
   final AnnonceModel annonce;
 
-  const SingleAnnonce({Key key, this.annonce}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -101,6 +106,89 @@ class SingleAnnonce extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, 'annonce/see', arguments: annonce);
       },
+    );
+  }
+}
+
+class PictureSelect extends StatelessWidget {
+  final void Function(File) onSelected;
+  const PictureSelect({Key key, @required this.onSelected}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(maxHeight: 180),
+      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+      child: Column(
+        children: <Widget>[
+          Text(
+            'Photo de profile',
+            style: Theme.of(context).textTheme.title,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: <Widget>[
+              IconButtonLabel(
+                icon: Icon(Icons.photo_camera),
+                label: 'Camera',
+                onTap: () {
+                  imageFromCamera().then((image) {
+                    onSelected(image);
+                  });
+                },
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              IconButtonLabel(
+                icon: Icon(Icons.photo_library),
+                label: 'Gallery',
+                onTap: () {
+                  imageFromGallery().then((image) {
+                    onSelected(image);
+                  });
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class IconButtonLabel extends StatelessWidget {
+  const IconButtonLabel(
+      {Key key,
+      @required this.icon,
+      @required this.label,
+      @required this.onTap})
+      : super(key: key);
+
+  final Icon icon;
+  final String label;
+
+  final void Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        CircleAvatar(
+          radius: 35,
+          foregroundColor: Theme.of(context).primaryColor,
+          child: IconButton(
+            icon: icon,
+            onPressed: onTap,
+          ),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text(label)
+      ],
     );
   }
 }

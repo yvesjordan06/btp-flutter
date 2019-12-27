@@ -38,6 +38,8 @@ dependencies:
   flutter_local_notifications: ^0.9.0+1
   dio: ^3.0.7
   flutter_launcher_icons: ^0.7.2
+  #sqflite: any
+  #path_provider: any
 
 flutter_icons:
     android: true

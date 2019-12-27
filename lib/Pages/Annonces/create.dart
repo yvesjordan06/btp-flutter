@@ -1,3 +1,6 @@
+import 'package:btpp/bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../Components/horizontalDivider.dart';
 import '../../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +29,7 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
   List<int> selectedTache = List();
   bool tacheError = false;
   DateTime today;
+  AnnoncesBloc bloc = annoncesBloc;
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final _pageController = PageController(initialPage: 0);
@@ -414,7 +418,14 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                       width: double.infinity,
                       child: Center(child: Text('Acheter')),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      print(data.id);
+                      if (data.id.isEmpty) {
+                        bloc.add(BlocCreateAnnonce(data));
+                      } else {
+                        bloc.add(UpdateAnnonce(data));
+                      }
+                    },
                   )
                 ],
               ),
@@ -426,15 +437,26 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
   }
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-        onWillPop: checkpage,
-        child: PageView(
-          physics: new NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          controller: _pageController,
-          children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
-        ),
-      );
+  Widget build(BuildContext context) {
+    bool opened = false;
+    return BlocBuilder<AnnoncesBloc, AnnoncesState>(
+        bloc: annoncesBloc,
+        builder: (context, state) {
+          print('oppenning $state');
+          if (state is AnnonceTaskSuccess && opened) Navigator.pop(context);
+
+          opened = true;
+          return WillPopScope(
+            onWillPop: checkpage,
+            child: PageView(
+              physics: new NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              controller: _pageController,
+              children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
+            ),
+          );
+        });
+  }
 }
 
 class _InputDropdown extends StatelessWidget {

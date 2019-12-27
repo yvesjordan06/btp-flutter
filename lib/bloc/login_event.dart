@@ -1,3 +1,4 @@
+import 'package:btpp/Models/annonce.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -22,4 +23,13 @@ class LoginButtonPressed extends LoginEvent {
   @override
   String toString() =>
       'LoginButtonPressed { telephone: $telephone, password: $motDePasse }';
+}
+
+class SignUpPressed extends LoginEvent {
+  final UserModel user;
+
+  SignUpPressed(this.user);
+
+  @override
+  List<Object> get props => [user];
 }

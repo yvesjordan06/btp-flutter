@@ -1,12 +1,18 @@
+import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
+import 'package:btpp/Pages/Auth/passwordreset.dart';
 import 'package:btpp/bloc/authentication_bloc.dart';
 import 'package:btpp/bloc/authentication_event.dart';
+import 'package:btpp/bloc/bloc.dart';
+import 'package:btpp/bloc/login_bloc.dart';
+import 'package:btpp/bloc/login_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 
 class SignupPage extends StatefulWidget {
@@ -47,42 +53,82 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
+  bool createdRequest = false;
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (previousPage == null || previousPage < 0) return Future.value(true);
-        previousPage--;
-        controller.previousPage(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.linear,
-        );
-        return Future.value(false);
-      },
-      child: PageView(
-        // physics: NeverScrollableScrollPhysics(),
-        controller: controller,
+    AuthenticationBloc authbloc = BlocProvider.of<AuthenticationBloc>(context);
+    LoginBloc loginBloc = LoginBloc(authenticationBloc: authbloc);
+    void _createUser(_user) {
+      loginBloc.add((SignUpPressed(user)));
+    }
 
-        children: <Widget>[
-          BasicInfo(
-            user,
-            onNext: _onNext,
+    return BlocProvider<LoginBloc>(
+      create: (context) => loginBloc,
+      child: BlocListener<LoginBloc, LoginState>(
+        bloc: loginBloc,
+        listener: (context, state) {
+          if (state is LoginLoading) {
+            createdRequest = true;
+          }
+          if ((state is LoginInitial) && createdRequest) {
+            Navigator.pop(context);
+          }
+        },
+        child: WillPopScope(
+          onWillPop: () {
+            if (previousPage == null || previousPage < 0)
+              return Future.value(true);
+            previousPage--;
+            controller.previousPage(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.linear,
+            );
+            return Future.value(false);
+          },
+          child: BlocBuilder<LoginBloc, LoginState>(
+            bloc: loginBloc,
+            builder: (context, state) {
+              print(state);
+              return Stack(
+                children: <Widget>[
+                  PageView(
+                    physics: NeverScrollableScrollPhysics(),
+                    controller: controller,
+                    children: <Widget>[
+                      BasicInfo(
+                        user,
+                        onNext: _onNext,
+                      ),
+                      if (!enterprise)
+                        Profile.particulier(
+                          user,
+                          onNext: _onNext,
+                        )
+                      else
+                        Profile.entreprise(
+                          user,
+                          onNext: _onNext,
+                        ),
+                      _ChoixService(
+                        user,
+                        onNext: _onNext,
+                      ),
+                      Password(user: user, onSubmit: _createUser)
+                    ],
+                  ),
+                  if (state is LoginLoading)
+                    Positioned.fill(
+                      child: Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    )
+                ],
+              );
+            },
           ),
-          if (!enterprise)
-            Profile.particulier(
-              user,
-              onNext: _onNext,
-            )
-          else
-            Profile.entreprise(
-              user,
-              onNext: _onNext,
-            ),
-          _ChoixService(
-            user,
-            onNext: _onNext,
-          )
-        ],
+        ),
       ),
     );
   }
@@ -331,8 +377,21 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _dateController = TextEditingController();
+  String initialDate;
+
   @override
   Widget build(BuildContext context) {
+    try {
+      print('I am trying');
+      initialDate = DateFormat.yMMMMd().format(widget.user.dateDeNaissance);
+    } catch (e) {
+      print(e);
+      print(widget.user.dateDeNaissance);
+      initialDate = '';
+    }
+
+    _dateController.value = TextEditingValue(text: initialDate);
     return Scaffold(
       appBar: widget.user.id.isNotEmpty
           ? null
@@ -379,10 +438,17 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     onTap: () {
-                      imageFromGallery().then((image) {
-                        widget.user.localPicture = image;
-                        setState(() {});
-                      });
+                      if (widget.user.id.isEmpty)
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => PictureSelect(
+                            onSelected: (image) {
+                              Navigator.pop(context);
+                              widget.user.localPicture = image;
+                              setState(() {});
+                            },
+                          ),
+                        );
                     },
                   ),
                   SizedBox(
@@ -441,24 +507,39 @@ class _ProfileState extends State<Profile> {
                       height: 5,
                     ),
                     TextFormField(
+                      controller: _dateController,
                       onSaved: (value) {
                         // widget.user.dateDeNaissance = DateTime.tryParse(value);
                       },
-                      initialValue:
-                          DateFormat.yMEd().format(widget.user.dateDeNaissance),
                       validator: (value) {
-                        if (value.length < 1) {
-                          return 'La Date de naissance est necessaire';
-                        }
+                        if (DateTime.tryParse(
+                                widget.user.dateDeNaissance.toString()) ==
+                            null) return 'Entrez une date valide';
 
                         return null;
                       },
-                      autovalidate: true,
+                      autovalidate: false,
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Date de naissance ',
-                        hintText: 'Votre Date de naissance',
-                      ),
+                          border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.arrow_drop_down),
+                          labelText: 'Date de naissance ',
+                          hintText: 'Votre Date de naissance',
+                          hintStyle: TextStyle(color: Colors.black)),
+                      readOnly: true,
+                      onTap: () {
+                        showDatePicker(
+                          initialDatePickerMode: DatePickerMode.year,
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        ).then((value) {
+                          if (value != null)
+                            setState(() {
+                              widget.user.dateDeNaissance = value;
+                            });
+                        });
+                      },
                     ),
                   ] else ...[
                     TextFormField(
@@ -561,7 +642,7 @@ class __ChoixServiceState extends State<_ChoixService> {
           child: Column(
             children: <Widget>[
               Container(
-                height: 200,
+                constraints: BoxConstraints(maxHeight: 200),
                 child: Card(
                   child: Stack(
                     children: <Widget>[
@@ -574,8 +655,9 @@ class __ChoixServiceState extends State<_ChoixService> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: ListView(
+                              // shrinkWrap: true,
+                              // crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Center(
                                     child: Text(
@@ -646,8 +728,8 @@ class __ChoixServiceState extends State<_ChoixService> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: ListView(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Center(
                                     child: Text(
