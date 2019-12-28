@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:multi_image_picker/multi_image_picker.dart';
+
 class AnnonceModel {
   String id = '';
   String intitule = '';
@@ -78,6 +80,26 @@ class UserModel {
   String toString() {
     return 'id :$id, type: $userType, name: $nom';
   }
+
+  UserModel copy() {
+    return UserModel(
+      id: this.id,
+      nom: this.nom,
+      prenom: this.prenom,
+      telephone: this.telephone,
+      dateDeNaissance: this.dateDeNaissance,
+      status: this.status,
+      accountType: this.accountType,
+      userType: this.userType,
+      motDePasse: this.motDePasse,
+      localPicture: this.localPicture,
+      pictureLink: this.pictureLink,
+      pays: this.pays,
+      ville: this.ville,
+      quartier: this.quartier,
+      boitePostal: this.boitePostal,
+    );
+  }
 }
 
 class AccountType {
@@ -104,6 +126,25 @@ class CategorieTacheModel {
   final List<TacheModel> taches;
 
   CategorieTacheModel({this.id, this.intitule, this.description, this.taches});
+}
+
+class ActuModel {
+  String id;
+  String intitule;
+  String lieu;
+  List<String> pictures;
+  DateTime date;
+  String description;
+  List<Asset> assetPictures;
+
+  ActuModel({
+    this.id,
+    this.intitule,
+    this.lieu,
+    this.pictures,
+    this.date,
+    this.description,
+  });
 }
 
 MetierModel metier1 =

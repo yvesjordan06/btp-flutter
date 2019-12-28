@@ -12,30 +12,96 @@ import 'package:btpp/bloc/bloc.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-class ActuPage extends StatelessWidget {
+class ActuPage extends StatefulWidget {
+  @override
+  _ActuPageState createState() => _ActuPageState();
+}
+
+class _ActuPageState extends State<ActuPage>
+    with AutomaticKeepAliveClientMixin {
   final ScrollController controller = ScrollController();
+
+  final ActuBloc bloc = actuBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc.add(ActuFetch());
+  }
+
+  List<ActuModel> list = [];
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Actualités'),
       ),
-      body: ListView(
-        children: <Widget>[
-          CreateActu(),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: 15,
-            itemBuilder: (context, index) => ActuTile(),
-          ),
-        ],
+      body: BlocListener<ActuBloc, ActuState>(
+        bloc: bloc,
+        listener: (context, state) {
+          print(state);
+          if (state is ActuFetchedState) {
+            list = state.list;
+          }
+        },
+        child: BlocBuilder<ActuBloc, ActuState>(
+          bloc: bloc,
+          builder: (context, state) {
+            return ListView(
+              //crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                CreateActu(),
+                Container(
+                  child: Stack(
+                    // fit: StackFit.passthrough,
+                    children: <Widget>[
+                      if (list.length < 1)
+                        Container(
+                          //color: Colors.white54,
+                          height: MediaQuery.of(context).size.height - 200,
+                          child: Center(
+                            child: FittedBox(
+                              child: Text('Aucune Realisation'),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: list.length,
+                        itemBuilder: (context, index) => ActuTile(list[index]),
+                      ),
+                      if (state is ActuFetchingState)
+                        Container(
+                          color: Colors.white54,
+                          height: MediaQuery.of(context).size.height - 200,
+                          child: Center(
+                            child: FittedBox(
+                              child: CircularProgressIndicator(),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class CreateActu extends StatefulWidget {
@@ -48,154 +114,252 @@ class CreateActu extends StatefulWidget {
 }
 
 class _CreateActuState extends State<CreateActu> {
+  ActuModel actu = ActuModel();
   bool createMode = false;
   List<Asset> images = List<Asset>();
+  final TextEditingController dateController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    dateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AuthenticationBloc _bloc =
-        BlocProvider.of<AuthenticationBloc>(context);
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (context, AuthenticationState state) {
-        return Container(
-          margin: const EdgeInsets.only(top: 16, left: 8, right: 8),
-          decoration: BoxDecoration(
-              border: createMode
-                  ? Border.all(color: Colors.black, width: 2)
-                  : null),
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: <Widget>[
-              if (!createMode)
-                CurrentUserImage(
-                  radius: 15,
-                ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      if (createMode)
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.close,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                createMode = false;
-                              });
-                            },
-                          ),
-                        ),
-                      if (createMode)
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Titre',
-                            // border: InputBorder.none,
-                          ),
-                        ),
-                      TextField(
-                        onTap: () {
-                          setState(() {
-                            createMode = true;
-                          });
-                        },
-                        showCursor: createMode,
-                        decoration: InputDecoration(
-                          hintText: 'Nouvelle Réalisation',
-                          border: InputBorder.none,
-                        ),
-                        maxLines: 3,
-                        minLines: 1,
-                      ),
-                      if (createMode)
-                        TextField(
-                          onTap: () {
-                            showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1820),
-                                    lastDate: DateTime.now())
-                                .then((v) {});
-                          },
-                          showCursor: false,
-                          decoration: InputDecoration(
-                            hintText: 'Date',
-                            suffixIcon: Icon(Icons.arrow_drop_down),
-                          ),
-                        ),
-                      if (createMode)
-                        Wrap(
-                          children: List<Widget>.generate(
-                              images.length,
-                              (index) => Stack(
-                                    children: <Widget>[
-                                      Container(
-                                        width: 60,
-                                        height: 60,
-                                        margin: EdgeInsets.all(8),
-                                        child: AssetImageViewer(
-                                          asset: images[index],
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: IconButton(
-                                          icon: Icon(Icons.delete),
-                                          iconSize: 12,
-                                          color: Colors.red,
-                                          onPressed: () {
-                                            setState(() {
-                                              images.removeAt(index);
-                                            });
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                        ),
-                      if (createMode)
-                        FlatButton.icon(
-                          icon: Icon(Icons.add_a_photo),
-                          onPressed: () {
-                            multiImagePicker().then((assets) {
-                              if (assets.length > 0)
-                                setState(() {
-                                  images.addAll(assets);
-                                });
-                            });
-                          },
-                          label: Text('Ajoutez des images'),
-                        ),
-                      if (createMode)
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: FlatButton.icon(
-                            icon: Icon(Icons.create),
-                            label: Text('Create'),
-                            onPressed: () {},
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        );
+    return BlocListener<ActuBloc, ActuState>(
+      bloc: actuBloc,
+      listener: (context, state) {
+        if (state is ActuCreatedState) {
+          formKey.currentState.reset();
+          images.clear();
+          createMode = false;
+          Scaffold.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Creée'),
+          ));
+        }
       },
+      child: BlocBuilder<ActuBloc, ActuState>(
+        bloc: actuBloc,
+        builder: (context, ActuState state) {
+          return Stack(
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.only(top: 16, left: 8, right: 8),
+                decoration: BoxDecoration(
+                    border: createMode
+                        ? Border.all(color: Colors.black, width: 2)
+                        : null),
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    if (!createMode)
+                      CurrentUserImage(
+                        radius: 15,
+                      ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (createMode)
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text('Nouvelle Realisation'),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          createMode = false;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              if (createMode)
+                                TextFormField(
+                                  onSaved: (val) {
+                                    actu.intitule = val;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Titre',
+                                    // border: InputBorder.none,
+                                  ),
+                                ),
+                              if (createMode)
+                                TextFormField(
+                                  onSaved: (val) {
+                                    actu.lieu = val;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Lieu ex:Cameroun, Douala',
+
+                                    // border: InputBorder.none,
+                                  ),
+                                ),
+                              TextFormField(
+                                onSaved: (val) {
+                                  actu.description = val;
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    createMode = true;
+                                  });
+                                },
+                                showCursor: createMode,
+                                decoration: InputDecoration(
+                                  hintText: 'Nouvelle Réalisation',
+                                  border: createMode
+                                      ? UnderlineInputBorder()
+                                      : InputBorder.none,
+                                ),
+                                maxLines: 3,
+                                minLines: 1,
+                              ),
+                              if (createMode)
+                                TextField(
+                                  controller: dateController,
+                                  showCursor: false,
+                                  readOnly: true,
+                                  onTap: () {
+                                    showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(1820),
+                                            lastDate: DateTime.now())
+                                        .then((v) {
+                                      setState(() {
+                                        actu.date = v;
+                                        if (v != null) {
+                                          dateController.text =
+                                              DateFormat.yMMMMd().format(v);
+                                        }
+                                      });
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Date',
+                                    suffixIcon: Icon(Icons.arrow_drop_down),
+                                  ),
+                                ),
+                              if (createMode)
+                                Wrap(
+                                  children: List<Widget>.generate(
+                                      images.length,
+                                      (index) => Stack(
+                                            children: <Widget>[
+                                              Container(
+                                                width: 60,
+                                                height: 60,
+                                                margin: EdgeInsets.all(8),
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    var pic =
+                                                        await images[index]
+                                                            .getByteData();
+                                                    var mem = pic.buffer
+                                                        .asUint8List();
+                                                    showDialog(
+                                                        context: context,
+                                                        child: DismissableImage
+                                                            .memory(mem));
+                                                  },
+                                                  child: AssetThumb(
+                                                    asset: images[index],
+                                                    height: 80,
+                                                    width: 80,
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: IconButton(
+                                                  padding: EdgeInsets.zero,
+                                                  icon: Icon(Icons.delete),
+                                                  iconSize: 12,
+                                                  color: Colors.red,
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      images.removeAt(index);
+                                                    });
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          )),
+                                ),
+                              if (createMode)
+                                FlatButton.icon(
+                                  icon: Icon(Icons.add_a_photo),
+                                  onPressed: () {
+                                    multiImagePicker().then((assets) {
+                                      if (assets.length > 0)
+                                        setState(() {
+                                          images = assets;
+                                        });
+                                    });
+                                  },
+                                  label: Text('Ajoutez des images'),
+                                ),
+                              if (createMode)
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: FlatButton.icon(
+                                    icon: Icon(Icons.create),
+                                    label: Text('Create'),
+                                    onPressed: () {
+                                      if (formKey.currentState.validate() &&
+                                          images.length > 0) {
+                                        setState(() {});
+                                        actu.assetPictures = List.from(images);
+                                        formKey.currentState.save();
+                                        actuBloc.add(ActuAdd(actu));
+                                      }
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              if (state is ActuCreatingState)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black12,
+                    child: Center(
+                      child: FittedBox(
+                        child: CircularProgressIndicator(),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                )
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
 class ActuTile extends StatefulWidget {
-  const ActuTile({Key key}) : super(key: key);
+  final ActuModel actu;
+  const ActuTile(this.actu, {Key key}) : super(key: key);
 
   @override
   _ActuTileState createState() => _ActuTileState();
@@ -203,9 +367,11 @@ class ActuTile extends StatefulWidget {
 
 class _ActuTileState extends State<ActuTile> {
   bool showComment = false;
+  ActuModel actu;
 
   @override
   Widget build(BuildContext context) {
+    actu = widget.actu;
     return GestureDetector(
       onTap: () {
         print('Parent Tapped');
@@ -213,15 +379,16 @@ class _ActuTileState extends State<ActuTile> {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
-              title: Text('Une realisation superbe'),
+              title: Text(actu.intitule),
               subtitle: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Douala, Cameroun'),
+                  Text(actu.lieu),
                   Text(
-                    'Mars 2001',
+                    DateFormat.yMMM().format(actu.date),
                     textAlign: TextAlign.end,
                   ),
                 ],
@@ -239,14 +406,16 @@ class _ActuTileState extends State<ActuTile> {
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: 4,
+                itemCount: actu.assetPictures == null
+                    ? actu.pictures.length
+                    : actu.assetPictures.length,
                 itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => DismissableImage.network(
-                                  'https://picsum.photos/200/300?random=1',
+                                  actu.pictures[index],
                                   tag: 'https://picsum.photos/500/300$index ' +
                                       DateTime.now().toString(),
                                 )));
@@ -257,12 +426,17 @@ class _ActuTileState extends State<ActuTile> {
                     height: 900,
                     constraints: BoxConstraints(maxWidth: 250),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        color: Colors.red,
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                'https://picsum.photos/200/300?random=1'),
-                            fit: BoxFit.cover)),
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      color: Colors.transparent,
+                      image: actu.assetPictures == null
+                          ? DecorationImage(
+                              image: NetworkImage(actu.pictures[index]),
+                              fit: BoxFit.cover)
+                          : null,
+                    ),
+                    child: actu.assetPictures != null
+                        ? AssetImageViewer(asset: actu.assetPictures[index])
+                        : null,
                   ),
                 ),
               ),
@@ -270,7 +444,7 @@ class _ActuTileState extends State<ActuTile> {
             Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                'Lorem Ipsum Lorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum testLorem Ipsum test test Lorem Ipsum testLorem Ipsum testLorem Ipsum test',
+                actu.description,
                 style: TextStyle(),
                 // maxLines: 2,
                 // overflow: TextOverflow.ellipsis,

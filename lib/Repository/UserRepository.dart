@@ -99,9 +99,11 @@ class UserRepository {
     await Future.delayed(Duration(seconds: 1));
     // return exampleUser;
     try {
-      return exampleUser.firstWhere((user) =>
-          (user.telephone == telephone.trim()) &&
-          (user.motDePasse == motDePasse));
+      return exampleUser
+          .firstWhere((user) =>
+              (user.telephone == telephone.trim()) &&
+              (user.motDePasse == motDePasse))
+          .copy();
     } catch (e) {
       throw ('Compte introuvable');
     }
@@ -116,7 +118,7 @@ class UserRepository {
 
   Future<UserModel> editUser(UserModel user) async {
     await Future.delayed(Duration(seconds: 2));
-    return user;
+    return user.copy();
   }
 
   Future<void> logout() async {

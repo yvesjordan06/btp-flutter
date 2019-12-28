@@ -33,6 +33,7 @@ class _AnnoncePageState extends State<AnnoncePage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     void _searchPressed() {
       setState(() {
         if (this._searchIcon.icon == Icons.search) {

@@ -105,9 +105,9 @@ class AssetImageViewer extends StatefulWidget {
 }
 
 class _AssetImageViewerState extends State<AssetImageViewer>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+/*with AutomaticKeepAliveClientMixin*/ {
+  //@override
+  //bool get wantKeepAlive => true;
 
   Uint8List image;
   final Asset asset;
@@ -149,7 +149,7 @@ class _AssetImageViewerState extends State<AssetImageViewer>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    //super.build(context);
     return image == null
         ? Center(
             child: CircularProgressIndicator(),
@@ -250,14 +250,15 @@ class DismissableImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget pic = builder(context);
     return Container(
       child: Center(
         child: Draggable(
           axis: Axis.vertical,
           affinity: Axis.vertical,
           // key: Key(DateTime.now().toString()),
-          child: Hero(child: builder(context), tag: tag),
-          feedback: builder(context, small: true),
+          child: Hero(child: pic, tag: tag),
+          feedback: pic,
           childWhenDragging: Opacity(
             opacity: 0.2,
             child: builder(context),
