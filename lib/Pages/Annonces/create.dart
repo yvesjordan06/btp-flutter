@@ -439,23 +439,45 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
   @override
   Widget build(BuildContext context) {
     bool opened = false;
-    return BlocBuilder<AnnoncesBloc, AnnoncesState>(
-        bloc: annoncesBloc,
-        builder: (context, state) {
-          print('oppenning $state');
-          if (state is AnnonceTaskSuccess && opened) Navigator.pop(context);
+    return BlocListener<AnnoncesBloc, AnnoncesState>(
+      bloc: annoncesBloc,
+      listener: (context, state) {
+        print('oppenning $state');
+        if (state is AnnonceTaskSuccess && opened) Navigator.pop(context);
 
-          opened = true;
-          return WillPopScope(
-            onWillPop: checkpage,
-            child: PageView(
-              physics: new NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              controller: _pageController,
-              children: [MainDetailPage(), TacheSelectPage(), PaymentPage()],
-            ),
-          );
-        });
+        opened = true;
+      },
+      child: BlocBuilder<AnnoncesBloc, AnnoncesState>(
+          bloc: annoncesBloc,
+          builder: (context, state) {
+            return WillPopScope(
+              onWillPop: checkpage,
+              child: Stack(
+                children: <Widget>[
+                  PageView(
+                    physics: new NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    controller: _pageController,
+                    children: [
+                      MainDetailPage(),
+                      TacheSelectPage(),
+                      PaymentPage()
+                    ],
+                  ),
+                  if (state is AnnonceTaskDoing)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black12,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    )
+                ],
+              ),
+            );
+          }),
+    );
   }
 }
 

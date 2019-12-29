@@ -2,6 +2,7 @@ import 'package:btpp/Components/recent-chats.dart';
 import 'package:btpp/Components/recent-contacts.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/Repository/ChatsRepository.dart';
 import 'package:btpp/State/index.dart';
 import 'package:btpp/State/user.dart';
 
@@ -16,6 +17,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
   UserState userState = AppState.userState;
 
   UserModel currentUser = AppState.userState.currentUser;
+
+  List<ChatModel> list = exampleChatList;
 
   @override
   void initState() {
@@ -59,8 +62,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 // color: AppColor().accentColor(),
                 child: Stack(
                   children: <Widget>[
-                    
-                    
                     Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[RecentContacts()],
@@ -72,7 +73,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ),
           SliverList(
             delegate: SliverChildListDelegate([
-              RecentChats(),
+              RecentChats(
+                chats: list,
+              ),
             ]),
           )
         ],

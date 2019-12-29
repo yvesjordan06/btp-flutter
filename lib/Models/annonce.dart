@@ -128,6 +128,29 @@ class CategorieTacheModel {
   CategorieTacheModel({this.id, this.intitule, this.description, this.taches});
 }
 
+class MessageModel {
+  final String id;
+  final String text;
+  final String image;
+  final bool sender;
+  final DateTime sentAt;
+
+  MessageModel(
+      {this.id, this.text, this.image, this.sender = false, this.sentAt});
+}
+
+class ChatModel {
+  final String id;
+  final UserModel contact;
+  final AnnonceModel annonceModel;
+  //final MessageModel lastMessage;
+  final List<MessageModel> messages;
+
+  ChatModel({this.id, this.contact, this.annonceModel, this.messages});
+
+  MessageModel get lastMessage => messages.first;
+}
+
 class ActuModel {
   String id;
   String intitule;

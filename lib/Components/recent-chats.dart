@@ -1,13 +1,18 @@
 import 'package:badges/badges.dart';
 import 'package:btpp/Functions/Utility.dart';
+import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Models/message-model.dart';
+import 'package:btpp/Pages/Actu/index.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RecentChats extends StatefulWidget {
+  final List<ChatModel> chats;
   @override
-  const RecentChats({Key key}) : super(key: key);
+  const RecentChats({Key key, @required this.chats})
+      : assert(chats != null),
+        super(key: key);
 
   @override
   _RecentChatsState createState() => _RecentChatsState();
@@ -31,30 +36,29 @@ class _RecentChatsState extends State<RecentChats> {
       child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: recentsChat.length,
+          itemCount: widget.chats.length,
           itemBuilder: (a, index) => ListTile(
                 onTap: () {
                   {
                     Navigator.pushNamed(context, 'chats/see',
-                        arguments: recentsChat[index]);
+                        arguments: widget.chats[index]);
                   }
                 },
                 title: Hero(
                   child: Text(
-                    recentsChat[index].sender.name,
+                    widget.chats[index].contact.nom,
                     style: Theme.of(context).textTheme.title,
                   ),
-                  tag: 'nom' + recentsChat[index].hashCode.toString(),
+                  tag: 'nom' + widget.chats[index].hashCode.toString(),
                 ),
                 leading: Container(
                   constraints: BoxConstraints.expand(width: 50),
                   child: Stack(children: [
-                    CircleAvatar(
-                      radius: 30,
-                      child: Hero(
-                        child: Image.asset('images/userfallback.png'),
-                        tag: 'image' + recentsChat[index].hashCode.toString(),
+                    Hero(
+                      child: UserImage(
+                        user: widget.chats[index].contact,
                       ),
+                      tag: 'image' + widget.chats[index].hashCode.toString(),
                     ),
                     Positioned(
                       bottom: 5,
@@ -70,10 +74,14 @@ class _RecentChatsState extends State<RecentChats> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Annonce intitule',
+                      widget.chats[index].annonceModel.intitule,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    Text(recentsChat[index].text)
+                    Text(
+                      widget.chats[index].lastMessage.text,
+                    )
                   ],
                 ),
                 trailing: Column(
