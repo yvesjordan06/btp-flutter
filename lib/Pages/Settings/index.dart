@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Components/menuTiles.dart';
 import 'package:btpp/Functions/Images.dart';
@@ -8,9 +6,6 @@ import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
 import 'package:btpp/Pages/Auth/passwordreset.dart';
 import 'package:btpp/Pages/Auth/signup.dart';
-import 'package:btpp/Pages/User/profile.dart';
-import 'package:btpp/State/index.dart';
-import 'package:btpp/State/user.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,14 +16,14 @@ class UserSettingPage extends StatefulWidget {
   _UserSettingPageState createState() => _UserSettingPageState();
 }
 
+AuthenticationBloc _bloc = authBloc;
+
 class _UserSettingPageState extends State<UserSettingPage> {
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc _bloc = BlocProvider.of<AuthenticationBloc>(context);
-
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       child: BlocBuilder(
-        bloc: _bloc,
+        bloc: authBloc,
         builder: (BuildContext context, AuthenticationState state) {
           UserModel currentUser;
           if (state is AuthenticationAuthenticated) {
@@ -164,6 +159,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
                               text: 'Se deconnecter',
                               onTap: () {
                                 _bloc.add(LoggedOut());
+                                //Navigator.pushReplacementNamed(context, 'auth');
                               },
                             ),
                             SizedBox(
@@ -243,7 +239,7 @@ class SettingDecorationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc _bloc = BlocProvider.of<AuthenticationBloc>(context);
+    AuthenticationBloc _bloc = authBloc;
     return Stack(
       children: <Widget>[
         Container(

@@ -77,6 +77,8 @@ class _AnnoncePageState extends State<AnnoncePage>
         child: BlocListener<AnnoncesBloc, AnnoncesState>(
           bloc: bloc,
           listener: (context, state) {
+            print('main $state');
+            if (state is AnnoncesFetched) print(state.annonce);
             if (state is AnnoncesFetched) annonces = state.annonce;
             if (state is AnnonceTaskDoing || state is AnnonceDeleteRequest) {
               Scaffold.of(context).showSnackBar(SnackBar(

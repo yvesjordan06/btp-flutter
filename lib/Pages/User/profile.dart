@@ -21,8 +21,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserModel _user;
-    final AuthenticationBloc _bloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    final AuthenticationBloc _bloc = authBloc;
     return BlocBuilder(
         bloc: _bloc,
         builder: (BuildContext context, AuthenticationState state) {

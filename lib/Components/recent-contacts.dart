@@ -1,8 +1,13 @@
+import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Models/message-model.dart';
+import 'package:btpp/Pages/Actu/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RecentContacts extends StatelessWidget {
+  final List<ChatModel> list;
+  RecentContacts(this.list);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,21 +36,20 @@ class RecentContacts extends StatelessWidget {
             child: ListView.builder(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 scrollDirection: Axis.horizontal,
-                itemCount: recents.length,
+                itemCount: list.length,
                 itemBuilder: (context, index) => Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: 35.0,
-                            backgroundImage: AssetImage('images/favicon.png'),
+                          UserImage(
+                            user: list[index].contact,
                           ),
                           SizedBox(
                             height: 8.0,
                           ),
                           Text(
-                            recents[index].name,
+                            list[index].contact.nom,
                             style: TextStyle(
                                 color: Colors.white,
                                 // fontSize: 18.0,

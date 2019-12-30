@@ -1,7 +1,39 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
+part 'annonce.g.dart';
+
+@JsonSerializable()
+class TacheModel {
+  final int id;
+  final String intitule;
+  final MetierModel metier;
+  final String description;
+
+  TacheModel({this.intitule, this.metier, this.description, this.id});
+
+  factory TacheModel.fromJson(Map<String, dynamic> json) =>
+      _$TacheModelFromJson(json);
+  Map<String, dynamic> toJson() => _$TacheModelToJson(this);
+}
+
+@JsonSerializable()
+class MetierModel {
+  final int id;
+  final String intitule;
+  final String description;
+
+  MetierModel({this.id, this.intitule, this.description});
+
+  factory MetierModel.fromJson(Map<String, dynamic> json) =>
+      _$MetierModelFromJson(json);
+  Map<String, dynamic> toJson() => _$MetierModelToJson(this);
+}
+
+@JsonSerializable()
 class AnnonceModel {
   String id = '';
   String intitule = '';
@@ -11,6 +43,7 @@ class AnnonceModel {
   DateTime dateDebut;
   DateTime dateFin;
   List<TacheModel> taches = [];
+  UserModel annonceur;
 
   AnnonceModel({
     this.intitule = '',
@@ -21,26 +54,15 @@ class AnnonceModel {
     this.dateFin,
     this.taches,
     this.id = '',
+    this.annonceur,
   });
+
+  factory AnnonceModel.fromJson(Map<String, dynamic> json) =>
+      _$AnnonceModelFromJson(json);
+  Map<String, dynamic> toJson() => _$AnnonceModelToJson(this);
 }
 
-class TacheModel {
-  final int id;
-  final String intitule;
-  final MetierModel metier;
-  final String description;
-
-  TacheModel({this.intitule, this.metier, this.description, this.id});
-}
-
-class MetierModel {
-  final int id;
-  final String intitule;
-  final String description;
-
-  MetierModel({this.id, this.intitule, this.description});
-}
-
+@JsonSerializable()
 class UserModel {
   String id = '';
   String nom = '';
@@ -51,6 +73,7 @@ class UserModel {
   String status = '';
   String accountType = '';
   String userType = '';
+  @JsonKey(ignore: true)
   File localPicture;
   String pictureLink = '';
   String pays = '';
@@ -100,6 +123,19 @@ class UserModel {
       boitePostal: this.boitePostal,
     );
   }
+
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
+}
+
+@JsonSerializable()
+class AnnonceListModel {
+  final List<AnnonceModel> list;
+  AnnonceListModel(this.list);
+  factory AnnonceListModel.fromJson(Map<String, dynamic> json) =>
+      _$AnnonceListModelFromJson(json);
+  Map<String, dynamic> toJson() => _$AnnonceListModelToJson(this);
 }
 
 class AccountType {
@@ -129,14 +165,21 @@ class CategorieTacheModel {
 }
 
 class MessageModel {
-  final String id;
-  final String text;
-  final String image;
-  final bool sender;
-  final DateTime sentAt;
+  String id;
+  String text;
+  String image;
+  bool sender;
+  DateTime sentAt;
 
   MessageModel(
       {this.id, this.text, this.image, this.sender = false, this.sentAt});
+}
+
+class NewMessageModel {
+  final MessageModel message;
+  final String chatID;
+
+  NewMessageModel(this.message, this.chatID);
 }
 
 class ChatModel {
@@ -145,6 +188,7 @@ class ChatModel {
   final AnnonceModel annonceModel;
   //final MessageModel lastMessage;
   final List<MessageModel> messages;
+  int unread = 0;
 
   ChatModel({this.id, this.contact, this.annonceModel, this.messages});
 

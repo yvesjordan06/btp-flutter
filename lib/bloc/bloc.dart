@@ -13,9 +13,13 @@ export 'chats_state.dart';
 export 'actu_bloc.dart';
 export 'actu_event.dart';
 export 'actu_state.dart';
+export 'notification_bloc.dart';
+export 'notification_event.dart';
+export 'notification_state.dart';
 
 import 'package:btpp/bloc/actu_bloc.dart';
 import 'package:btpp/bloc/chats_bloc.dart';
+import 'package:btpp/bloc/notification_bloc.dart';
 
 import 'login_bloc.dart';
 
@@ -28,3 +32,4 @@ AuthenticationBloc authBloc = AuthenticationBloc();
 LoginBloc loginBloc = LoginBloc(authenticationBloc: authBloc);
 ActuBloc actuBloc = ActuBloc();
 ChatsBloc chatsBloc = ChatsBloc();
+NotificationBloc notificationBloc = NotificationBloc();

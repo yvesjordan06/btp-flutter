@@ -15,6 +15,7 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      bloc: authBloc,
       builder: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationUninitialized) return SplashScreen();
         if (state is AuthenticationUnauthenticated) {

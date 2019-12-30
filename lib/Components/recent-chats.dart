@@ -6,6 +6,7 @@ import 'package:btpp/Pages/Actu/index.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class RecentChats extends StatefulWidget {
   final List<ChatModel> chats;
@@ -64,7 +65,11 @@ class _RecentChatsState extends State<RecentChats> {
                       bottom: 5,
                       right: 0,
                       child: Badge(
-                        badgeColor: Colors.red,
+                        badgeColor: widget.chats[index].lastMessage.sentAt
+                                .isBefore(
+                                    DateTime.now().add(Duration(minutes: 5)))
+                            ? Colors.green[400]
+                            : Colors.red[300],
                       ),
                     ),
                   ]),
@@ -88,19 +93,23 @@ class _RecentChatsState extends State<RecentChats> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Text(
-                      '11: 42',
+                      DateFormat.Hm()
+                          .format(widget.chats[index].lastMessage.sentAt),
                       style: TextStyle(fontSize: 11, color: Colors.grey),
                     ),
-                    Badge(
-                      badgeContent: Text('2'),
-                      badgeColor: ThemeData().primaryColor,
-                      showBadge: false,
-                    ),
-                    Icon(
-                      Icons.done,
-                      size: 11,
-                      color: Colors.grey,
-                    )
+                    if (widget.chats[index].unread > 0)
+                      Badge(
+                        badgeContent:
+                            Text(widget.chats[index].unread.toString()),
+                        badgeColor: ThemeData().primaryColor,
+                        showBadge: true,
+                      ),
+                    if (!widget.chats[index].lastMessage.sender)
+                      Icon(
+                        Icons.done,
+                        size: 11,
+                        color: Colors.grey,
+                      )
                   ],
                 ),
               )),

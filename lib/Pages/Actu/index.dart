@@ -420,23 +420,32 @@ class _ActuTileState extends State<ActuTile> {
                                       DateTime.now().toString(),
                                 )));
                   },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 16, right: 4),
-                    width: 600,
-                    height: 900,
-                    constraints: BoxConstraints(maxWidth: 250),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                      color: Colors.transparent,
-                      image: actu.assetPictures == null
-                          ? DecorationImage(
-                              image: NetworkImage(actu.pictures[index]),
-                              fit: BoxFit.cover)
-                          : null,
-                    ),
-                    child: actu.assetPictures != null
-                        ? AssetImageViewer(asset: actu.assetPictures[index])
-                        : null,
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 16, right: 4),
+                        width: 600,
+                        height: 900,
+                        constraints: BoxConstraints(maxWidth: 250),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          color: Colors.black12,
+                          image: actu.assetPictures == null
+                              ? DecorationImage(
+                                  image: NetworkImage(actu.pictures[index]),
+                                  fit: BoxFit.cover)
+                              : null,
+                        ),
+                        child: actu.assetPictures != null
+                            ? AssetImageViewer(asset: actu.assetPictures[index])
+                            : null,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -554,7 +563,7 @@ class CurrentUserImage extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
+    AuthenticationBloc bloc = authBloc;
 
     return BlocBuilder(
         bloc: bloc,

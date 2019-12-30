@@ -28,9 +28,7 @@ class _ImageViewerState extends State<ImageViewer> {
       appBar: AppBar(
         title: Text('Image Picker Example'),
         leading: MaterialButton(
-          onPressed: () {
-            displayNotification();
-          },
+          onPressed: () {},
           child: Text("Notif"),
         ),
       ),

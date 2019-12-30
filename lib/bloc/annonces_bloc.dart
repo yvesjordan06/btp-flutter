@@ -1,21 +1,55 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/AnnoncesRepository.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import './bloc.dart';
 
-class AnnoncesBloc extends Bloc<AnnoncesEvent, AnnoncesState> {
+class AnnoncesBloc extends HydratedBloc<AnnoncesEvent, AnnoncesState> {
   final AnnoncesRepository repository = AnnoncesRepository();
+
+  AnnoncesBloc() {
+    authBloc.listen(onData);
+  }
+
   List<AnnonceModel> annonces;
 
   @override
-  AnnoncesState get initialState => AnnoncesInitial();
+  AnnoncesState get initialState {
+    return super.initialState ?? AnnoncesInitial();
+  }
+
+  @override
+  AnnoncesState fromJson(Map<String, dynamic> json) {
+    try {
+      annonces = List.from(AnnonceListModel.fromJson(json).list);
+      print('init $annonces');
+      if (annonces == null)
+        return AnnoncesInitial();
+      else
+        annonces..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return null;
+      // return null;
+    } catch (_) {
+      print('eeroor aoccoa');
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(AnnoncesState state) {
+    if (state is AnnoncesFetched) {
+      print('someting happenning');
+      return AnnonceListModel(state.annonce).toJson();
+    }
+    return null;
+  }
 
   @override
   Stream<AnnoncesState> mapEventToState(
     AnnoncesEvent event,
   ) async* {
     if (event is FetchAnnonce) {
+      if (annonces != null) yield AnnoncesFetched(annonces);
       yield AnnoncesFetching();
       try {
         annonces = await repository.fetchAll();
@@ -98,6 +132,18 @@ class AnnoncesBloc extends Bloc<AnnoncesEvent, AnnoncesState> {
         print(error);
         yield AnnonceTaskFailed(error);
       }
+    }
+
+    if (event is ClearAnnonce) {
+      annonces = null;
+      yield AnnoncesFetched(null);
+    }
+  }
+
+  void onData(AuthenticationState state) {
+    if (state is AuthenticationUnauthenticated) {
+      print('annonce clearing');
+      add(ClearAnnonce());
     }
   }
 }

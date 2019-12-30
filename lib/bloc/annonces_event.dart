@@ -20,6 +20,11 @@ class PostuleAnnonce extends AnnoncesEvent {
   List<Object> get props => [payload];
 }
 
+class ClearAnnonce extends AnnoncesEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class UpdateAnnonce extends AnnoncesEvent {
   final AnnonceModel annonce;
   const UpdateAnnonce(this.annonce);

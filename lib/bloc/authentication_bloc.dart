@@ -1,17 +1,43 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/UserRepository.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import './bloc.dart';
 
 class AuthenticationBloc
-    extends Bloc<AuthenticationEvent, AuthenticationState> {
+    extends HydratedBloc<AuthenticationEvent, AuthenticationState> {
   final UserRepository userRepository = UserRepository();
   UserModel currentUser;
   AuthenticationBloc();
 
   @override
-  AuthenticationState get initialState => AuthenticationUninitialized();
+  AuthenticationState get initialState {
+    return super.initialState ?? AuthenticationUnauthenticated();
+  }
+
+  @override
+  AuthenticationState fromJson(Map<String, dynamic> json) {
+    try {
+      currentUser = UserModel.fromJson(json);
+      print('init $currentUser');
+      return currentUser.id.isNotEmpty
+          ? AuthenticationAuthenticated(currentUser)
+          : AuthenticationUnauthenticated();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(AuthenticationState state) {
+    if (state is AuthenticationAuthenticated) {
+      return state.user.toJson();
+    } else if (state is AuthenticationUnauthenticated) {
+      return UserModel().toJson();
+    } else {
+      return null;
+    }
+  }
 
   @override
   Stream<AuthenticationState> mapEventToState(

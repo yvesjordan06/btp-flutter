@@ -16,12 +16,17 @@ class AnnoncesFetching extends AnnoncesState {
   List<Object> get props => [];
 }
 
+class AnnoncesCleared extends AnnoncesState {
+  @override
+  List<Object> get props => [];
+}
+
 class AnnoncesFetched extends AnnoncesState {
   final List<AnnonceModel> annonce;
 
   AnnoncesFetched(this.annonce);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [annonce.hashCode];
 }
 
 class AnnoncesError extends AnnoncesState {
