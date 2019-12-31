@@ -129,3 +129,132 @@ Map<String, dynamic> _$AnnonceListModelToJson(AnnonceListModel instance) =>
     <String, dynamic>{
       'list': instance.list,
     };
+
+CategorieTacheModel _$CategorieTacheModelFromJson(Map<String, dynamic> json) {
+  return CategorieTacheModel(
+    id: json['id'] as int,
+    intitule: json['intitule'] as String,
+    description: json['description'] as String,
+    taches: (json['taches'] as List)
+        ?.map((e) =>
+            e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$CategorieTacheModelToJson(
+        CategorieTacheModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'intitule': instance.intitule,
+      'description': instance.description,
+      'taches': instance.taches,
+    };
+
+MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
+  return MessageModel(
+    id: json['id'] as String,
+    text: json['text'] as String,
+    image: json['image'] as String,
+    sender: json['sender'] as bool,
+    sentAt: json['sentAt'] == null
+        ? null
+        : DateTime.parse(json['sentAt'] as String),
+  );
+}
+
+Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'text': instance.text,
+      'image': instance.image,
+      'sender': instance.sender,
+      'sentAt': instance.sentAt?.toIso8601String(),
+    };
+
+NewMessageModel _$NewMessageModelFromJson(Map<String, dynamic> json) {
+  return NewMessageModel(
+    json['message'] == null
+        ? null
+        : MessageModel.fromJson(json['message'] as Map<String, dynamic>),
+    json['chatID'] as String,
+  );
+}
+
+Map<String, dynamic> _$NewMessageModelToJson(NewMessageModel instance) =>
+    <String, dynamic>{
+      'message': instance.message,
+      'chatID': instance.chatID,
+    };
+
+ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
+  return ChatModel(
+    id: json['id'] as String,
+    contact: json['contact'] == null
+        ? null
+        : UserModel.fromJson(json['contact'] as Map<String, dynamic>),
+    annonceModel: json['annonceModel'] == null
+        ? null
+        : AnnonceModel.fromJson(json['annonceModel'] as Map<String, dynamic>),
+    messages: (json['messages'] as List)
+        ?.map((e) =>
+            e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  )..unread = json['unread'] as int;
+}
+
+Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
+      'id': instance.id,
+      'contact': instance.contact,
+      'annonceModel': instance.annonceModel,
+      'messages': instance.messages,
+      'unread': instance.unread,
+    };
+
+ActuModel _$ActuModelFromJson(Map<String, dynamic> json) {
+  return ActuModel(
+    id: json['id'] as String,
+    intitule: json['intitule'] as String,
+    lieu: json['lieu'] as String,
+    pictures: (json['pictures'] as List)?.map((e) => e as String)?.toList(),
+    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    description: json['description'] as String,
+  );
+}
+
+Map<String, dynamic> _$ActuModelToJson(ActuModel instance) => <String, dynamic>{
+      'id': instance.id,
+      'intitule': instance.intitule,
+      'lieu': instance.lieu,
+      'pictures': instance.pictures,
+      'date': instance.date?.toIso8601String(),
+      'description': instance.description,
+    };
+
+ActuListModel _$ActuListModelFromJson(Map<String, dynamic> json) {
+  return ActuListModel(
+    (json['list'] as List)
+        ?.map((e) =>
+            e == null ? null : ActuModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$ActuListModelToJson(ActuListModel instance) =>
+    <String, dynamic>{
+      'list': instance.list,
+    };
+
+ChatListModel _$ChatListModelFromJson(Map<String, dynamic> json) {
+  return ChatListModel(
+    (json['list'] as List)
+        ?.map((e) =>
+            e == null ? null : ChatModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$ChatListModelToJson(ChatListModel instance) =>
+    <String, dynamic>{
+      'list': instance.list,
+    };

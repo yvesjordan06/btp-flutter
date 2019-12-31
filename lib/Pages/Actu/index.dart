@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/horizontalDivider.dart';
@@ -11,9 +13,13 @@ import 'package:btpp/State/user.dart';
 import 'package:btpp/bloc/bloc.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/transition.dart';
+import 'package:flutter_advanced_networkimage/zoomable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ActuPage extends StatefulWidget {
   @override
@@ -42,7 +48,7 @@ class _ActuPageState extends State<ActuPage>
         title: Text('Actualités'),
       ),
       body: BlocListener<ActuBloc, ActuState>(
-        bloc: bloc,
+        bloc: actuBloc,
         listener: (context, state) {
           print(state);
           if (state is ActuFetchedState) {
@@ -52,45 +58,65 @@ class _ActuPageState extends State<ActuPage>
         child: BlocBuilder<ActuBloc, ActuState>(
           bloc: bloc,
           builder: (context, state) {
-            return ListView(
-              //crossAxisAlignment: CrossAxisAlignment.start,
+            return Stack(
               children: <Widget>[
-                CreateActu(),
-                Container(
-                  child: Stack(
-                    // fit: StackFit.passthrough,
-                    children: <Widget>[
-                      if (list.length < 1)
-                        Container(
-                          //color: Colors.white54,
-                          height: MediaQuery.of(context).size.height - 200,
-                          child: Center(
-                            child: FittedBox(
-                              child: Text('Aucune Realisation'),
-                              fit: BoxFit.contain,
+                ListView(
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    CreateActu(),
+                    Container(
+                      child: Stack(
+                        // fit: StackFit.passthrough,
+                        children: <Widget>[
+                          if (list.length < 1)
+                            Container(
+                              //color: Colors.white54,
+                              height: MediaQuery.of(context).size.height - 200,
+                              child: Center(
+                                child: FittedBox(
+                                  child: Text('Aucune Realisation'),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: list.length,
-                        itemBuilder: (context, index) => ActuTile(list[index]),
+                          if (state is ActuFetchedState ||
+                              list.isNotEmpty ||
+                              bloc.actus != null)
+                            ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: list.isNotEmpty
+                                  ? list.length
+                                  : bloc.actus.length,
+                              itemBuilder: (context, index) => ActuTile(
+                                  list.isNotEmpty
+                                      ? list[index]
+                                      : bloc.actus[index]),
+                            ),
+                          if (state is ActuFetchingState &&
+                              (list.isEmpty && bloc.actus == null))
+                            Container(
+                              color: Colors.white54,
+                              height: MediaQuery.of(context).size.height - 200,
+                              child: Center(
+                                child: FittedBox(
+                                  child: CircularProgressIndicator(),
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      if (state is ActuFetchingState)
-                        Container(
-                          color: Colors.white54,
-                          height: MediaQuery.of(context).size.height - 200,
-                          child: Center(
-                            child: FittedBox(
-                              child: CircularProgressIndicator(),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                if (state is ActuFetchingState &&
+                    (list.isNotEmpty || bloc.actus != null))
+                  Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                          margin: EdgeInsets.only(top: 40),
+                          child: RefreshProgressIndicator())),
               ],
             );
           },
@@ -409,44 +435,23 @@ class _ActuTileState extends State<ActuTile> {
                 itemCount: actu.assetPictures == null
                     ? actu.pictures.length
                     : actu.assetPictures.length,
-                itemBuilder: (context, index) => GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DismissableImage.network(
-                                  actu.pictures[index],
-                                  tag: 'https://picsum.photos/500/300$index ' +
-                                      DateTime.now().toString(),
-                                )));
-                  },
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                itemBuilder: (context, index) => Stack(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(left: 16, right: 4),
+                      width: 600,
+                      height: 900,
+                      constraints: BoxConstraints(maxWidth: 250),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        //borderRadius: BorderRadius.all(Radius.circular(30)),
+                        color: Colors.black12,
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 16, right: 4),
-                        width: 600,
-                        height: 900,
-                        constraints: BoxConstraints(maxWidth: 250),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          color: Colors.black12,
-                          image: actu.assetPictures == null
-                              ? DecorationImage(
-                                  image: NetworkImage(actu.pictures[index]),
-                                  fit: BoxFit.cover)
-                              : null,
-                        ),
-                        child: actu.assetPictures != null
-                            ? AssetImageViewer(asset: actu.assetPictures[index])
-                            : null,
-                      ),
-                    ],
-                  ),
+                      child: actu.assetPictures != null
+                          ? ImageDisplay.asset2(actu.assetPictures[index])
+                          : ImageDisplay.network(actu.pictures[index]),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -518,11 +523,256 @@ class _ActuTileState extends State<ActuTile> {
   }
 }
 
+class ImageDisplay extends StatelessWidget {
+  const ImageDisplay.file(
+    this.file, {
+    Key key,
+    this.asset,
+    this.link,
+    this.newAsset,
+    this.memory,
+    this.width,
+    this.height,
+    this.circularRadius,
+    this.useCache,
+    this.enableRefresh,
+    this.fallback,
+  })  : assert(file != null),
+        super(key: key);
+
+  const ImageDisplay.network(
+    this.link, {
+    Key key,
+    this.asset,
+    this.newAsset,
+    this.memory,
+    this.width,
+    this.height,
+    this.circularRadius,
+    this.useCache = true,
+    this.enableRefresh,
+    this.fallback,
+    this.file,
+  })  : assert(link != null),
+        super(key: key);
+
+  const ImageDisplay.memory(
+    this.memory, {
+    Key key,
+    this.asset,
+    this.link,
+    this.newAsset,
+    this.width,
+    this.height,
+    this.circularRadius,
+    this.useCache,
+    this.enableRefresh,
+    this.fallback,
+    this.file,
+  })  : assert(memory != null),
+        super(key: key);
+
+  const ImageDisplay.asset2(
+    this.newAsset, {
+    Key key,
+    this.asset,
+    this.link,
+    this.memory,
+    this.width,
+    this.height,
+    this.circularRadius,
+    this.useCache,
+    this.enableRefresh,
+    this.fallback,
+    this.file,
+  })  : assert(newAsset != null),
+        super(key: key);
+
+  const ImageDisplay.asset(
+    this.asset, {
+    Key key,
+    this.link,
+    this.newAsset,
+    this.memory,
+    this.width,
+    this.height,
+    this.circularRadius,
+    this.useCache,
+    this.enableRefresh,
+    this.fallback,
+    this.file,
+  })  : assert(asset != null),
+        super(key: key);
+
+  final String asset, link;
+  final Asset newAsset;
+  final Uint8List memory;
+  final double width, height, circularRadius;
+  final bool useCache;
+  final bool enableRefresh;
+  final Widget fallback;
+  final File file;
+
+  ImageProvider get imageProvider {
+    if (file != null) {
+      return FileImage(file);
+    }
+    if (memory != null) {
+      return MemoryImage(memory);
+    }
+    if (asset != null) {
+      return AssetImage(asset);
+    }
+    if (link != null) {
+      return AdvancedNetworkImage(link, useDiskCache: useCache);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String key = (link ?? 'a') + Random().nextInt(5247785).toString();
+    return new ClipRRect(
+      borderRadius: new BorderRadius.circular(circularRadius ?? 15.0),
+      child: newAsset == null
+          ? InkWell(
+              onTap: () {
+                showFullNetworkImage(context, link, key: key);
+              },
+              child: Hero(
+                tag: key,
+                child: TransitionToImage(
+                  image: imageProvider,
+                  loadingWidgetBuilder: (_, double progress, __) {
+                    return Center(
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value: (progress < 1) && (progress > 0)
+                                ? progress
+                                : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  fit: BoxFit.fill,
+                  placeholder: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: const CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white,
+                        child: const Icon(Icons.refresh)),
+                  ),
+                  width: width,
+                  height: height,
+                  enableRefresh: enableRefresh ?? true,
+                ),
+              ),
+            )
+          : FittedBox(
+              fit: BoxFit.fill,
+              child: AssetImageViewer(
+                asset: newAsset,
+              ),
+            ),
+    );
+  }
+}
+
+class ZoomableImage extends StatefulWidget {
+  const ZoomableImage({@required this.url, this.tag, this.memory});
+  const ZoomableImage.memory({this.url, this.tag, @required this.memory});
+
+  final String url;
+  final Object tag;
+  final Uint8List memory;
+
+  @override
+  _ZoomableImageState createState() => _ZoomableImageState();
+}
+
+class _ZoomableImageState extends State<ZoomableImage> {
+  double top = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: top,
+              //left: 155,
+              child: GestureDetector(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Hero(
+                    tag: widget.tag,
+                    child: PhotoView(
+                      //maxScale: 5.0,
+                      //minScale: 1.0,
+                      imageProvider: widget.memory == null
+                          ? AdvancedNetworkImage(widget.url, useDiskCache: true)
+                          : MemoryImage(widget.memory),
+                    ),
+                  ),
+                ),
+                onVerticalDragUpdate: (val) {
+                  //print(val);
+                  setState(() {
+                    top += val.delta.dy;
+                  });
+                },
+                onVerticalDragEnd: (val) async {
+                  print(top);
+                  if ((top > -200) && (top < 0)) {
+                    for (var i = top; i < 0; i += 5) {
+                      await Future.delayed(Duration(microseconds: 1000));
+                      if (!mounted) break;
+                      setState(() {
+                        top = i;
+                      });
+                    }
+                  } else if ((top > 0) && (top < 200)) {
+                    for (var i = top; i > 0; i -= 5) {
+                      await Future.delayed(Duration(microseconds: 1000));
+                      if (!mounted) break;
+                      setState(() {
+                        top = i;
+                      });
+                    }
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class UserImage extends StatelessWidget {
   final double radius;
   final UserModel user;
+  final bool zoomable;
 
-  const UserImage({Key key, this.radius = 30.0, @required this.user})
+  const UserImage(
+      {Key key, this.radius = 30.0, @required this.user, this.zoomable = false})
       : assert(user != null),
         super(key: key);
 
@@ -535,22 +785,45 @@ class UserImage extends StatelessWidget {
       picture = FileImage(local);
     } else {
       if (link.isNotEmpty) {
-        picture = NetworkImage(link);
+        picture = AdvancedNetworkImage(link, useDiskCache: true);
       } else {
-        return CircleAvatar(
-          child: Icon(
-            Icons.person,
-            size: radius,
+        return InkWell(
+          onTap: () {
+            if (zoomable)
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('Aucune photo de profil'),
+                duration: Duration(seconds: 1),
+              ));
+          },
+          child: CircleAvatar(
+            child: Icon(
+              Icons.person,
+              size: radius,
+            ),
+            radius: radius,
           ),
-          radius: radius,
         );
       }
     }
-    return Container(
-      child: CircleAvatar(
-        radius: radius,
-        backgroundImage: picture,
-      ),
+    return InkWell(
+      onTap: () {
+        if (link.isNotEmpty && zoomable)
+          showFullNetworkImage(context, link, key: link);
+        else if (zoomable)
+          showFullMemoryImage(context, local.readAsBytesSync(), key: local);
+      },
+      child: zoomable
+          ? Hero(
+              tag: link.isNotEmpty ? link : local,
+              child: CircleAvatar(
+                radius: radius,
+                backgroundImage: picture,
+              ),
+            )
+          : CircleAvatar(
+              radius: radius,
+              backgroundImage: picture,
+            ),
     );
   }
 }
@@ -558,8 +831,10 @@ class UserImage extends StatelessWidget {
 class CurrentUserImage extends StatelessWidget {
   final double radius;
   final bool editable;
+  final bool zoomable;
 
-  const CurrentUserImage({Key key, this.radius = 30, this.editable = false})
+  const CurrentUserImage(
+      {Key key, this.radius = 30, this.editable = false, this.zoomable = false})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -578,6 +853,7 @@ class CurrentUserImage extends StatelessWidget {
                   UserImage(
                     user: state.user,
                     radius: radius,
+                    zoomable: zoomable,
                   ),
                   if (state is ChangingPicture)
                     Positioned.fill(
@@ -665,4 +941,43 @@ class CommentBox extends StatelessWidget {
       ),
     );
   }
+}
+
+class HeroDialogRoute<T> extends PageRoute<T> {
+  HeroDialogRoute({this.builder}) : super();
+
+  final WidgetBuilder builder;
+
+  @override
+  bool get opaque => false;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Color get barrierColor => Colors.black54;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return new FadeTransition(
+        opacity: new CurvedAnimation(parent: animation, curve: Curves.easeOut),
+        child: child);
+  }
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
+    return builder(context);
+  }
+
+  @override
+  // TODO: implement barrierLabel
+  String get barrierLabel => null;
 }

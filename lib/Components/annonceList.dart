@@ -23,7 +23,9 @@ class AnnoncesList extends StatelessWidget {
       }
     }
     return ListView.builder(
+      // shrinkWrap: true,
       itemCount: annonceList.length,
+      // physics: NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         print('Annonce $index : ' + annonceList[index].hashCode.toString());
         return SingleAnnonce(

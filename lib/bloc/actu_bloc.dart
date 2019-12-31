@@ -1,15 +1,38 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/ActuRepository.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import './bloc.dart';
 
-class ActuBloc extends Bloc<ActuEvent, ActuState> {
+class ActuBloc extends HydratedBloc<ActuEvent, ActuState> {
   List<ActuModel> actus;
   ActuRepository repo = ActuRepository();
   @override
-  ActuState get initialState => InitialActuState();
+  ActuState get initialState {
+    print('super state is ${super.initialState}');
+    return super.initialState ?? InitialActuState();
+  }
+
+  @override
+  ActuState fromJson(Map<String, dynamic> json) {
+    try {
+      print('reading acuts');
+      actus = List.from(ActuListModel.fromJson(json).list);
+      print(actus);
+      return ActuFetchedState(actus);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(ActuState state) {
+    if (state is ActuFetchedState) {
+      return ActuListModel(state.list).toJson();
+    }
+    return null;
+  }
 
   @override
   Stream<ActuState> mapEventToState(

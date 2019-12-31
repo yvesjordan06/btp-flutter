@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
       create: (context) => authBloc /*..add(AppStarted())*/,
       child: Center(
         child: MaterialApp(
+          title: 'BTP Partnership',
           //initialRoute: 'loading',
           debugShowCheckedModeBanner: false,
           theme: basicTheme(),

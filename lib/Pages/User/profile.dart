@@ -69,39 +69,17 @@ class ProfilePage extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          if (_user.pictureLink.isEmpty &&
-                              _user.localPicture == null) {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text('Aucune photo de profil'),
-                              duration: Duration(seconds: 1),
-                            ));
-                          } else {
-                            Navigator.pushNamed(
-                              context,
-                              'images/see',
-                              arguments: ImageViewerRouteArgument(
-                                  image: _user.localPicture != null
-                                      ? _user.localPicture
-                                      : _user.pictureLink,
-                                  tag: 'uniquetag1'),
-                            );
-                          }
-                        },
-                        child: Hero(
-                          tag: 'uniquetag12',
-                          child: !forCurrentUser
-                              ? UserImage(
-                                  user: _user,
-                                  radius: 100,
-                                )
-                              : CurrentUserImage(
-                                  radius: 100,
-                                  editable: true,
-                                ),
-                        ),
-                      ),
+                      !forCurrentUser
+                          ? UserImage(
+                              user: _user,
+                              radius: 100,
+                              zoomable: true,
+                            )
+                          : CurrentUserImage(
+                              radius: 100,
+                              editable: true,
+                              zoomable: true,
+                            ),
                       SizedBox(
                         height: 20,
                       ),

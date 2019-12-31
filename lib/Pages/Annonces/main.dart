@@ -110,14 +110,29 @@ class _AnnoncePageState extends State<AnnoncePage>
               bloc: bloc,
               builder: (context, state) {
                 print(state);
-
-                if (state is AnnoncesFetching)
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-
-                return AnnoncesList(
-                  annonceList: annonces,
+                return Stack(
+                  children: <Widget>[
+                    RefreshIndicator(
+                      onRefresh: () {
+                        annoncesBloc.add(FetchAnnonce());
+                        return Future.value(true);
+                      },
+                      child: AnnoncesList(
+                        annonceList: annonces,
+                      ),
+                    ),
+                    if (annonces.isNotEmpty && state is AnnoncesFetching)
+                      Align(
+                        child: Container(
+                            margin: EdgeInsets.only(top: 40),
+                            child: RefreshProgressIndicator()),
+                        alignment: Alignment.topCenter,
+                      ),
+                    if (annonces.isEmpty && state is AnnoncesFetching)
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                  ],
                 );
               }),
         ),

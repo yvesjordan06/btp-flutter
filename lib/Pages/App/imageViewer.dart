@@ -147,51 +147,28 @@ class _AssetImageViewerState extends State<AssetImageViewer>
 
   @override
   Widget build(BuildContext context) {
+    print('hash : ${widget.hashCode}');
     //super.build(context);
     return image == null
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : Material(
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DismissableImage.memory(
-                            image,
-                            tag: widget.asset.name,
-                          )),
-                );
-              },
-              child: widget.dismissable
-                  ? Dismissible(
-                      crossAxisEndOffset: 0,
-                      dragStartBehavior: DragStartBehavior.down,
-                      movementDuration: Duration(seconds: 0),
-                      direction:
-                          widget.dismissable ? DismissDirection.vertical : null,
-                      onDismissed: widget.onDismiss,
-                      key: Key(widget.asset.identifier),
-                      child: Hero(
-                        transitionOnUserGestures: true,
-                        tag: widget.asset.name,
-                        child: Image.memory(
-                          image,
-                          width: widget.width == null
-                              ? double.infinity
-                              : widget.width,
-                          height: widget.height == null
-                              ? double.infinity
-                              : widget.height,
-                        ),
-                      ),
-                    )
-                  : Hero(
+        : InkWell(
+            child: widget.dismissable
+                ? Dismissible(
+                    crossAxisEndOffset: 0,
+                    dragStartBehavior: DragStartBehavior.down,
+                    movementDuration: Duration(seconds: 0),
+                    direction:
+                        widget.dismissable ? DismissDirection.vertical : null,
+                    onDismissed: widget.onDismiss,
+                    key: Key(widget.asset.identifier),
+                    child: Hero(
                       transitionOnUserGestures: true,
-                      tag: widget.asset.name,
+                      tag: widget.asset.hashCode.toString(),
                       child: Image.memory(
                         image,
+                        fit: BoxFit.fill,
                         width: widget.width == null
                             ? double.infinity
                             : widget.width,
@@ -200,7 +177,23 @@ class _AssetImageViewerState extends State<AssetImageViewer>
                             : widget.height,
                       ),
                     ),
-            ),
+                  )
+                : Hero(
+                    transitionOnUserGestures: true,
+                    tag: widget.asset,
+                    child: Image.memory(
+                      image,
+                      width: widget.width,
+                      height: widget.height,
+                    ),
+                  ),
+            onTap: () {
+              showFullMemoryImage(
+                context,
+                image,
+                key: widget.asset,
+              );
+            },
           );
   }
 }

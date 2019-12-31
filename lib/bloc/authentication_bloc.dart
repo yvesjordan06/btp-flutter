@@ -3,6 +3,7 @@ import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/UserRepository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import './bloc.dart';
+import 'package:bloc/bloc.dart';
 
 class AuthenticationBloc
     extends HydratedBloc<AuthenticationEvent, AuthenticationState> {
@@ -70,6 +71,7 @@ class AuthenticationBloc
     if (event is LoggedOut) {
       yield AuthenticationUnauthenticated();
       currentUser = null;
+      (BlocSupervisor.delegate as HydratedBlocDelegate).storage.clear();
       await userRepository.logout();
     }
 

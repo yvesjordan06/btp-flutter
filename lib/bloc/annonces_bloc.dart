@@ -8,7 +8,7 @@ class AnnoncesBloc extends HydratedBloc<AnnoncesEvent, AnnoncesState> {
   final AnnoncesRepository repository = AnnoncesRepository();
 
   AnnoncesBloc() {
-    authBloc.listen(onData);
+    // authBloc.listen(onData);
   }
 
   List<AnnonceModel> annonces;

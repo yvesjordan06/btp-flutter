@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -155,6 +154,7 @@ class UserType {
   }
 }
 
+@JsonSerializable()
 class CategorieTacheModel {
   final int id;
   final String intitule;
@@ -162,8 +162,13 @@ class CategorieTacheModel {
   final List<TacheModel> taches;
 
   CategorieTacheModel({this.id, this.intitule, this.description, this.taches});
+
+  factory CategorieTacheModel.fromJson(Map<String, dynamic> json) =>
+      _$CategorieTacheModelFromJson(json);
+  Map<String, dynamic> toJson() => _$CategorieTacheModelToJson(this);
 }
 
+@JsonSerializable()
 class MessageModel {
   String id;
   String text;
@@ -173,15 +178,25 @@ class MessageModel {
 
   MessageModel(
       {this.id, this.text, this.image, this.sender = false, this.sentAt});
+
+  factory MessageModel.fromJson(Map<String, dynamic> json) =>
+      _$MessageModelFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageModelToJson(this);
 }
 
+@JsonSerializable()
 class NewMessageModel {
   final MessageModel message;
   final String chatID;
 
   NewMessageModel(this.message, this.chatID);
+
+  factory NewMessageModel.fromJson(Map<String, dynamic> json) =>
+      _$NewMessageModelFromJson(json);
+  Map<String, dynamic> toJson() => _$NewMessageModelToJson(this);
 }
 
+@JsonSerializable()
 class ChatModel {
   final String id;
   final UserModel contact;
@@ -193,8 +208,13 @@ class ChatModel {
   ChatModel({this.id, this.contact, this.annonceModel, this.messages});
 
   MessageModel get lastMessage => messages.first;
+
+  factory ChatModel.fromJson(Map<String, dynamic> json) =>
+      _$ChatModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ChatModelToJson(this);
 }
 
+@JsonSerializable()
 class ActuModel {
   String id;
   String intitule;
@@ -202,6 +222,7 @@ class ActuModel {
   List<String> pictures;
   DateTime date;
   String description;
+  @JsonKey(ignore: true)
   List<Asset> assetPictures;
 
   ActuModel({
@@ -212,6 +233,10 @@ class ActuModel {
     this.date,
     this.description,
   });
+
+  factory ActuModel.fromJson(Map<String, dynamic> json) =>
+      _$ActuModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ActuModelToJson(this);
 }
 
 MetierModel metier1 =
@@ -263,3 +288,21 @@ CategorieTacheModel cat4 = CategorieTacheModel(
 List<CategorieTacheModel> exampleCat = [cat1, cat2, cat3, cat4];
 
 List<TacheModel> exampleTache = [];
+
+@JsonSerializable()
+class ActuListModel {
+  final List<ActuModel> list;
+  ActuListModel(this.list);
+  factory ActuListModel.fromJson(Map<String, dynamic> json) =>
+      _$ActuListModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ActuListModelToJson(this);
+}
+
+@JsonSerializable()
+class ChatListModel {
+  final List<ChatModel> list;
+  ChatListModel(this.list);
+  factory ChatListModel.fromJson(Map<String, dynamic> json) =>
+      _$ChatListModelFromJson(json);
+  Map<String, dynamic> toJson() => _$ChatListModelToJson(this);
+}
