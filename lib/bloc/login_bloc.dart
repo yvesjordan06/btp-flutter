@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:bloc/bloc.dart';
 import 'package:btpp/Repository/UserRepository.dart';
 import 'package:meta/meta.dart';
-import 'package:bloc/bloc.dart';
 
 import 'authentication_bloc.dart';
 import 'authentication_event.dart';

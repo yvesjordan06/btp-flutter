@@ -11,6 +11,7 @@ class UserState extends ChangeNotifier {
 
   /// An unmodifiable view of the items in the cart.
   UserModel get currentUser => _user;
+
   String get error => _error;
 
   /// Adds [item] to cart. This is the only way to modify the cart from outside.

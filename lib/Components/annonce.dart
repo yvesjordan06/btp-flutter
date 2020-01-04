@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:btpp/Functions/Images.dart';
-
-import '../Functions/Utility.dart';
-import '../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import '../Functions/Utility.dart';
+import '../Models/annonce.dart';
 
 class SingleAnnonce extends StatelessWidget {
   const SingleAnnonce({Key key, this.annonce}) : super(key: key);
@@ -29,7 +29,7 @@ class SingleAnnonce extends StatelessWidget {
                   CircleAvatar(
                     backgroundColor: AppColor.primaryColor,
                     radius: 24,
-                    child: Text(annonce.intitule[0]),
+                    child: Text(annonce.intitule[annonce.intitule.length - 1]),
                   ),
                   SizedBox(
                     width: 10,
@@ -69,6 +69,7 @@ class SingleAnnonce extends StatelessWidget {
                       SizedBox(
                         height: 10.0,
                       ),
+                      if(annonce.createdAt.isAfter(DateTime.now().subtract(Duration(days: 1))))
                       Container(
                         width: 40,
                         height: 20,
@@ -112,6 +113,7 @@ class SingleAnnonce extends StatelessWidget {
 
 class PictureSelect extends StatelessWidget {
   final void Function(File) onSelected;
+
   const PictureSelect({Key key, @required this.onSelected}) : super(key: key);
 
   @override

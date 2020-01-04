@@ -1,35 +1,39 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
+
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/ChatsRepository.dart';
 import 'package:btpp/utils/notifications.dart';
-import 'package:meta/meta.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'bloc.dart';
 
-class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
+class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
   final ChatsRepository repo = ChatsRepository();
+  final AuthenticationBloc authenticationBloc = authBloc;
   List<ChatModel> list = [];
 
   ChatsBloc() {
     repo.recieve().listen((newMessage) {
       try {
+        authBloc.listen((event) {
+          if (event is AuthenticationUnauthenticated) list = [];
+        });
         ChatModel chat = list.firstWhere((ch) => ch.id == newMessage.chatID);
         chat.messages.insert(0, newMessage.message);
         chat.unread++;
-        print('unread ${chat.unread}');
+        //print('unread ${chat.unread}');
         list = List.from(list);
 
         this.add(ChatsMessageRecieving(newMessage));
         showChatNotification(chat);
       } catch (e) {
-        print('not in chat');
+       // print('not in chat');
       }
     });
   }
 
   @override
-  ChatsState get initialState => InitialChatsState();
+  ChatsState get initialState => super.initialState ?? InitialChatsState();
 
   @override
   Stream<ChatsState> mapEventToState(
@@ -78,5 +82,22 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       list = List.from(list);
       yield ChatsFetchingSuccess(list);
     }
+  }
+
+  @override
+  ChatsState fromJson(Map<String, dynamic> json) {
+    try {
+      list = ChatListModel.fromJson(json).list;
+      return ChatsFetchingSuccess(list);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(ChatsState state) {
+    if (state is ChatsFetchingSuccess)
+      return ChatListModel(state.chats).toJson();
+    return null;
   }
 }

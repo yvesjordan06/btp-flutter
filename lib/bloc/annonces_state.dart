@@ -1,5 +1,4 @@
 import 'package:btpp/Models/annonce.dart';
-import 'package:btpp/bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class AnnoncesState extends Equatable {
@@ -25,12 +24,14 @@ class AnnoncesFetched extends AnnoncesState {
   final List<AnnonceModel> annonce;
 
   AnnoncesFetched(this.annonce);
+
   @override
   List<Object> get props => [annonce.hashCode];
 }
 
 class AnnoncesError extends AnnoncesState {
   final String error;
+
   AnnoncesError(this.error);
 
   @override
@@ -46,7 +47,9 @@ class AnnonceTaskSuccess extends AnnoncesFetched {
 
 class AnnonceTaskFailed extends AnnoncesState {
   final String error;
+
   AnnonceTaskFailed(this.error);
+
   @override
   List<Object> get props => [];
 }

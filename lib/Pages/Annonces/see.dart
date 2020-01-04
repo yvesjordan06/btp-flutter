@@ -3,12 +3,13 @@ import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Repository/AnnoncesRepository.dart';
 import 'package:btpp/bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../Functions/Utility.dart';
-import '../../Models/annonce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../Functions/Utility.dart';
+import '../../Models/annonce.dart';
 
 class SeeAnnonce extends StatelessWidget {
   const SeeAnnonce({Key key, this.annonce}) : super(key: key);

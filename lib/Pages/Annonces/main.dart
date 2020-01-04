@@ -1,13 +1,10 @@
-import 'package:btpp/Repository/AnnoncesRepository.dart';
 import 'package:btpp/bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../Components/annonceList.dart';
-
 import '../../Models/annonce.dart';
-import 'package:flutter/material.dart';
-
-import 'package:flutter/rendering.dart';
 
 class AnnoncePage extends StatefulWidget {
   @override
@@ -77,8 +74,6 @@ class _AnnoncePageState extends State<AnnoncePage>
         child: BlocListener<AnnoncesBloc, AnnoncesState>(
           bloc: bloc,
           listener: (context, state) {
-            print('main $state');
-            if (state is AnnoncesFetched) print(state.annonce);
             if (state is AnnoncesFetched) annonces = state.annonce;
             if (state is AnnonceTaskDoing || state is AnnonceDeleteRequest) {
               Scaffold.of(context).showSnackBar(SnackBar(
@@ -153,7 +148,7 @@ class _AnnoncePageState extends State<AnnoncePage>
       ),
       floatingActionButton: AnimatedOpacity(
         opacity: isEnabled ? 1.0 : 0,
-        duration: Duration(milliseconds: 300),
+        duration: Duration(milliseconds: 1000),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, 'annonce/create');

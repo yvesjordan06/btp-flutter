@@ -1,6 +1,5 @@
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/bloc/bloc.dart';
-import 'package:btpp/main.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -28,10 +27,13 @@ showChatNotification(ChatModel chat) async {
 
   if (chat.unread < 2) {
     AndroidNotificationDetails android = AndroidNotificationDetails(
-        groupChannelId, groupChannelName, groupChannelDescription,
-        importance: Importance.Max,
-        priority: Priority.High,
-        groupKey: groupKey);
+      groupChannelId,
+      groupChannelName,
+      groupChannelDescription,
+      importance: Importance.Max,
+      priority: Priority.High,
+      groupKey: groupKey,
+    );
     NotificationDetails notificationDetails =
         NotificationDetails(android, null);
     await flutterNotification.show(int.parse(chat.id) + 1000000,
@@ -39,30 +41,42 @@ showChatNotification(ChatModel chat) async {
         payload: 'chat,${chat.id}');
   } else {
 // create the summary notification required for older devices that pre-date Android 7.0 (API level 24)
-    List<String> lines = new List<String>.from(chat.messages
-        .toList()
-        .take(chat.unread)
-        .map((f) => DateFormat.Hm().format(f.sentAt) + ' ' + f.text));
+    List<String> lines = new List<String>.from(
+      chat.messages
+          .toList()
+          .take(chat.unread)
+          .map((f) => DateFormat.Hm().format(f.sentAt) + ' ' + f.text),
+    );
+
     InboxStyleInformation inboxStyleInformation = new InboxStyleInformation(
-        lines,
-        contentTitle:
-            chat.annonceModel.intitule + ', ' + chat.annonceModel.lieu,
-        summaryText: chat.contact.nom);
+      lines,
+      contentTitle: chat.annonceModel.intitule + ', ' + chat.annonceModel.lieu,
+      summaryText: chat.contact.nom,
+    );
+
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         new AndroidNotificationDetails(
-            groupChannelId, groupChannelName, groupChannelDescription,
-            style: AndroidNotificationStyle.Inbox,
-            styleInformation: inboxStyleInformation,
-            groupKey: groupKey,
-            setAsGroupSummary: true);
-    NotificationDetails platformChannelSpecifics =
-        new NotificationDetails(androidPlatformChannelSpecifics, null);
+      groupChannelId,
+      groupChannelName,
+      groupChannelDescription,
+      style: AndroidNotificationStyle.Inbox,
+      styleInformation: inboxStyleInformation,
+      groupKey: groupKey,
+      setAsGroupSummary: true,
+    );
+
+    NotificationDetails platformChannelSpecifics = new NotificationDetails(
+      androidPlatformChannelSpecifics,
+      null,
+    );
+
     await flutterNotification.show(
-        int.parse(chat.id) + 1000000,
-        chat.annonceModel.intitule,
-        '${chat.unread} nouveau messages',
-        platformChannelSpecifics,
-        payload: 'chat,${chat.id}');
+      int.parse(chat.id) + 1000000,
+      chat.annonceModel.intitule,
+      '${chat.unread} nouveau messages',
+      platformChannelSpecifics,
+      payload: 'chat,${chat.id}',
+    );
   }
 }
 

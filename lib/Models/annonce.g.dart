@@ -40,25 +40,70 @@ Map<String, dynamic> _$MetierModelToJson(MetierModel instance) =>
       'description': instance.description,
     };
 
+NewAnnonceModel _$NewAnnonceModelFromJson(Map<String, dynamic> json) {
+  $checkKeys(json, requiredKeys: const ['id_taxation']);
+  return NewAnnonceModel(
+    intitule: json['intitule'] as String,
+    description: json['description'] as String,
+    lieu: json['lieu'] as String,
+    dateDebut: json['date_debut'] as String,
+    dateFin: json['date_fin'] as String,
+    taches: (json['taches'] as List)?.map((e) => e as int)?.toList(),
+    idEntreprise: json['id_annonceur_entreprise'] as int,
+    idParticulier: json['id_annonceur_particulier'] as int,
+    etat: json['etat'] as String,
+    idTaxation: json['id_taxation'] as int ?? 1,
+  );
+}
+
+Map<String, dynamic> _$NewAnnonceModelToJson(NewAnnonceModel instance) =>
+    <String, dynamic>{
+      'intitule': instance.intitule,
+      'lieu': instance.lieu,
+      'description': instance.description,
+      'date_debut': instance.dateDebut,
+      'date_fin': instance.dateFin,
+      'taches': instance.taches,
+      'etat': instance.etat,
+      'id_annonceur_entreprise': instance.idEntreprise,
+      'id_annonceur_particulier': instance.idParticulier,
+      'id_taxation': instance.idTaxation,
+    };
+
+AppStatusModel _$AppStatusModelFromJson(Map<String, dynamic> json) {
+  return AppStatusModel(
+    isfirstTime: json['isfirstTime'] as bool ?? true,
+    currentUser: json['currentUser'] == null
+        ? null
+        : UserModel.fromJson(json['currentUser'] as Map<String, dynamic>),
+  );
+}
+
+Map<String, dynamic> _$AppStatusModelToJson(AppStatusModel instance) =>
+    <String, dynamic>{
+      'isfirstTime': instance.isfirstTime,
+      'currentUser': instance.currentUser,
+    };
+
 AnnonceModel _$AnnonceModelFromJson(Map<String, dynamic> json) {
   return AnnonceModel(
     intitule: json['intitule'] as String,
     description: json['description'] as String,
-    createdAt: json['createdAt'] == null
+    createdAt: json['created_at'] == null
         ? null
-        : DateTime.parse(json['createdAt'] as String),
+        : DateTime.parse(json['created_at'] as String),
     lieu: json['lieu'] as String,
-    dateDebut: json['dateDebut'] == null
+    dateDebut: json['date_debut'] == null
         ? null
-        : DateTime.parse(json['dateDebut'] as String),
-    dateFin: json['dateFin'] == null
+        : DateTime.parse(json['date_debut'] as String),
+    dateFin: json['date_fin'] == null
         ? null
-        : DateTime.parse(json['dateFin'] as String),
+        : DateTime.parse(json['date_fin'] as String),
     taches: (json['taches'] as List)
         ?.map((e) =>
             e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    id: json['id'] as String,
+    id: _stringFromInt(json['id'] as int),
     annonceur: json['annonceur'] == null
         ? null
         : UserModel.fromJson(json['annonceur'] as Map<String, dynamic>),
@@ -67,49 +112,70 @@ AnnonceModel _$AnnonceModelFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$AnnonceModelToJson(AnnonceModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'id': _stringToInt(instance.id),
       'intitule': instance.intitule,
       'lieu': instance.lieu,
       'description': instance.description,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'dateDebut': instance.dateDebut?.toIso8601String(),
-      'dateFin': instance.dateFin?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'date_debut': instance.dateDebut?.toIso8601String(),
+      'date_fin': instance.dateFin?.toIso8601String(),
       'taches': instance.taches,
       'annonceur': instance.annonceur,
     };
 
-UserModel _$UserModelFromJson(Map<String, dynamic> json) {
-  return UserModel(
-    id: json['id'] as String,
-    nom: json['nom'] as String,
-    prenom: json['prenom'] as String,
-    telephone: json['telephone'] as String,
-    dateDeNaissance: json['dateDeNaissance'] == null
+AuthenticationModel _$AuthenticationModelFromJson(Map<String, dynamic> json) {
+  return AuthenticationModel(
+    currentUser: json['currentUser'] == null
         ? null
-        : DateTime.parse(json['dateDeNaissance'] as String),
-    status: json['status'] as String,
-    accountType: json['accountType'] as String,
-    userType: json['userType'] as String,
-    motDePasse: json['motDePasse'] as String,
-    pictureLink: json['pictureLink'] as String,
-    pays: json['pays'] as String,
-    ville: json['ville'] as String,
-    quartier: json['quartier'] as String,
-    boitePostal: json['boitePostal'] as String,
+        : UserModel.fromJson(json['currentUser'] as Map<String, dynamic>),
+    token: json['token'] as String,
   );
 }
 
+Map<String, dynamic> _$AuthenticationModelToJson(
+        AuthenticationModel instance) =>
+    <String, dynamic>{
+      'currentUser': instance.currentUser,
+      'token': instance.token,
+    };
+
+UserModel _$UserModelFromJson(Map<String, dynamic> json) {
+  return UserModel(
+    id: _stringFromInt(json['id'] as int),
+    nom: json['nom'] as String,
+    prenom: json['prenom'] as String,
+    telephone: json['telephone'] as String,
+    dateDeNaissance: json['date_de_naissance'] == null
+        ? null
+        : DateTime.parse(json['date_de_naissance'] as String),
+    raisonSociale: json['raisonSociale'] as String,
+    status: json['status'] as String,
+    accountType: json['accountType'] as String,
+    userType: json['userType'] as String,
+    motDePasse: json['mot_de_passe'] as String,
+    pictureLink: json['picture_link'] as String,
+    pays: json['pays'] as String ?? 'Cameroun',
+    ville: json['ville'] as String,
+    quartier: json['quartier'] as String,
+    boitePostal: json['boitePostal'] as String,
+  )..createdAt = json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String);
+}
+
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
-      'id': instance.id,
+      'id': _stringToInt(instance.id),
       'nom': instance.nom,
       'prenom': instance.prenom,
+      'raisonSociale': instance.raisonSociale,
       'telephone': instance.telephone,
-      'motDePasse': instance.motDePasse,
-      'dateDeNaissance': instance.dateDeNaissance?.toIso8601String(),
+      'mot_de_passe': instance.motDePasse,
+      'date_de_naissance': instance.dateDeNaissance?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
       'status': instance.status,
       'accountType': instance.accountType,
       'userType': instance.userType,
-      'pictureLink': instance.pictureLink,
+      'picture_link': instance.pictureLink,
       'pays': instance.pays,
       'ville': instance.ville,
       'quartier': instance.quartier,
@@ -190,9 +256,12 @@ Map<String, dynamic> _$NewMessageModelToJson(NewMessageModel instance) =>
 ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
   return ChatModel(
     id: json['id'] as String,
-    contact: json['contact'] == null
+    annonceur: json['annonceur'] == null
         ? null
-        : UserModel.fromJson(json['contact'] as Map<String, dynamic>),
+        : UserModel.fromJson(json['annonceur'] as Map<String, dynamic>),
+    travailleur: json['travailleur'] == null
+        ? null
+        : UserModel.fromJson(json['travailleur'] as Map<String, dynamic>),
     annonceModel: json['annonceModel'] == null
         ? null
         : AnnonceModel.fromJson(json['annonceModel'] as Map<String, dynamic>),
@@ -205,7 +274,8 @@ ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
       'id': instance.id,
-      'contact': instance.contact,
+      'annonceur': instance.annonceur,
+      'travailleur': instance.travailleur,
       'annonceModel': instance.annonceModel,
       'messages': instance.messages,
       'unread': instance.unread,
@@ -213,12 +283,18 @@ Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
 
 ActuModel _$ActuModelFromJson(Map<String, dynamic> json) {
   return ActuModel(
-    id: json['id'] as String,
+    id: json['id'] as int,
     intitule: json['intitule'] as String,
     lieu: json['lieu'] as String,
-    pictures: (json['pictures'] as List)?.map((e) => e as String)?.toList(),
-    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    pictures:
+        (json['pictures_link'] as List)?.map((e) => e as String)?.toList(),
+    date: json['date_realisation'] == null
+        ? null
+        : DateTime.parse(json['date_realisation'] as String),
     description: json['description'] as String,
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at'] as String),
   );
 }
 
@@ -226,9 +302,10 @@ Map<String, dynamic> _$ActuModelToJson(ActuModel instance) => <String, dynamic>{
       'id': instance.id,
       'intitule': instance.intitule,
       'lieu': instance.lieu,
-      'pictures': instance.pictures,
-      'date': instance.date?.toIso8601String(),
+      'pictures_link': instance.pictures,
+      'date_realisation': instance.date?.toIso8601String(),
       'description': instance.description,
+      'created_at': instance.createdAt?.toIso8601String(),
     };
 
 ActuListModel _$ActuListModelFromJson(Map<String, dynamic> json) {

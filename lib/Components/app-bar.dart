@@ -24,11 +24,10 @@ class BTPAppBar extends StatelessWidget {
           color: Colors.white,
         ),
       ],
-      title: Text('Conversations',
-        style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold
-        ),),
+      title: Text(
+        'Conversations',
+        style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }

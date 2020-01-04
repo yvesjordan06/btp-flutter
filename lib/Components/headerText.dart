@@ -5,6 +5,7 @@ import 'horizontalDivider.dart';
 class HeaderText extends StatelessWidget {
   final String text;
   final bool underlined;
+
   const HeaderText({
     Key key,
     @required this.text,

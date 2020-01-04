@@ -14,6 +14,7 @@ class ChatsMessageRecieving extends ChatsEvent {
   final NewMessageModel newMessage;
 
   ChatsMessageRecieving(this.newMessage);
+
   @override
   List<Object> get props => null;
 }

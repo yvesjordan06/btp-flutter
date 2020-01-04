@@ -1,6 +1,6 @@
 import 'package:btpp/Models/annonce.dart';
-import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 abstract class LoginEvent extends Equatable {
   const LoginEvent();

@@ -1,7 +1,6 @@
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
-import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,10 +8,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ProfilePage extends StatelessWidget {
   final UserModel user;
   final bool forCurrentUser;
-  const ProfilePage({Key key, @required this.user})
+
+  UserModel _user;
+  AuthenticationBloc _bloc = authBloc;
+
+  ProfilePage({Key key, @required this.user})
       : assert(user != null),
         forCurrentUser = false,
         super(key: key);
+
   ProfilePage.currentUser({Key key})
       : user = null,
         forCurrentUser = true,
@@ -20,8 +24,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel _user;
-    final AuthenticationBloc _bloc = authBloc;
+
     return BlocBuilder(
         bloc: _bloc,
         builder: (BuildContext context, AuthenticationState state) {
@@ -84,14 +87,14 @@ class ProfilePage extends StatelessWidget {
                         height: 20,
                       ),
                       Text(
-                        _user.nom + ' ' + _user.prenom,
+                        _user.name,
                         style: Theme.of(context).textTheme.title,
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       Text(
-                        _user.pays + ', ' + _user.ville,
+                        _user.address,
                         style: Theme.of(context).textTheme.subtitle,
                       ),
                       Padding(

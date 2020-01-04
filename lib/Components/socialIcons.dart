@@ -5,11 +5,7 @@ class SocialIcon extends StatelessWidget {
   final String icondata;
   final Function onPressed;
 
-  SocialIcon({
-    this.colors,
-    this.icondata,
-    this.onPressed
-  });
+  SocialIcon({this.colors, this.icondata, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +18,11 @@ class SocialIcon extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: colors,
-              )
-          ),
+              )),
           child: RawMaterialButton(
               shape: CircleBorder(),
               onPressed: onPressed,
-              child: Text(icondata)
-          )
-      ),
+              child: Text(icondata))),
     );
   }
 }

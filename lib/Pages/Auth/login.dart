@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   final GlobalKey<LoginFormState> _formKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     String _error = '';
@@ -148,6 +149,7 @@ class LoginPage extends StatelessWidget {
 
 class LoginForm extends StatefulWidget {
   final void Function(String telphone, String password) onSubmit;
+
   LoginForm({@required Key key, this.onSubmit}) : super(key: key);
 
   @override

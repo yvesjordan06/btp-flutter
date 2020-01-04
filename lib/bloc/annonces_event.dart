@@ -14,6 +14,7 @@ class FetchAnnonce extends AnnoncesEvent {
 
 class PostuleAnnonce extends AnnoncesEvent {
   final dynamic payload;
+
   const PostuleAnnonce(this.payload);
 
   @override
@@ -27,6 +28,7 @@ class ClearAnnonce extends AnnoncesEvent {
 
 class UpdateAnnonce extends AnnoncesEvent {
   final AnnonceModel annonce;
+
   const UpdateAnnonce(this.annonce);
 
   @override
@@ -35,6 +37,7 @@ class UpdateAnnonce extends AnnoncesEvent {
 
 class DeleteAnnonce extends AnnoncesEvent {
   final AnnonceModel annonce;
+
   const DeleteAnnonce(this.annonce);
 
   @override
@@ -43,6 +46,7 @@ class DeleteAnnonce extends AnnoncesEvent {
 
 class BlocCreateAnnonce extends AnnoncesEvent {
   final AnnonceModel annonce;
+
   const BlocCreateAnnonce(this.annonce);
 
   @override
@@ -51,6 +55,7 @@ class BlocCreateAnnonce extends AnnoncesEvent {
 
 class FilterAnnonce extends AnnoncesEvent {
   final String text;
+
   const FilterAnnonce(this.text);
 
   @override
@@ -61,6 +66,7 @@ class AttribuerAnnonce extends AnnoncesEvent {
   final AnnonceModel annonce;
   final UserModel travailleur;
   final List<int> taches;
+
   const AttribuerAnnonce(this.annonce, this.travailleur, this.taches);
 
   @override

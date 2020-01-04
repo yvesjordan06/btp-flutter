@@ -1,14 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Functions/Utility.dart';
-import 'package:btpp/utils/notifications.dart';
 import 'package:flutter/gestures.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<File> gallery;
+
   const ImageViewer({Key key, this.gallery}) : super(key: key);
 
   @override
@@ -17,6 +18,7 @@ class ImageViewer extends StatefulWidget {
 
 class _ImageViewerState extends State<ImageViewer> {
   List<Asset> images = List();
+
   @override
   void initState() {
     super.initState();
@@ -81,6 +83,7 @@ class AssetImageViewer extends StatefulWidget {
   final GestureTapCallback onTap;
   final bool dismissable;
   final DismissDirectionCallback onDismiss;
+
   const AssetImageViewer(
       {Key key,
       @required this.asset,
@@ -102,8 +105,8 @@ class AssetImageViewer extends StatefulWidget {
       );
 }
 
-class _AssetImageViewerState extends State<AssetImageViewer>
-/*with AutomaticKeepAliveClientMixin*/ {
+class _AssetImageViewerState
+    extends State<AssetImageViewer> /*with AutomaticKeepAliveClientMixin*/ {
   //@override
   //bool get wantKeepAlive => true;
 
@@ -114,6 +117,7 @@ class _AssetImageViewerState extends State<AssetImageViewer>
   final GestureTapCallback onTap;
   final bool dismissable;
   final DismissDirectionCallback onDismiss;
+
   _AssetImageViewerState({
     @required this.asset,
     this.width,
@@ -207,9 +211,11 @@ class DismissableImage extends StatelessWidget {
   const DismissableImage.network(this.url, {this.tag = 'none'})
       : file = null,
         memory = null;
+
   const DismissableImage.file(this.file, {this.tag = 'none'})
       : url = null,
         memory = null;
+
   const DismissableImage.memory(this.memory, {this.tag = 'none'})
       : url = null,
         file = null;
@@ -266,6 +272,7 @@ class DismissableImage extends StatelessWidget {
 
 class ImageViewerRouteArgument {
   ImageViewerRouteArgument({this.image, this.tag});
+
   final dynamic image;
   final String tag;
 

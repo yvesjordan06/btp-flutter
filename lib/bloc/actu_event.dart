@@ -14,6 +14,7 @@ class ActuAdd extends ActuEvent {
   final ActuModel actu;
 
   ActuAdd(this.actu);
+
   @override
   List<Object> get props => null;
 }

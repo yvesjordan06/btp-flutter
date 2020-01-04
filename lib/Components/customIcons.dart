@@ -1,5 +1,4 @@
-
 class CustomIcons {
-  static const  facebook = 'f';
-  static const  googlePlus = 'g';
+  static const facebook = 'f';
+  static const googlePlus = 'g';
 }

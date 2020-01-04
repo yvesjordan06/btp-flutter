@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+
 import './bloc.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {

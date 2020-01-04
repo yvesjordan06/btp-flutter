@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -16,6 +17,7 @@ class TacheModel {
 
   factory TacheModel.fromJson(Map<String, dynamic> json) =>
       _$TacheModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$TacheModelToJson(this);
 }
 
@@ -29,19 +31,91 @@ class MetierModel {
 
   factory MetierModel.fromJson(Map<String, dynamic> json) =>
       _$MetierModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$MetierModelToJson(this);
+}
+
+int _stringToInt(String number) => (number == null) || number.isEmpty ? null : int.parse(number);
+
+String _stringFromInt(int number) {
+  //print(number);
+  return number.toString();
+}
+@JsonSerializable()
+class NewAnnonceModel {
+ final  String intitule;
+ final  String lieu;
+ final  String description;
+
+  @JsonKey(name: 'date_debut')
+ final  String dateDebut;
+  @JsonKey(name: 'date_fin')
+  final String dateFin;
+  List<int> taches;
+ final  String etat;
+  @JsonKey(name: 'id_annonceur_entreprise', nullable: true)
+  final int idEntreprise;
+  @JsonKey(name: 'id_annonceur_particulier', nullable: true)
+ final  int idParticulier;
+  @JsonKey(name: 'id_taxation', defaultValue: 1, required: true)
+ final int idTaxation;
+
+  NewAnnonceModel({
+    this.intitule = '',
+    this.description = '',
+    //this.createdAt,
+    this.lieu = '',
+    this.dateDebut,
+    this.dateFin,
+    this.taches,
+    this.idEntreprise,
+    this.idParticulier ,
+    this.etat = 'encours',
+    this.idTaxation = 0,
+
+
+  });
+
+
+  factory NewAnnonceModel.fromJson(Map<String, dynamic> json) =>
+      _$NewAnnonceModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NewAnnonceModelToJson(this);
+}
+
+@JsonSerializable()
+class AppStatusModel {
+  @JsonKey(defaultValue: true)
+  final bool isfirstTime;
+  UserModel currentUser;
+
+  AppStatusModel({this.isfirstTime = true, this.currentUser});
+
+  bool isLoggedin() {
+    return (currentUser != null) && (currentUser.id != null);
+  }
+
+  factory AppStatusModel.fromJson(Map<String, dynamic> json) =>
+      _$AppStatusModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AppStatusModelToJson(this);
+
 }
 
 @JsonSerializable()
 class AnnonceModel {
-  String id = '';
-  String intitule = '';
-  String lieu = '';
-  String description = '';
+  @JsonKey(fromJson: _stringFromInt, toJson: _stringToInt)
+  String id;
+  String intitule;
+  String lieu;
+  String description;
+  @JsonKey(name: 'created_at')
   DateTime createdAt;
+  @JsonKey(name: 'date_debut')
   DateTime dateDebut;
+  @JsonKey(name: 'date_fin')
   DateTime dateFin;
-  List<TacheModel> taches = [];
+  List<TacheModel> taches;
   UserModel annonceur;
 
   AnnonceModel({
@@ -56,25 +130,62 @@ class AnnonceModel {
     this.annonceur,
   });
 
+  NewAnnonceModel makeNew() {
+    return NewAnnonceModel(
+      intitule: intitule,
+      description: description,
+      lieu: lieu,
+      dateDebut: dateDebut.toString(),
+      dateFin: dateFin.toString(),
+      idParticulier: annonceur.accountType == AccountType.particulier ? int.tryParse(annonceur.id): null,
+      idEntreprise: annonceur.accountType == AccountType.entreprise ? int.tryParse(annonceur.id): null,
+      idTaxation: annonceur.accountType == AccountType.particulier ? 1 : 2,
+      taches: List<int>.generate(taches.length, (index) => taches[index].id)  ,
+    );
+  }
+
   factory AnnonceModel.fromJson(Map<String, dynamic> json) =>
       _$AnnonceModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$AnnonceModelToJson(this);
 }
 
 @JsonSerializable()
+class AuthenticationModel {
+  UserModel currentUser;
+  String token;
+
+  AuthenticationModel({this.currentUser, this.token});
+
+  factory AuthenticationModel.fromJson(Map<String, dynamic> json) =>
+      _$AuthenticationModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AuthenticationModelToJson(this);
+}
+
+@JsonSerializable()
 class UserModel {
-  String id = '';
+  @JsonKey(fromJson: _stringFromInt, toJson: _stringToInt)
+  String id;
+
   String nom = '';
   String prenom = '';
+  String raisonSociale = '';
   String telephone = '';
+  @JsonKey(name: 'mot_de_passe')
   String motDePasse = '';
+  @JsonKey(name: 'date_de_naissance')
   DateTime dateDeNaissance;
+  @JsonKey(name: 'created_at')
+  DateTime createdAt;
   String status = '';
   String accountType = '';
   String userType = '';
   @JsonKey(ignore: true)
   File localPicture;
+  @JsonKey(name: 'picture_link')
   String pictureLink = '';
+  @JsonKey(defaultValue: 'Cameroun')
   String pays = '';
   String ville = '';
   String quartier = '';
@@ -86,6 +197,7 @@ class UserModel {
     this.prenom = '',
     this.telephone = '',
     this.dateDeNaissance,
+    this.raisonSociale = '',
     this.status = '',
     this.accountType = '',
     this.userType = '',
@@ -98,53 +210,47 @@ class UserModel {
     this.boitePostal = '',
   });
 
+  String get name => (raisonSociale) ?? (nom + ' ' + prenom);
+
+  String get address => ville + ',' + (boitePostal ?? quartier);
+
+   String get type => (userType??'No type') + ' ' + (accountType?? 'No type');
+
+  String get birthday => dateDeNaissance != null
+      ? DateFormat.yMMMd().format(dateDeNaissance)
+      : null;
+
   @override
   String toString() {
-    return 'id :$id, type: $userType, name: $nom';
-  }
-
-  UserModel copy() {
-    return UserModel(
-      id: this.id,
-      nom: this.nom,
-      prenom: this.prenom,
-      telephone: this.telephone,
-      dateDeNaissance: this.dateDeNaissance,
-      status: this.status,
-      accountType: this.accountType,
-      userType: this.userType,
-      motDePasse: this.motDePasse,
-      localPicture: this.localPicture,
-      pictureLink: this.pictureLink,
-      pays: this.pays,
-      ville: this.ville,
-      quartier: this.quartier,
-      boitePostal: this.boitePostal,
-    );
+    return 'nom :$name, address: $address, type: $type , birthday: $birthday';
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }
 
 @JsonSerializable()
 class AnnonceListModel {
   final List<AnnonceModel> list;
+
   AnnonceListModel(this.list);
+
   factory AnnonceListModel.fromJson(Map<String, dynamic> json) =>
       _$AnnonceListModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$AnnonceListModelToJson(this);
 }
 
 class AccountType {
-  static final String particulier = 'Particulier';
-  static final String entreprise = 'Entreprise';
+  static const  String particulier = 'Particulier';
+  static const String entreprise = 'Entreprise';
 }
 
 class UserType {
-  static final String annonceur = 'Annonceur';
-  static final String travailleur = 'Travailleur';
+  static const String annonceur = 'Annonceur';
+  static const String travailleur = 'Travailleur';
 
   static String toggleType(String type) {
     if (type == annonceur) {
@@ -165,6 +271,7 @@ class CategorieTacheModel {
 
   factory CategorieTacheModel.fromJson(Map<String, dynamic> json) =>
       _$CategorieTacheModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$CategorieTacheModelToJson(this);
 }
 
@@ -181,6 +288,7 @@ class MessageModel {
 
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
       _$MessageModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$MessageModelToJson(this);
 }
 
@@ -193,37 +301,54 @@ class NewMessageModel {
 
   factory NewMessageModel.fromJson(Map<String, dynamic> json) =>
       _$NewMessageModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$NewMessageModelToJson(this);
 }
 
 @JsonSerializable()
 class ChatModel {
   final String id;
-  final UserModel contact;
+
+  //final UserModel contact;
+  final UserModel annonceur;
+  final UserModel travailleur;
   final AnnonceModel annonceModel;
+
   //final MessageModel lastMessage;
   final List<MessageModel> messages;
   int unread = 0;
 
-  ChatModel({this.id, this.contact, this.annonceModel, this.messages});
+  ChatModel(
+      {this.id,
+      this.annonceur,
+      this.travailleur,
+      this.annonceModel,
+      this.messages});
 
   MessageModel get lastMessage => messages.first;
 
+  UserModel get contact => annonceur ?? travailleur;
+
   factory ChatModel.fromJson(Map<String, dynamic> json) =>
       _$ChatModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$ChatModelToJson(this);
 }
 
 @JsonSerializable()
 class ActuModel {
-  String id;
+  int id;
   String intitule;
   String lieu;
+  @JsonKey(name: 'pictures_link')
   List<String> pictures;
+  @JsonKey(name: 'date_realisation')
   DateTime date;
   String description;
   @JsonKey(ignore: true)
   List<Asset> assetPictures;
+  @JsonKey(name: 'created_at')
+  DateTime createdAt;
 
   ActuModel({
     this.id,
@@ -232,10 +357,12 @@ class ActuModel {
     this.pictures,
     this.date,
     this.description,
+    this.createdAt
   });
 
   factory ActuModel.fromJson(Map<String, dynamic> json) =>
       _$ActuModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$ActuModelToJson(this);
 }
 
@@ -292,17 +419,23 @@ List<TacheModel> exampleTache = [];
 @JsonSerializable()
 class ActuListModel {
   final List<ActuModel> list;
+
   ActuListModel(this.list);
+
   factory ActuListModel.fromJson(Map<String, dynamic> json) =>
       _$ActuListModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$ActuListModelToJson(this);
 }
 
 @JsonSerializable()
 class ChatListModel {
   final List<ChatModel> list;
+
   ChatListModel(this.list);
+
   factory ChatListModel.fromJson(Map<String, dynamic> json) =>
       _$ChatListModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$ChatListModelToJson(this);
 }

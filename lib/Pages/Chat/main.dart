@@ -2,16 +2,15 @@ import 'package:btpp/Components/recent-chats.dart';
 import 'package:btpp/Components/recent-contacts.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
-import 'package:btpp/Repository/ChatsRepository.dart';
 import 'package:btpp/State/index.dart';
 import 'package:btpp/State/user.dart';
 import 'package:btpp/bloc/bloc.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key key}) : super(key: key);
+
   @override
   _ChatListScreenState createState() => _ChatListScreenState();
 }
@@ -26,8 +25,11 @@ class _ChatListScreenState extends State<ChatListScreen>
 
   final ChatsBloc bloc = chatsBloc..add(ChatsFetch());
 
+  bool hasInit = false;
+
   @override
   bool get wantKeepAlive => true;
+
   @override
   void initState() {
     userState.addListener(() {
@@ -49,6 +51,10 @@ class _ChatListScreenState extends State<ChatListScreen>
         if (state is ChatsFetchingSuccess) {
           list = state.chats;
         }
+        if (!hasInit && bloc.initialState is ChatsFetchingSuccess) {
+          list = bloc.list;
+        }
+        hasInit = true;
       },
       child: BlocBuilder<ChatsBloc, ChatsState>(
         bloc: bloc,

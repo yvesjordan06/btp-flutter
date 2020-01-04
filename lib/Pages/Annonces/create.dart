@@ -1,13 +1,13 @@
 import 'package:btpp/bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../Components/horizontalDivider.dart';
-import '../../Models/annonce.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
+import '../../Components/horizontalDivider.dart';
+import '../../Models/annonce.dart';
 
 class CreateAnnonce extends StatefulWidget {
   const CreateAnnonce({Key key, this.annonce}) : super(key: key);
@@ -305,10 +305,10 @@ class _CreateAnnonceState extends State<CreateAnnonce> {
                             maxLength: 1000,
                             validator: (value) {
                               if (value.length < 1) {
-                                return 'Veuillez entrer un titre';
+                                return 'Veuillez entrer une description';
                               }
                               if (value.length < 200) {
-                                return 'Description trop courte, min 200';
+                                //return 'Description trop courte, min 200';
                               }
                               return null;
                             },

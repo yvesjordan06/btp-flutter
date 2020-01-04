@@ -52,7 +52,6 @@ class _$ActuApi extends ActuApi {
     return client.send<dynamic, dynamic>($request);
   }
 
-  @override
   Future<Response> sendImagse(int actuID, List<int> bytes) {
     final $url = '/realisations/images/upload/$actuID';
     final $parts = <PartValue>[PartValueFile<List<int>>('file', bytes)];

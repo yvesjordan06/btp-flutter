@@ -1,7 +1,6 @@
-import 'package:btpp/Pages/Auth/signup.dart';
+import 'package:flutter/material.dart';
 
 import '../../Pages/Auth/login.dart';
-import 'package:flutter/material.dart';
 
 class AuthApp extends StatelessWidget {
   @override

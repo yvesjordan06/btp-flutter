@@ -2,11 +2,11 @@ import 'package:btpp/Components/headerText.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
-import 'package:btpp/State/index.dart';
 import 'package:flutter/material.dart';
 
 class CVPage extends StatefulWidget {
   final UserModel user;
+
   CVPage({Key key, @required this.user}) : super(key: key);
 
   @override
@@ -173,6 +173,7 @@ class _CVPageState extends State<CVPage> {
 class CompetenceTile extends StatelessWidget {
   final String type;
   final String value;
+
   const CompetenceTile({
     Key key,
     @required this.type,

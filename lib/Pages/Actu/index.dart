@@ -8,14 +8,12 @@ import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/User/profile.dart';
-import 'package:btpp/State/index.dart';
 import 'package:btpp/State/user.dart';
+import 'package:btpp/api/chopper.dart';
 import 'package:btpp/bloc/bloc.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
-import 'package:flutter_advanced_networkimage/zoomable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -54,6 +52,18 @@ class _ActuPageState extends State<ActuPage>
           if (state is ActuFetchedState) {
             list = state.list;
           }
+          if (state is ActuCreatedFailedState) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content:
+                  Text("Impossible d'effectuer cette demande actuellement"),
+              action: SnackBarAction(
+                label: "fermer",
+                onPressed: () {
+                  Scaffold.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ));
+          }
         },
         child: BlocBuilder<ActuBloc, ActuState>(
           bloc: bloc,
@@ -86,8 +96,8 @@ class _ActuPageState extends State<ActuPage>
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: list.isNotEmpty
-                                  ? list.length
-                                  : bloc.actus.length,
+                                  ? (list?.length ?? 0)
+                                  : (bloc.actus?.length ?? 0),
                               itemBuilder: (context, index) => ActuTile(
                                   list.isNotEmpty
                                       ? list[index]
@@ -126,7 +136,6 @@ class _ActuPageState extends State<ActuPage>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -385,6 +394,7 @@ class _CreateActuState extends State<CreateActu> {
 
 class ActuTile extends StatefulWidget {
   final ActuModel actu;
+
   const ActuTile(this.actu, {Key key}) : super(key: key);
 
   @override
@@ -449,7 +459,8 @@ class _ActuTileState extends State<ActuTile> {
                       ),
                       child: actu.assetPictures != null
                           ? ImageDisplay.asset2(actu.assetPictures[index])
-                          : ImageDisplay.network(actu.pictures[index]),
+                          : ImageDisplay.network(
+                              mainUrl + '/' + actu.pictures[index]),
                     ),
                   ],
                 ),
@@ -626,6 +637,7 @@ class ImageDisplay extends StatelessWidget {
     if (link != null) {
       return AdvancedNetworkImage(link, useDiskCache: useCache);
     }
+    return null;
   }
 
   @override
@@ -659,7 +671,7 @@ class ImageDisplay extends StatelessWidget {
                       ),
                     );
                   },
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   placeholder: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: const CircleAvatar(
@@ -674,7 +686,7 @@ class ImageDisplay extends StatelessWidget {
               ),
             )
           : FittedBox(
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               child: AssetImageViewer(
                 asset: newAsset,
               ),
@@ -685,6 +697,7 @@ class ImageDisplay extends StatelessWidget {
 
 class ZoomableImage extends StatefulWidget {
   const ZoomableImage({@required this.url, this.tag, this.memory});
+
   const ZoomableImage.memory({this.url, this.tag, @required this.memory});
 
   final String url;
@@ -697,6 +710,7 @@ class ZoomableImage extends StatefulWidget {
 
 class _ZoomableImageState extends State<ZoomableImage> {
   double top = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -718,15 +732,20 @@ class _ZoomableImageState extends State<ZoomableImage> {
                 child: Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
-                  child: Hero(
-                    tag: widget.tag,
-                    child: PhotoView(
-                      //maxScale: 5.0,
-                      //minScale: 1.0,
-                      imageProvider: widget.memory == null
-                          ? AdvancedNetworkImage(widget.url, useDiskCache: true)
-                          : MemoryImage(widget.memory),
-                    ),
+                  child: PhotoView(
+                    scaleStateChangedCallback: (scale) {
+                      print(scale);
+                    },
+                    //tightMode: true,
+                    backgroundDecoration:
+                        BoxDecoration(color: Colors.transparent),
+                    initialScale: widget.memory == null ? 1.0 : null,
+                    heroAttributes: PhotoViewHeroAttributes(tag: widget.tag),
+                    maxScale: PhotoViewComputedScale.covered,
+                    //minScale: PhotoViewComputedScale.contained,
+                    imageProvider: widget.memory == null
+                        ? AdvancedNetworkImage(widget.url, useDiskCache: true)
+                        : MemoryImage(widget.memory),
                   ),
                 ),
                 onVerticalDragUpdate: (val) {
@@ -766,7 +785,7 @@ class _ZoomableImageState extends State<ZoomableImage> {
   }
 }
 
-class UserImage extends StatelessWidget {
+class UserImage extends StatefulWidget {
   final double radius;
   final UserModel user;
   final bool zoomable;
@@ -777,55 +796,109 @@ class UserImage extends StatelessWidget {
         super(key: key);
 
   @override
+  _UserImageState createState() => _UserImageState();
+}
+
+class _UserImageState extends State<UserImage>
+    with AutomaticKeepAliveClientMixin {
+  Widget child;
+
+  @override
   Widget build(BuildContext context) {
-    String link = user.pictureLink;
-    File local = user.localPicture;
+    super.build(context);
+    String link = widget.user.pictureLink;
+    File local = widget.user.localPicture;
     ImageProvider picture;
     if (local != null) {
       picture = FileImage(local);
     } else {
       if (link.isNotEmpty) {
-        picture = AdvancedNetworkImage(link, useDiskCache: true);
+        picture = AdvancedNetworkImage(link, useDiskCache: false,
+            loadingProgress: (p, u) {
+          print('loading $p');
+          setState(() {
+            child = Stack(
+              children: <Widget>[
+                Center(child: CircularProgressIndicator()),
+                Center(
+                  child: Text(
+                    '${(p * 100).toInt()} %',
+                    style: TextStyle(fontSize: 8),
+                  ),
+                )
+              ],
+            );
+          });
+        }, loadFailedCallback: () {
+          setState(() {
+            child = IconButton(
+              onPressed: () {
+                print('need to realoda');
+                setState(() {
+                  authBloc.add(ReloadUser());
+                });
+              },
+              iconSize: widget.radius,
+              icon: Icon(
+                Icons.person,
+                //size: widget.radius,
+              ),
+            );
+          });
+        }, loadedCallback: () {
+          setState(() {
+            child = null;
+          });
+        });
       } else {
-        return InkWell(
-          onTap: () {
-            if (zoomable)
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text('Aucune photo de profil'),
-                duration: Duration(seconds: 1),
-              ));
-          },
-          child: CircleAvatar(
-            child: Icon(
-              Icons.person,
-              size: radius,
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.zoomable
+                ? () {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('Aucune photo de profil'),
+                      duration: Duration(seconds: 1),
+                    ));
+                  }
+                : null,
+            child: CircleAvatar(
+              child: Icon(
+                Icons.person,
+                size: widget.radius,
+              ),
+              radius: widget.radius,
             ),
-            radius: radius,
           ),
         );
       }
     }
     return InkWell(
       onTap: () {
-        if (link.isNotEmpty && zoomable)
-          showFullNetworkImage(context, link, key: link);
-        else if (zoomable)
+        if (local != null && widget.zoomable)
           showFullMemoryImage(context, local.readAsBytesSync(), key: local);
+        else if (widget.zoomable)
+          showFullNetworkImage(context, link, key: link);
       },
-      child: zoomable
+      child: widget.zoomable
           ? Hero(
-              tag: link.isNotEmpty ? link : local,
+              tag: local == null ? link : local,
               child: CircleAvatar(
-                radius: radius,
+                radius: widget.radius,
                 backgroundImage: picture,
+                child: child,
               ),
             )
           : CircleAvatar(
-              radius: radius,
+              radius: widget.radius,
               backgroundImage: picture,
+              child: child,
             ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class CurrentUserImage extends StatelessWidget {
@@ -836,6 +909,7 @@ class CurrentUserImage extends StatelessWidget {
   const CurrentUserImage(
       {Key key, this.radius = 30, this.editable = false, this.zoomable = false})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     AuthenticationBloc bloc = authBloc;
@@ -978,6 +1052,5 @@ class HeroDialogRoute<T> extends PageRoute<T> {
   }
 
   @override
-  // TODO: implement barrierLabel
   String get barrierLabel => null;
 }

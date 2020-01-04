@@ -1,6 +1,5 @@
 import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/headerText.dart';
-import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
@@ -12,7 +11,6 @@ import 'package:btpp/bloc/login_bloc.dart';
 import 'package:btpp/bloc/login_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 
 class SignupPage extends StatefulWidget {
@@ -54,6 +52,7 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   bool createdRequest = false;
+
   @override
   Widget build(BuildContext context) {
     AuthenticationBloc authbloc = BlocProvider.of<AuthenticationBloc>(context);
@@ -139,6 +138,7 @@ class BasicInfo extends StatefulWidget {
   final Function(UserModel) onNext;
 
   const BasicInfo(this.user, {Key key, this.onNext}) : super(key: key);
+
   @override
   _BasicInfoState createState() => _BasicInfoState();
 }
@@ -366,6 +366,7 @@ class Profile extends StatefulWidget {
       : particulier = false,
         entreprise = true,
         super(key: key);
+
   Profile.particulier(this.user, {Key key, this.onNext})
       : particulier = true,
         entreprise = false,

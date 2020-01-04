@@ -14,6 +14,7 @@ class NotificationOpenChat extends NotificationState {
   final ChatModel chat;
 
   NotificationOpenChat(this.chat);
+
   @override
   List<Object> get props => [chat.hashCode];
 }
@@ -27,6 +28,7 @@ class NotificationOpenSingleAnnonce extends NotificationState {
   final AnnonceModel annonce;
 
   NotificationOpenSingleAnnonce(this.annonce);
+
   @override
   List<Object> get props => [];
 }

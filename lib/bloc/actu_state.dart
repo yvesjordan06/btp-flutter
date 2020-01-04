@@ -1,5 +1,4 @@
 import 'package:btpp/Models/annonce.dart';
-import 'package:btpp/bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class ActuState extends Equatable {
@@ -20,6 +19,7 @@ class ActuFetchedState extends ActuState {
   final List<ActuModel> list;
 
   ActuFetchedState(this.list);
+
   @override
   List<Object> get props => [list];
 }
@@ -28,6 +28,7 @@ class ActuFetchedFailedState extends ActuState {
   final String error;
 
   ActuFetchedFailedState(this.error);
+
   @override
   List<Object> get props => [];
 }
@@ -48,6 +49,7 @@ class ActuCreatedFailedState extends ActuState {
   final String error;
 
   ActuCreatedFailedState(this.error);
+
   @override
   List<Object> get props => [];
 }

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:btpp/Pages/Annonces/demandes.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/Auth/login.dart';
@@ -9,7 +7,7 @@ import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Chat/see.dart';
 import 'package:btpp/Pages/Settings/index.dart';
 import 'package:btpp/Pages/User/cv.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:flutter/material.dart';
 
 import '../Models/annonce.dart';
 import '../Pages/Annonces/create.dart';
@@ -18,7 +16,6 @@ import '../Pages/Annonces/see.dart';
 import '../Pages/App/auth.dart';
 import '../Pages/App/load.dart';
 import '../Pages/App/main.dart';
-import 'package:flutter/material.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

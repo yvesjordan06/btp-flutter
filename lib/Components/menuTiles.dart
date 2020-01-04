@@ -4,6 +4,7 @@ class MenuToggle extends StatelessWidget {
   final String text;
   final bool value;
   final void Function(bool) onToggle;
+
   const MenuToggle({
     Key key,
     @required this.text,
@@ -37,6 +38,7 @@ class MenuTile extends StatelessWidget {
   final String text;
   final String value;
   final VoidCallback onTap;
+
   const MenuTile({
     Key key,
     @required this.text,

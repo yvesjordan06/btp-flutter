@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 import '../Components/annonce.dart';
 import '../Models/annonce.dart';
-import 'package:flutter/material.dart';
 
 class AnnoncesList extends StatelessWidget {
   final List<AnnonceModel> annonceList;
@@ -27,7 +28,7 @@ class AnnoncesList extends StatelessWidget {
       itemCount: annonceList.length,
       // physics: NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        print('Annonce $index : ' + annonceList[index].hashCode.toString());
+        // print('Annonce $index : ' + annonceList[index].hashCode.toString());
         return SingleAnnonce(
           annonce: annonceList[index],
         );

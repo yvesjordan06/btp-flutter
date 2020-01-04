@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ResetPasswordPage extends StatelessWidget {
   ResetPasswordPage({Key key}) : super(key: key);
   final PageController _controller = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
     return Container(

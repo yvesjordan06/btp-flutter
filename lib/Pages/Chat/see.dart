@@ -14,6 +14,7 @@ class SingleChatPage extends StatefulWidget {
   const SingleChatPage({Key key, this.chat})
       : assert(chat != null && chat is ChatModel),
         super(key: key);
+
   @override
   _SingleChatPageState createState() => _SingleChatPageState();
 }
@@ -24,6 +25,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   TextEditingController messageController = TextEditingController();
+
   @override
   void initState() {
     bloc.add(ChatsMessageRead(chatID: widget.chat.id));
@@ -53,9 +55,11 @@ class _SingleChatPageState extends State<SingleChatPage> {
       listener: (context, state) {
         if (state is ChatsMessageRecieved) {
           if (state.newMessage.chatID == widget.chat.id) {
-            bloc.add(ChatsMessageRead(chatID: widget.chat.id));
-            flutterNotification
-                .cancel(int.parse(state.newMessage.chatID) + 1000000);
+            if (mounted) {
+              bloc.add(ChatsMessageRead(chatID: widget.chat.id));
+              flutterNotification
+                  .cancel(int.parse(state.newMessage.chatID) + 1000000);
+            }
             messages.insert(0, state.newMessage.message);
             _listKey.currentState.insertItem(0);
           }

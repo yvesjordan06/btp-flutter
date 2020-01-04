@@ -1,7 +1,7 @@
-import '../../Components/horizontalDivider.dart';
-import '../../Models/annonce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import '../../Models/annonce.dart';
 
 class PostulerPage extends StatefulWidget {
   const PostulerPage({Key key, this.annonce}) : super(key: key);

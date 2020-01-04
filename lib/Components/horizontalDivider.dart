@@ -12,6 +12,7 @@ Widget horizontalDivider({text, double margin = 5}) {
 class HorizontalDivider extends StatelessWidget {
   final String text;
   final double margin;
+
   const HorizontalDivider({
     Key key,
     this.text,

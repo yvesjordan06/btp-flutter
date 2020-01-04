@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/api/chopper.dart';
+import 'package:btpp/bloc/bloc.dart';
+import 'package:chopper/chopper.dart';
 
 List<AnnonceModel> annonces = [
   AnnonceModel(
@@ -59,7 +62,21 @@ List<AnnonceModel> annonces = [
 
 class AnnoncesRepository {
   /// Recupere toute les annonces
+  Response a;
   Future<List<AnnonceModel>> fetchAll() async {
+    try {
+      a = await annonceApi
+          .getAnnonceByParticulier(int.parse(authBloc.currentUser.id))
+          .timeout(Duration(seconds: 30));
+    } catch (e) {
+      throw 'Erreur ';
+    }
+    if (!a.isSuccessful) throw 'Error';
+    AnnonceListModel b = AnnonceListModel(List<AnnonceModel>.generate(
+        a.body.length,
+        (index) => AnnonceModel.fromJson(a.body[index]['annonce'])));
+    print(b);
+    return b.list;
     return Future.delayed(
         Duration(seconds: 4), () => List<AnnonceModel>.of(annonces));
   }
@@ -72,13 +89,22 @@ class AnnoncesRepository {
 
   /// Ajouter une annonces
   Future<AnnonceModel> create(AnnonceModel annonce) async {
-    annonces.add(annonce
-      ..id = Random().nextInt(5000).toString()
-      ..createdAt = DateTime.now());
-    print('created Annonce with id ${annonce.id}');
-    await Future.delayed(Duration(seconds: 4));
+    annonce.annonceur = authBloc.currentUser;
+    annonce.createdAt = DateTime.now();
+    print(annonce.annonceur.id);
+    try {
+      annonce.makeNew();
+      print(annonce.makeNew().toJson());
+    } catch (e) {
+      print(e);
+    }
 
-    return annonce;
+    Response body =
+        await annonceApi.postAnnonceParticulier(annonce.makeNew().toJson());
+    if (!body.isSuccessful)
+      throw ' Impossible d\'effectuer votre demande a cette instant';
+
+    return AnnonceModel.fromJson(body.body['annonce']);
   }
 
   /// Retirer une annonces

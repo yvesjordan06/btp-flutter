@@ -1,6 +1,11 @@
+import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:btpp/Models/annonce.dart';
+import 'package:btpp/api/chopper.dart';
+
+import 'package:chopper/chopper.dart';
 import 'package:meta/meta.dart';
 
 List<UserModel> exampleUser = [
@@ -96,7 +101,35 @@ class UserRepository {
     @required String motDePasse,
     String type,
   }) async {
-    await Future.delayed(Duration(seconds: 1));
+    if (type == null || type == 'annonceur') {
+      try {
+
+        Response a = await authApi.annonceurLogin(
+            {'telephone': telephone.trim(), 'mot_de_passe': motDePasse});
+
+
+        if (!a.isSuccessful) throw json.decode(a.error);
+        UserModel user = UserModel.fromJson(a.body['annonceur']);
+
+        //print('User repo 121 error ${user}');
+
+        user.accountType = user.raisonSociale == null
+            ? AccountType.particulier
+            : AccountType.entreprise;
+        user.userType = UserType.annonceur;
+        user.pictureLink = mainUrl + user.pictureLink;
+        return user;
+      } catch (e) {
+        print('User repo 121 error $e');
+        throw e;
+        if (e['code'] == 'NotFound')
+          throw 'Telephone ou mot de passe incorrect';
+      }
+    }
+
+
+
+    /*  await Future.delayed(Duration(seconds: 1));
     // return exampleUser;
     try {
       return exampleUser
@@ -106,9 +139,35 @@ class UserRepository {
           .copy();
     } catch (e) {
       throw ('Compte introuvable');
-    }
+    } */
   }
+  Future<UserModel> getUser(int id, {String usertype = UserType.annonceur, String accounttype = AccountType.particulier}) async {
+    Response a;
 
+    if (usertype == UserType.travailleur) {
+      a = await authApi.getTravailleurById(id);
+    } else if (usertype == UserType.annonceur) {
+      if (accounttype == AccountType.particulier) {
+        a = await authApi.getAnnonceurParticulierById(id);
+      }else if(accounttype == AccountType.entreprise) {
+        a = await authApi.getAnnonceurEntrepriseById(id);
+      }else {
+        throw 'Invalid accountype';
+      }
+    }else {
+      throw 'Invalid usertype';
+    }
+    print('refresh result');
+    print(a.body);
+    print(a.error);
+    if(!a.isSuccessful) throw 'Impossible de traiter la demande actuellement';
+    return UserModel.fromJson(a.body)
+      ..pictureLink=mainUrl+a.body['picture_link']
+    ..userType = usertype
+        ..accountType = accounttype;
+
+
+  }
   Future<UserModel> create({
     @required UserModel user,
   }) async {
@@ -118,7 +177,7 @@ class UserRepository {
 
   Future<UserModel> editUser(UserModel user) async {
     await Future.delayed(Duration(seconds: 2));
-    return user.copy();
+    return user;
   }
 
   Future<void> logout() async {
@@ -127,9 +186,13 @@ class UserRepository {
     return;
   }
 
-  Future<void> persist() async {
+  Future<void> changePicture(String image, UserModel user) async {
     /// write to keystore/keychain
-    await Future.delayed(Duration(seconds: 5));
+    print('user repo 191 $image');
+    Response a = await authApi.changeAnnonceurParticulierPicture(int.parse(user.id), image);
+    print(a.headers);
+    print(a.statusCode);
+    print(a.error);
     return;
   }
 

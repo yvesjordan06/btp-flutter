@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/ActuRepository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+
 import './bloc.dart';
 
 class ActuBloc extends HydratedBloc<ActuEvent, ActuState> {
   List<ActuModel> actus;
   ActuRepository repo = ActuRepository();
+
   @override
   ActuState get initialState {
     print('super state is ${super.initialState}');
@@ -44,7 +46,7 @@ class ActuBloc extends HydratedBloc<ActuEvent, ActuState> {
         actus = await repo.fetchAll();
         yield ActuFetchedState(actus);
       } catch (e) {
-        yield ActuFetchedFailedState('Error');
+        yield ActuFetchedFailedState(e);
       }
     }
 
@@ -56,7 +58,7 @@ class ActuBloc extends HydratedBloc<ActuEvent, ActuState> {
         actus = [res, ...actus];
         yield ActuCreatedState(actus);
       } catch (e) {
-        yield ActuCreatedFailedState('Error');
+        yield ActuCreatedFailedState(e);
       }
     }
   }
