@@ -21,7 +21,7 @@ class ChatsMessageRecieving extends ChatsEvent {
 
 class ChatsMessageSend extends ChatsEvent {
   final MessageModel message;
-  final String chatID;
+  final int chatID;
 
   ChatsMessageSend({this.message, this.chatID});
 
@@ -30,7 +30,7 @@ class ChatsMessageSend extends ChatsEvent {
 }
 
 class ChatsMessageRead extends ChatsEvent {
-  final String chatID;
+  final int chatID;
 
   ChatsMessageRead({this.chatID});
 

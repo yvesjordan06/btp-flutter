@@ -1,6 +1,6 @@
 import 'package:btpp/Functions/Utility.dart';
-import 'package:btpp/Pages/App/auth.dart';
 import 'package:btpp/Pages/App/main.dart';
+import 'package:btpp/Pages/Auth/login.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -22,9 +22,9 @@ class LoadingPage extends StatelessWidget {
         if (state is AuthenticationUninitialized) return SplashScreen();
         if (state is AuthenticationUnauthenticated) {
           // print('Unauthenticated');
-          return AuthApp();
-        }
-        return MainApp();
+          return LoginPage();
+        } else
+          return MainApp();
       },
     );
   }
@@ -35,8 +35,6 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-
-
 class _SplashScreenState extends State<SplashScreen> {
   List<Slide> slides = new List();
 
@@ -46,32 +44,37 @@ class _SplashScreenState extends State<SplashScreen> {
 
     slides.add(
       new Slide(
-        title: "BTP Partnership",
-        description: "Bienvenu dans un monde au le travaille est facile",
-        pathImage: "images/favicon.png",
+          title: "BTP Partnership",
+          description: "Bienvenu dans un monde au le travaille est facile",
+          pathImage: "images/favicon.png",
           colorBegin: AppColor.accentColor,
-          colorEnd: AppColor.primaryColor
-      ),
+          colorEnd: AppColor.primaryColor),
     );
     slides.add(
       new Slide(
         title: "TRAVAILLER",
         description: "Trouvez du travaille et gagner de l'argent facilement",
-        centerWidget: Icon(Icons.account_balance_wallet, size: 128, color: AppColor.primaryColor,),
+        centerWidget: Icon(
+          Icons.account_balance_wallet,
+          size: 128,
+          color: AppColor.primaryColor,
+        ),
         //pathImage: "images/photo_pencil.png",
         backgroundColor: Color(0xff203152),
       ),
     );
     slides.add(
       new Slide(
-        title: "LANCEZ VOUS",
-        description:
-        "Commençont en beauté",
-        centerWidget: Icon(Icons.directions_run, size: 128, color: AppColor.accentColor,),
-        //backgroundColor: Color(0xff9932CC),
-        colorBegin: AppColor.primaryColor,
-        colorEnd: AppColor.accentColor
-      ),
+          title: "LANCEZ VOUS",
+          description: "Commençont en beauté",
+          centerWidget: Icon(
+            Icons.directions_run,
+            size: 128,
+            color: AppColor.accentColor,
+          ),
+          //backgroundColor: Color(0xff9932CC),
+          colorBegin: AppColor.primaryColor,
+          colorEnd: AppColor.accentColor),
     );
   }
 
@@ -83,7 +86,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return new IntroSlider(
       slides: this.slides,
-      onDonePress: () {authBloc.add(AppStarted());},
+      onDonePress: () {
+        authBloc.add(AppStarted());
+      },
       colorActiveDot: AppColor.accentColor,
       colorDot: AppColor.primaryColorsOpacity(0.5),
       nameNextBtn: 'Suivant',

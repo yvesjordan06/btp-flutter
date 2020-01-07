@@ -18,8 +18,8 @@ NotificationDetails get _ongoing {
 }
 
 showChatNotification(ChatModel chat) async {
-  String groupKey = chat.id;
-  String groupChannelId = chat.id;
+  String groupKey = chat.id.toString();
+  String groupChannelId = chat.id.toString();
   String groupChannelName = chat.annonceModel.intitule;
   String groupChannelDescription = chat.annonceModel.description;
 
@@ -36,13 +36,13 @@ showChatNotification(ChatModel chat) async {
     );
     NotificationDetails notificationDetails =
         NotificationDetails(android, null);
-    await flutterNotification.show(int.parse(chat.id) + 1000000,
-        chat.contact.nom, chat.lastMessage.text, notificationDetails,
+    await flutterNotification.show(chat.id + 1000000, chat.contact.nom,
+        chat.lastMessage.text, notificationDetails,
         payload: 'chat,${chat.id}');
   } else {
 // create the summary notification required for older devices that pre-date Android 7.0 (API level 24)
     List<String> lines = new List<String>.from(
-      chat.messages
+      chat.messages.reversed
           .toList()
           .take(chat.unread)
           .map((f) => DateFormat.Hm().format(f.sentAt) + ' ' + f.text),
@@ -50,7 +50,8 @@ showChatNotification(ChatModel chat) async {
 
     InboxStyleInformation inboxStyleInformation = new InboxStyleInformation(
       lines,
-      contentTitle: chat.annonceModel.intitule + ', ' + chat.annonceModel.lieu,
+      contentTitle:
+      chat.annonceModel.intitule + ', ' + '${chat.unread} non lus',
       summaryText: chat.contact.nom,
     );
 
@@ -71,7 +72,7 @@ showChatNotification(ChatModel chat) async {
     );
 
     await flutterNotification.show(
-      int.parse(chat.id) + 1000000,
+      chat.id + 1000000,
       chat.annonceModel.intitule,
       '${chat.unread} nouveau messages',
       platformChannelSpecifics,

@@ -8,39 +8,32 @@ abstract class ChatApi extends ChopperService {
   @Get()
   Future<Response> getChats();
 
-  @Get(path:'/annonceur/{id}')
+  @Get(path: '/annonceur/{id}')
   Future<Response> getChatsForAnnonceur(@Path('id') int id);
 
-  @Get(path:'/travailleur/{id}')
+  @Get(path: '/travailleur/{id}')
   Future<Response> getChatsForTravailleur(@Path('id') int id);
 
-  @Get(path:'/annonce/{id}')
+  @Get(path: '/annonce/{id}')
   Future<Response> getChatsForAnnonce(@Path('id') int id);
 
-  @Get(path:'/message/chat/{id}')
+  @Get(path: '/message/chat/{id}')
   Future<Response> getMessagesForChat(@Path('id') int id);
 
-  @Post(path:'/creer')
+  @Post(path: '/creer')
   Future<Response> createChat(
-      @Body() Map<String, dynamic> body,
-      );
+    @Body() Map<String, dynamic> body,
+  );
 
-  @Post(path:'/message/{chatID}')
-  Future<Response> sendMessage(
-      @Path('chatID') int chatID,
-      @Body() Map<String, dynamic> body,
-      );
+  @Post(path: '/message/{chatID}')
+  Future<Response> sendMessage(@Path('chatID') int chatID,
+      @Body() Map<String, dynamic> body,);
 
-  @Post(path:'/message/image/upload/{chatID}')
+  @Post(path: '/message/image/upload/{chatID}')
   @multipart
-  Future<Response> sendImage(
-      @Path('chatID') int chatID,
-      @PartFile('file') List<int> bytes,
-      );
+  Future<Response> sendImage(@Path('chatID') int chatID,
+      @PartFile('image') String path,);
 
-  @Post(path:'/entreprise/creer')
-  Future<Response> postChatEntreprise(
-      @Body() Map<String, dynamic> body,
-      );
-
+  @Post(path: '/entreprise/creer')
+  Future<Response> postChatEntreprise(@Body() Map<String, dynamic> body,);
 }

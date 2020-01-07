@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/api/chopper.dart';
-
 import 'package:chopper/chopper.dart';
 import 'package:meta/meta.dart';
 
@@ -103,10 +101,8 @@ class UserRepository {
   }) async {
     if (type == null || type == 'annonceur') {
       try {
-
         Response a = await authApi.annonceurLogin(
             {'telephone': telephone.trim(), 'mot_de_passe': motDePasse});
-
 
         if (!a.isSuccessful) throw json.decode(a.error);
         UserModel user = UserModel.fromJson(a.body['annonceur']);
@@ -127,8 +123,6 @@ class UserRepository {
       }
     }
 
-
-
     /*  await Future.delayed(Duration(seconds: 1));
     // return exampleUser;
     try {
@@ -141,7 +135,10 @@ class UserRepository {
       throw ('Compte introuvable');
     } */
   }
-  Future<UserModel> getUser(int id, {String usertype = UserType.annonceur, String accounttype = AccountType.particulier}) async {
+
+  Future<UserModel> getUser(int id,
+      {String usertype = UserType.annonceur,
+      String accounttype = AccountType.particulier}) async {
     Response a;
 
     if (usertype == UserType.travailleur) {
@@ -149,25 +146,24 @@ class UserRepository {
     } else if (usertype == UserType.annonceur) {
       if (accounttype == AccountType.particulier) {
         a = await authApi.getAnnonceurParticulierById(id);
-      }else if(accounttype == AccountType.entreprise) {
+      } else if (accounttype == AccountType.entreprise) {
         a = await authApi.getAnnonceurEntrepriseById(id);
-      }else {
+      } else {
         throw 'Invalid accountype';
       }
-    }else {
+    } else {
       throw 'Invalid usertype';
     }
     print('refresh result');
     print(a.body);
     print(a.error);
-    if(!a.isSuccessful) throw 'Impossible de traiter la demande actuellement';
+    if (!a.isSuccessful) throw 'Impossible de traiter la demande actuellement';
     return UserModel.fromJson(a.body)
-      ..pictureLink=mainUrl+a.body['picture_link']
-    ..userType = usertype
-        ..accountType = accounttype;
-
-
+      ..pictureLink = mainUrl + a.body['picture_link']
+      ..userType = usertype
+      ..accountType = accounttype;
   }
+
   Future<UserModel> create({
     @required UserModel user,
   }) async {
@@ -189,7 +185,9 @@ class UserRepository {
   Future<void> changePicture(String image, UserModel user) async {
     /// write to keystore/keychain
     print('user repo 191 $image');
-    Response a = await authApi.changeAnnonceurParticulierPicture(int.parse(user.id), image);
+    Response a = await authApi
+        .changeAnnonceurParticulierPicture(int.parse(user.id), image)
+        .timeout(Duration(seconds: 30));
     print(a.headers);
     print(a.statusCode);
     print(a.error);

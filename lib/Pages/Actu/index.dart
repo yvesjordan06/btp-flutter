@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:btpp/Components/annonce.dart';
 import 'package:btpp/Components/horizontalDivider.dart';
 import 'package:btpp/Functions/Images.dart';
+import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/App/imageViewer.dart';
 import 'package:btpp/Pages/User/profile.dart';
@@ -24,8 +25,7 @@ class ActuPage extends StatefulWidget {
   _ActuPageState createState() => _ActuPageState();
 }
 
-class _ActuPageState extends State<ActuPage>
-    with AutomaticKeepAliveClientMixin {
+class _ActuPageState extends State<ActuPage> {
   final ScrollController controller = ScrollController();
 
   final ActuBloc bloc = actuBloc;
@@ -40,7 +40,7 @@ class _ActuPageState extends State<ActuPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Actualités'),
@@ -135,8 +135,8 @@ class _ActuPageState extends State<ActuPage>
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
+//@override
+// bool get wantKeepAlive => true;
 }
 
 class CreateActu extends StatefulWidget {
@@ -181,26 +181,43 @@ class _CreateActuState extends State<CreateActu> {
         builder: (context, ActuState state) {
           return Stack(
             children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(top: 16, left: 8, right: 8),
+              AnimatedContainer(
+                height: createMode ? 364 : 65,
                 decoration: BoxDecoration(
-                    border: createMode
-                        ? Border.all(color: Colors.black, width: 2)
-                        : null),
+                  boxShadow: createMode
+                      ? [
+                          BoxShadow(
+                              color: AppColor.basic,
+                              spreadRadius: 5,
+                              blurRadius: 5,
+                              offset: Offset(0, 0)),
+                          //BoxShadow(color: AppColor.basic)
+                        ]
+                      : null,
+                  color: Colors.white,
+                ),
+                duration: Duration(milliseconds: 600),
+                margin: const EdgeInsets.only(top: 16, left: 8, right: 8),
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    if (!createMode)
-                      CurrentUserImage(
-                        radius: 15,
-                      ),
+                    //if (!createMode)
+                    AnimatedSwitcher(
+                      duration: Duration(milliseconds: 300),
+                      switchInCurve: Curves.bounceIn,
+                      child: !createMode
+                          ? CurrentUserImage(
+                              radius: 15,
+                            )
+                          : SizedBox.shrink(),
+                    ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Form(
                           key: formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: ListView(
+                            shrinkWrap: true,
                             children: <Widget>[
                               if (createMode)
                                 Row(
@@ -295,36 +312,42 @@ class _CreateActuState extends State<CreateActu> {
                                             children: <Widget>[
                                               Container(
                                                 width: 60,
-                                                height: 60,
+                                                height: 80,
                                                 margin: EdgeInsets.all(8),
                                                 child: InkWell(
                                                   onTap: () async {
                                                     var pic =
-                                                        await images[index]
-                                                            .getByteData();
+                                                    await images[index]
+                                                        .getByteData();
                                                     var mem = pic.buffer
                                                         .asUint8List();
-                                                    showDialog(
-                                                        context: context,
-                                                        child: DismissableImage
-                                                            .memory(mem));
+                                                    showFullMemoryImage(
+                                                        context, mem,
+                                                        key: images[index]
+                                                            .hashCode);
+                                                    //.memory(mem));
                                                   },
-                                                  child: AssetThumb(
-                                                    asset: images[index],
-                                                    height: 80,
-                                                    width: 80,
+                                                  child: Hero(
+                                                    tag: images[index].hashCode,
+                                                    child: AssetThumb(
+                                                      //key: GlobalKey(),
+                                                      asset: images[index],
+                                                      height: 80,
+                                                      width: 80,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                               Positioned(
-                                                top: 0,
-                                                right: 0,
-                                                child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  icon: Icon(Icons.delete),
-                                                  iconSize: 12,
-                                                  color: Colors.red,
-                                                  onPressed: () {
+                                                top: 5,
+                                                right: 5,
+                                                child: InkWell(
+                                                  child: Icon(
+                                                    Icons.delete_outline,
+                                                    size: 12,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onTap: () {
                                                     setState(() {
                                                       images.removeAt(index);
                                                     });
@@ -648,7 +671,10 @@ class ImageDisplay extends StatelessWidget {
       child: newAsset == null
           ? InkWell(
               onTap: () {
-                showFullNetworkImage(context, link, key: key);
+                if (link != null) showFullNetworkImage(context, link, key: key);
+                if (file != null) showFullFileImage(context, file, key: key);
+                if (memory != null)
+                  showFullMemoryImage(context, memory, key: key);
               },
               child: Hero(
                 tag: key,
@@ -873,27 +899,30 @@ class _UserImageState extends State<UserImage>
         );
       }
     }
-    return InkWell(
-      onTap: () {
-        if (local != null && widget.zoomable)
-          showFullMemoryImage(context, local.readAsBytesSync(), key: local);
-        else if (widget.zoomable)
-          showFullNetworkImage(context, link, key: link);
-      },
-      child: widget.zoomable
-          ? Hero(
-              tag: local == null ? link : local,
-              child: CircleAvatar(
-                radius: widget.radius,
-                backgroundImage: picture,
-                child: child,
-              ),
-            )
-          : CircleAvatar(
-              radius: widget.radius,
-              backgroundImage: picture,
-              child: child,
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          if (local != null && widget.zoomable)
+            showFullMemoryImage(context, local.readAsBytesSync(), key: local);
+          else if (widget.zoomable)
+            showFullNetworkImage(context, link, key: link);
+        },
+        child: widget.zoomable
+            ? Hero(
+          tag: local == null ? link : local,
+          child: CircleAvatar(
+            radius: widget.radius,
+            backgroundImage: picture,
+            child: child,
+          ),
+        )
+            : CircleAvatar(
+          radius: widget.radius,
+          backgroundImage: picture,
+          child: child,
+        ),
+      ),
     );
   }
 

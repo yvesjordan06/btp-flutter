@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/api/chopper.dart';
 import 'package:btpp/bloc/bloc.dart';
@@ -75,7 +73,7 @@ class AnnoncesRepository {
     AnnonceListModel b = AnnonceListModel(List<AnnonceModel>.generate(
         a.body.length,
         (index) => AnnonceModel.fromJson(a.body[index]['annonce'])));
-    print(b);
+    // print(b);
     return b.list;
     return Future.delayed(
         Duration(seconds: 4), () => List<AnnonceModel>.of(annonces));

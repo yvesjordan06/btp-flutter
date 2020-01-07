@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:btpp/bloc/bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -35,30 +36,32 @@ class MetierModel {
   Map<String, dynamic> toJson() => _$MetierModelToJson(this);
 }
 
-int _stringToInt(String number) => (number == null) || number.isEmpty ? null : int.parse(number);
+int _stringToInt(String number) =>
+    (number == null) || number.isEmpty ? null : int.parse(number);
 
 String _stringFromInt(int number) {
   //print(number);
   return number.toString();
 }
+
 @JsonSerializable()
 class NewAnnonceModel {
- final  String intitule;
- final  String lieu;
- final  String description;
+  final String intitule;
+  final String lieu;
+  final String description;
 
   @JsonKey(name: 'date_debut')
- final  String dateDebut;
+  final String dateDebut;
   @JsonKey(name: 'date_fin')
   final String dateFin;
   List<int> taches;
- final  String etat;
+  final String etat;
   @JsonKey(name: 'id_annonceur_entreprise', nullable: true)
   final int idEntreprise;
   @JsonKey(name: 'id_annonceur_particulier', nullable: true)
- final  int idParticulier;
+  final int idParticulier;
   @JsonKey(name: 'id_taxation', defaultValue: 1, required: true)
- final int idTaxation;
+  final int idTaxation;
 
   NewAnnonceModel({
     this.intitule = '',
@@ -69,13 +72,10 @@ class NewAnnonceModel {
     this.dateFin,
     this.taches,
     this.idEntreprise,
-    this.idParticulier ,
+    this.idParticulier,
     this.etat = 'encours',
     this.idTaxation = 0,
-
-
   });
-
 
   factory NewAnnonceModel.fromJson(Map<String, dynamic> json) =>
       _$NewAnnonceModelFromJson(json);
@@ -99,7 +99,6 @@ class AppStatusModel {
       _$AppStatusModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$AppStatusModelToJson(this);
-
 }
 
 @JsonSerializable()
@@ -137,11 +136,25 @@ class AnnonceModel {
       lieu: lieu,
       dateDebut: dateDebut.toString(),
       dateFin: dateFin.toString(),
-      idParticulier: annonceur.accountType == AccountType.particulier ? int.tryParse(annonceur.id): null,
-      idEntreprise: annonceur.accountType == AccountType.entreprise ? int.tryParse(annonceur.id): null,
+      idParticulier: annonceur.accountType == AccountType.particulier
+          ? int.tryParse(annonceur.id)
+          : null,
+      idEntreprise: annonceur.accountType == AccountType.entreprise
+          ? int.tryParse(annonceur.id)
+          : null,
       idTaxation: annonceur.accountType == AccountType.particulier ? 1 : 2,
-      taches: List<int>.generate(taches.length, (index) => taches[index].id)  ,
+      taches: List<int>.generate(taches.length, (index) => taches[index].id),
     );
+  }
+
+  bool get isExpired => dateFin.isBefore(DateTime.now());
+
+  String get expiresIn {
+    Duration d = dateFin.difference(DateTime.now());
+    if (d.inDays < 0) return 'Obselete';
+    if (d.inDays == 1) return "1 Jour";
+    if (d.inDays < 1) return 'Avant demain';
+    return "${d.inDays} Jours";
   }
 
   factory AnnonceModel.fromJson(Map<String, dynamic> json) =>
@@ -214,7 +227,7 @@ class UserModel {
 
   String get address => ville + ',' + (boitePostal ?? quartier);
 
-   String get type => (userType??'No type') + ' ' + (accountType?? 'No type');
+  String get type => (userType ?? 'No type') + ' ' + (accountType ?? 'No type');
 
   String get birthday => dateDeNaissance != null
       ? DateFormat.yMMMd().format(dateDeNaissance)
@@ -244,7 +257,7 @@ class AnnonceListModel {
 }
 
 class AccountType {
-  static const  String particulier = 'Particulier';
+  static const String particulier = 'Particulier';
   static const String entreprise = 'Entreprise';
 }
 
@@ -277,14 +290,34 @@ class CategorieTacheModel {
 
 @JsonSerializable()
 class MessageModel {
+  @JsonKey(fromJson: _stringFromInt, toJson: _stringToInt)
   String id;
   String text;
+  UserModel travailleur;
+  UserModel annonceur;
   String image;
-  bool sender;
+  @JsonKey(ignore: true)
+  File localImage;
+
+  bool get sender {
+    return (authBloc.currentUser.userType == UserType.annonceur &&
+            annonceur == null) ||
+        (authBloc.currentUser.userType == UserType.travailleur &&
+            travailleur == null);
+  }
+
+  @JsonKey(name: 'datePost')
   DateTime sentAt;
 
   MessageModel(
-      {this.id, this.text, this.image, this.sender = false, this.sentAt});
+      {this.id,
+      this.text,
+      this.image,
+      this.annonceur,
+      this.travailleur,
+      this.sentAt});
+
+  bool get hasImage => image != null || localImage != null;
 
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
       _$MessageModelFromJson(json);
@@ -307,15 +340,17 @@ class NewMessageModel {
 
 @JsonSerializable()
 class ChatModel {
-  final String id;
+  final int id;
 
   //final UserModel contact;
   final UserModel annonceur;
   final UserModel travailleur;
+  @JsonKey(name: 'annonce')
   final AnnonceModel annonceModel;
 
   //final MessageModel lastMessage;
   final List<MessageModel> messages;
+  @JsonKey(defaultValue: 0)
   int unread = 0;
 
   ChatModel(
@@ -325,7 +360,7 @@ class ChatModel {
       this.annonceModel,
       this.messages});
 
-  MessageModel get lastMessage => messages.first;
+  MessageModel get lastMessage => messages.last;
 
   UserModel get contact => annonceur ?? travailleur;
 
@@ -350,15 +385,13 @@ class ActuModel {
   @JsonKey(name: 'created_at')
   DateTime createdAt;
 
-  ActuModel({
-    this.id,
+  ActuModel({this.id,
     this.intitule,
     this.lieu,
     this.pictures,
     this.date,
     this.description,
-    this.createdAt
-  });
+    this.createdAt});
 
   factory ActuModel.fromJson(Map<String, dynamic> json) =>
       _$ActuModelFromJson(json);

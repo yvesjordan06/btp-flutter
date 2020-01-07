@@ -1,11 +1,9 @@
-import 'package:badges/badges.dart';
 import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Pages/Actu/index.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/User/profile.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:btpp/utils/notifications.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -54,12 +52,26 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
   }
 
   int _selectedIndex = 0;
+  bool quit = false;
+
+  void quitCounter() async {
+    setState(() {
+      quit = true;
+    });
+
+    print('counter started');
+    await Future.delayed(Duration(seconds: 3));
+    setState(() {
+      quit = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<NotificationBloc, NotificationState>(
       bloc: notificationBloc,
       listener: (context, state) {
-        print(state);
+        //print(state);
         if (state is NotificationOpenChat) {
           Navigator.pushNamed(
             context,
@@ -69,6 +81,19 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
         }
       },
       child: Scaffold(
+        bottomSheet: quit
+            ? Container(
+                color: Colors.grey[850],
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Appuyez de nouveau pour quitter',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              )
+            : null,
         bottomNavigationBar: Container(
           width: double.infinity,
           height: 56,
@@ -108,81 +133,95 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
               }
               return bloc != null
                   ? StreamBuilder(
-                      stream: bloc.asBroadcastStream(),
-                      builder: (context, state) {
-                        //print('main 113 $state.');
-                        if ((index == 0 && state.data is AnnoncesError) ||
-                            (index == 1 &&
-                                state.data is ActuFetchedFailedState) ||
-                            (index == 2 && state.data is ChatsFetchingFailed))
-                          return InkWell(
-                            onTap: () {
-                              setState(() {
-                                _selectedIndex = index;
-                              });
-                              tabController.animateTo(index,
-                                  duration: Duration(milliseconds: 300));
-                              if (index == 0) annoncesBloc.add(FetchAnnonce());
-                              if (index == 1) actuBloc.add(ActuFetch());
-                            },
-                            child: ItemWidget(
-                              animationDuration: Duration(milliseconds: 300),
-                              backgroundColor:
-                                  Theme.of(context).bottomAppBarColor,
-                              iconSize: 24,
-                              isSelected: _selectedIndex == index,
-                              item: items[index],
-                              itemCornerRadius: 50,
-                              error: true,
-                            ),
-                          );
-                        else
-                          return InkWell(
-                            onTap: () {
-                              tabController.animateTo(index,
-                                  duration: Duration(milliseconds: 277));
-                            },
-                            child: ItemWidget(
-                              animationDuration: Duration(milliseconds: 277),
-                              backgroundColor:
-                                  Theme.of(context).bottomAppBarColor,
-                              iconSize: 24,
-                              isSelected: _selectedIndex == index,
-                              item: items[index],
-                              itemCornerRadius: 50,
-                              badgeContent:
-                                  (index == 2 && chatsBloc.list != null)
-                                      ? chatsBloc.list
-                                          .where((t) => t.unread > 0)
-                                          .length
-                                          .toString()
-                                      : '',
-                            ),
-                          );
-                      },
-                    )
-                  : InkWell(
+                stream: bloc.asBroadcastStream(),
+                builder: (context, state) {
+                  //print('main 113 $state.');
+                  if ((index == 0 && state.data is AnnoncesError) ||
+                      (index == 1 &&
+                          state.data is ActuFetchedFailedState) ||
+                      (index == 2 && state.data is ChatsFetchingFailed))
+                    return InkWell(
                       onTap: () {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
                         tabController.animateTo(index,
                             duration: Duration(milliseconds: 300));
+                        if (index == 0) annoncesBloc.add(FetchAnnonce());
+                        if (index == 1) actuBloc.add(ActuFetch());
+                        if (index == 2) chatsBloc.add(ChatsFetch());
                       },
                       child: ItemWidget(
-                        animationDuration: Duration(milliseconds: 277),
-                        backgroundColor: Theme.of(context).bottomAppBarColor,
+                        animationDuration: Duration(milliseconds: 300),
+                        backgroundColor:
+                        Theme.of(context).bottomAppBarColor,
                         iconSize: 24,
                         isSelected: _selectedIndex == index,
                         item: items[index],
                         itemCornerRadius: 50,
+                        error: true,
                       ),
                     );
+                  else
+                    return InkWell(
+                      onTap: () {
+                        tabController.animateTo(index,
+                            duration: Duration(milliseconds: 277));
+                      },
+                      child: ItemWidget(
+                        animationDuration: Duration(milliseconds: 277),
+                        backgroundColor:
+                        Theme.of(context).bottomAppBarColor,
+                        iconSize: 24,
+                        isSelected: _selectedIndex == index,
+                        item: items[index],
+                        itemCornerRadius: 50,
+                        badgeContent:
+                        (index == 2 && chatsBloc.list != null)
+                            ? chatsBloc.list
+                            .where((t) => t.unread > 0)
+                            .length
+                            .toString()
+                            : '',
+                      ),
+                    );
+                },
+              )
+                  : InkWell(
+                onTap: () {
+                  tabController.animateTo(index,
+                      duration: Duration(milliseconds: 300));
+                },
+                child: ItemWidget(
+                  animationDuration: Duration(milliseconds: 277),
+                  backgroundColor: Theme
+                      .of(context)
+                      .bottomAppBarColor,
+                  iconSize: 24,
+                  isSelected: _selectedIndex == index,
+                  item: items[index],
+                  itemCornerRadius: 50,
+                ),
+              );
             }),
           ),
         ),
-        body: DoubleBackToCloseApp(
-          snackBar: const SnackBar(
-            content: Text('Appuyez de nouveau pour quitter'),
-          ),
+        body: WillPopScope(
+          onWillPop: () async {
+            if (tabController.index != 0) {
+              tabController.animateTo(0);
+              return Future.value(false);
+            } else {
+              if (!quit) {
+                quitCounter();
+                return Future.value(false);
+              }
+
+              return Future.value(true);
+            }
+          },
           child: DefaultTabController(
+            length: 4,
             child: TabBarView(controller: tabController, children: [
               AnnoncePage(),
               // ImageViewer(),
@@ -190,7 +229,6 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
               ChatListScreen(),
               ProfilePage.currentUser(),
             ]),
-            length: 4,
           ),
         ),
       ),

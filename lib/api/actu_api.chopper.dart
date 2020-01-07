@@ -51,12 +51,4 @@ class _$ActuApi extends ActuApi {
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
   }
-
-  Future<Response> sendImagse(int actuID, List<int> bytes) {
-    final $url = '/realisations/images/upload/$actuID';
-    final $parts = <PartValue>[PartValueFile<List<int>>('file', bytes)];
-    final $request =
-        Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
-    return client.send<dynamic, dynamic>($request);
-  }
 }

@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:btpp/Functions/Utility.dart';
 import 'package:btpp/Pages/Actu/index.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<List<Asset>> multiImagePicker([max = 10]) async {
   try {
@@ -56,4 +58,27 @@ void showFullMemoryImage(BuildContext context, Uint8List byte, {Object key}) {
   }));
 }
 
+void showFullFileImage(BuildContext context, File file, {Object key}) {
+  Navigator.push(context, new HeroDialogRoute(builder: (BuildContext context) {
+    return new ZoomableImage.memory(memory: file.readAsBytesSync(), tag: key);
+  }));
+}
+
 Widget currentUserImageWidget = CurrentUserImage();
+
+Future<String> get _localPath async {
+  final directory = await getApplicationDocumentsDirectory();
+
+  return directory.path;
+}
+
+Future<File> assetImageToFile(Asset image) async {
+  String path = await _localPath;
+
+  Uint8List a = await assetToByte(image);
+  String __localPath = '$path/${image.name}';
+  File file = File(__localPath);
+
+  file.writeAsBytes(a);
+  return file;
+}

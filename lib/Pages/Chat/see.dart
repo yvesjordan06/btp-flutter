@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:btpp/Functions/Images.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Pages/Actu/index.dart';
@@ -29,8 +31,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
   @override
   void initState() {
     bloc.add(ChatsMessageRead(chatID: widget.chat.id));
-    messages = List<MessageModel>.generate(
-        widget.chat.messages.length, (index) => widget.chat.messages[index]);
+    messages = List<MessageModel>.generate(widget.chat.messages.length,
+        (index) => widget.chat.messages.reversed.toList()[index]);
     super.initState();
   }
 
@@ -38,6 +40,11 @@ class _SingleChatPageState extends State<SingleChatPage> {
     print('sending');
     String text = messageController.text;
     MessageModel msg = MessageModel(text: text, sentAt: DateTime.now());
+    print(authBloc.currentUser.id);
+    if (authBloc.currentUser.userType == UserType.annonceur)
+      msg.annonceur = authBloc.currentUser;
+    else
+      msg.travailleur = authBloc.currentUser;
     bloc.add(ChatsMessageSend(message: msg, chatID: widget.chat.id));
     if (text.isNotEmpty) {
       messages.insert(0, msg);
@@ -54,7 +61,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
       bloc: bloc,
       listener: (context, state) {
         if (state is ChatsMessageRecieved) {
-          if (state.newMessage.chatID == widget.chat.id) {
+          print('HURÉ NEW MESSAGE');
+          if (int.parse(state.newMessage.chatID) == widget.chat.id) {
             if (mounted) {
               bloc.add(ChatsMessageRead(chatID: widget.chat.id));
               flutterNotification
@@ -72,7 +80,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.info_outline),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, 'annonce/see',
+                      arguments: widget.chat.annonceModel);
+                },
               ),
               IconButton(
                 icon: Icon(Icons.more_vert),
@@ -104,9 +115,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage('images/background1.jpg'),
-            )),
+                  fit: BoxFit.cover,
+                  image: AssetImage('images/background1.jpg'),
+                )),
             child: Column(
               children: <Widget>[
                 Expanded(
@@ -138,43 +149,62 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                           ? CrossAxisAlignment.end
                                           : CrossAxisAlignment.end,
                                       children: [
-                                        Text(messages[index].text.trim()),
+                                        if (messages[index].localImage != null)
+                                          ImageDisplay.file(
+                                            messages[index].localImage,
+                                          )
+                                        else
+                                          if (messages[index].image != null)
+                                            ImageDisplay.network(
+                                              messages[index].image,
+                                            )
+                                          else
+                                            Text(messages[index].text?.trim() ??
+                                                'Message supprimé'),
                                         SizedBox(
                                           height: 5,
                                         ),
-                                        Container(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Text(
-                                                DateFormat.Hm().format(
-                                                    messages[index].sentAt),
-                                                style: TextStyle(
-                                                    fontSize: 8,
-                                                    color: Colors.grey[800]),
-                                              ),
-                                              if (!messages[index].sender)
-                                                Icon(
-                                                  Icons.done,
-                                                  color: Colors.grey[800],
-                                                  size: 8,
-                                                )
-                                            ],
-                                          ),
-                                        )
+                                        if (messages[index].hasImage ||
+                                            messages[index].text != null)
+                                          Container(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  DateFormat.Hm().format(
+                                                      messages[index].sentAt),
+                                                  style: TextStyle(
+                                                      fontSize: 8,
+                                                      color: Colors.grey[800]),
+                                                ),
+                                                if (!messages[index].sender)
+                                                  Icon(
+                                                    Icons.done,
+                                                    color: Colors.grey[800],
+                                                    size: 8,
+                                                  )
+                                              ],
+                                            ),
+                                          )
                                       ]),
                                   stick: true,
                                   margin: messages[index].sender
                                       ? BubbleEdges.only(top: 10, right: 30)
                                       : BubbleEdges.only(top: 10, left: 30),
-                                  nip: messages[index].sender
+                                  nip: (!messages[index].hasImage &&
+                                      messages[index].text == null)
+                                      ? BubbleNip.no
+                                      : messages[index].sender
                                       ? BubbleNip.leftTop
                                       : BubbleNip.rightTop,
                                   alignment: messages[index].sender
                                       ? Alignment.topLeft
                                       : Alignment.topRight,
-                                  color: messages[index].sender
-                                      ? Colors.white
+                                  color: (!messages[index].hasImage &&
+                                      messages[index].text == null)
+                                      ? Colors.grey[400]
+                                      : messages[index].sender
+                                      ? Colors.lightBlue[200]
                                       : ThemeData().accentColor,
                                 ),
                                 key: GlobalKey(),
@@ -196,21 +226,21 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               Wrap(
                                 children: List<Widget>.generate(
                                     4,
-                                    (index) => Container(
-                                          margin: EdgeInsets.all(4),
-                                          child: Chip(
-                                            avatar: Icon(
-                                              Icons.done,
-                                              size: 12,
-                                              color: Colors.lime,
-                                            ),
-                                            backgroundColor: Colors.lightBlue,
-                                            label: Text(
-                                              'macon',
-                                              style: TextStyle(fontSize: 11),
-                                            ),
-                                          ),
-                                        )),
+                                        (index) => Container(
+                                      margin: EdgeInsets.all(4),
+                                      child: Chip(
+                                        avatar: Icon(
+                                          Icons.done,
+                                          size: 12,
+                                          color: Colors.lime,
+                                        ),
+                                        backgroundColor: Colors.lightBlue,
+                                        label: Text(
+                                          'macon',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                      ),
+                                    )),
                               ),
                             ],
                           ),
@@ -227,7 +257,25 @@ class _SingleChatPageState extends State<SingleChatPage> {
                       IconButton(
                         icon: Icon(Icons.photo_camera),
                         onPressed: () {
-                          multiImagePicker().then((value) => {});
+                          multiImagePicker().then((value) async {
+                            if (value != null) {
+                              for (var asset in value) {
+                                File img = await assetImageToFile(asset);
+                                MessageModel msg =
+                                MessageModel(sentAt: DateTime.now());
+                                msg.localImage = img;
+                                if (authBloc.currentUser.userType ==
+                                    UserType.annonceur)
+                                  msg.annonceur = authBloc.currentUser;
+                                else
+                                  msg.travailleur = authBloc.currentUser;
+                                messages.insert(0, msg);
+                                _listKey.currentState.insertItem(0);
+                                chatsBloc.add(ChatsMessageSend(
+                                    message: msg, chatID: widget.chat.id));
+                              }
+                            }
+                          });
                         },
                       ),
                       Expanded(

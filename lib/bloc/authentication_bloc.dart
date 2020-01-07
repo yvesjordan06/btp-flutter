@@ -45,7 +45,8 @@ class AuthenticationBloc
   @override
   Map<String, dynamic> toJson(AuthenticationState state) {
     if (state is AuthenticationAuthenticated) {
-      _status.currentUser = state.user;
+      _status = AppStatusModel(isfirstTime: false, currentUser: state.user);
+
       return _status.toJson();
     } else if (state is AuthenticationUnauthenticated) {
       print("authBloc 53 I'm saving");
@@ -68,54 +69,60 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
     AuthenticationEvent event,
   ) async* {
-    if (event is AppStarted) {
-      print('app started');
-      if (currentUser != null) {
-        try {
-          print('authbloc 73 $currentUser');
-          currentUser = await userRepository.getUser(
-            int.parse(currentUser.id),
-            accounttype: currentUser.accountType,
-            usertype: currentUser.userType,
-          );
-          print('authbloc 75 $currentUser');
-          yield AuthenticationAuthenticated(currentUser);
-        } catch (e) {
-          print('error auth line 71 $e');
+    try {
+      if (event is AppStarted) {
+        print('app started');
+        if (currentUser != null) {
+          try {
+            print('authbloc 73 $currentUser');
+            currentUser = await userRepository.getUser(
+              int.parse(currentUser.id),
+              accounttype: currentUser.accountType,
+              usertype: currentUser.userType,
+            );
+            print('authbloc 75 $currentUser');
+            yield AuthenticationAuthenticated(currentUser);
+          } catch (e) {
+            print('error auth line 71 $e');
+          }
         }
+        print('Authbloc 82 this is null');
+        yield AuthenticationUnauthenticated();
       }
-      print('Authbloc 82 this is null');
-      yield AuthenticationUnauthenticated();
-    }
 
-    if (event is ChangePicture) {
-      currentUser.localPicture = event.image;
-      yield AuthenticationAuthenticated(currentUser);
-      yield ChangingPicture(currentUser);
+      if (event is ChangePicture) {
+        currentUser.localPicture = event.image;
+        yield AuthenticationAuthenticated(currentUser);
+        yield ChangingPicture(currentUser);
 
-      await userRepository.changePicture(event.image.path, currentUser);
-      yield PictureChanged(currentUser);
-    }
-    if (event is LoggedIn) {
-      // await userRepository.persist();
-      currentUser = event.user;
+        await userRepository.changePicture(event.image.path, currentUser);
+        yield PictureChanged(currentUser);
+      }
+      if (event is LoggedIn) {
+        // await userRepository.persist();
+        currentUser = event.user;
+        print('user got authenticated authbloc 102');
 
-      yield AuthenticationAuthenticated(currentUser);
-    }
+        yield AuthenticationAuthenticated(currentUser);
+        print('DONE0');
+      }
 
-    if (event is LoggedOut) {
-      yield AuthenticationUnauthenticated();
-      currentUser = null;
-      _status.currentUser = null;
-      (BlocSupervisor.delegate as HydratedBlocDelegate).storage.clear();
-      this.add(AppStarted());
-      await userRepository.logout();
-    }
+      if (event is LoggedOut) {
+        yield AuthenticationUnauthenticated();
+        currentUser = null;
+        _status.currentUser = null;
+        (BlocSupervisor.delegate as HydratedBlocDelegate).storage.clear();
+        this.add(AppStarted());
+        await userRepository.logout();
+      }
 
-    if (event is EditUser) {
-      yield EditingUser(currentUser);
-      currentUser = await userRepository.editUser(event.user);
-      yield UserEdited(currentUser);
+      if (event is EditUser) {
+        yield EditingUser(currentUser);
+        currentUser = await userRepository.editUser(event.user);
+        yield UserEdited(currentUser);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

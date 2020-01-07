@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:btpp/Pages/App/load.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:btpp/utils/theme.dart';
 import 'package:flutter/material.dart';
@@ -38,11 +37,11 @@ class MyApp extends StatelessWidget {
       child: Center(
         child: MaterialApp(
           title: 'BTP Partnership',
-          //initialRoute: 'loading',
+          initialRoute: 'loading',
           debugShowCheckedModeBanner: false,
           theme: basicTheme(),
           onGenerateRoute: RouteGenerator.generateRoute,
-          home: LoadingPage(),
+          //home: LoadingPage(),
         ),
       ),
     );

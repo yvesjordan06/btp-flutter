@@ -67,9 +67,9 @@ class _$ChatApi extends ChatApi {
   }
 
   @override
-  Future<Response> sendImage(int chatID, List<int> bytes) {
+  Future<Response> sendImage(int chatID, String path) {
     final $url = '/chats/message/image/upload/$chatID';
-    final $parts = <PartValue>[PartValueFile<List<int>>('file', bytes)];
+    final $parts = <PartValue>[PartValueFile<String>('image', path)];
     final $request =
         Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
     return client.send<dynamic, dynamic>($request);

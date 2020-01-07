@@ -4,10 +4,11 @@ import 'package:chopper/chopper.dart';
 
 import 'actu_api.dart';
 import 'authentication_api.dart';
+
 export './authentication_api.dart';
 
 String token =
-    'rjvNQo81hlgFezHky0uJ20uprgMfoR9JMAGkKfD68IH2KkBzwQeY2Xzr+Nq+6bYDz3A=';
+    'G1meHgz9daQp0mDoJ2xQanOWUajA1lERCDPAmBP2amnhaRcmiPnOm9vKBJ7gdjQFfY0=';
 
 const String mainUrl = 'https://btp-partnership.herokuapp.com';
 ChopperClient chopper = ChopperClient(

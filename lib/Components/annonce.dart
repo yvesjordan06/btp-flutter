@@ -69,19 +69,29 @@ class SingleAnnonce extends StatelessWidget {
                       SizedBox(
                         height: 10.0,
                       ),
-                      if(annonce.createdAt.isAfter(DateTime.now().subtract(Duration(days: 1))))
-                      Container(
-                        width: 40,
-                        height: 20,
-                        decoration: BoxDecoration(
-                            color: AppColor.primaryColor,
-                            borderRadius: BorderRadius.circular(30)),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'New',
-                          style: TextStyle(fontSize: 11, color: Colors.white),
+                      if (annonce.createdAt
+                          .isAfter(DateTime.now().subtract(Duration(days: 1))))
+                        Tooltip(
+                          message: 'Annonce recente',
+                          child: Container(
+                            width: 25,
+                            height: 15,
+                            decoration: BoxDecoration(
+                                color: AppColor.primaryColor,
+                                borderRadius: BorderRadius.circular(30)),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'New',
+                              style:
+                                  TextStyle(fontSize: 8, color: Colors.white),
+                            ),
+                          ),
                         ),
-                      )
+                      if (annonce.isExpired)
+                        Tooltip(
+                          child: Icon(Icons.archive),
+                          message: 'Annonce Obselete',
+                        )
                     ],
                   )
                 ],

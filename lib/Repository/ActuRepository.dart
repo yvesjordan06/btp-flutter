@@ -36,26 +36,24 @@ List<ActuModel> actuListExample = List<ActuModel>.generate(
 
 class ActuRepository {
   Future<List<ActuModel>> fetchAll() async {
-    Response a = await actuApi.getActus();
-    //print('actu repo 29 ${a.error}');
-    //print('actu repo 30 ${a.statusCode}');
-    if (!a.isSuccessful)
-      throw 'Impossible de traiter cette demande actuellement';
-
-    //print('actu repo 31 ${a.body}');
     try {
+      Response a = await actuApi.getActus().timeout(Duration(seconds: 30));
+
+      if (!a.isSuccessful)
+        throw 'Impossible de traiter cette demande actuellement';
+
       List<ActuModel> actus = List.generate(
         a.body.length,
         (index) => ActuModel.fromJson(a.body[index]),
       );
       return actus.reversed.toList();
     } catch (e) {
-      //print('actu repo 37 ${e}');
-      throw e;
+      print(e);
+      throw 'Impossible de traiter cette demande actuellement';
     }
 
     // await Future.delayed(Duration(seconds: 4));
-    return List.from(actuListExample);
+    //return List.from(actuListExample);
   }
 
   Future<ActuModel> create(ActuModel actu) async {
@@ -67,14 +65,15 @@ class ActuRepository {
       'id_travailleur': int.parse(authBloc.currentUser.id)
     };
 
-    print('actu repo 54 ${actu.assetPictures[0].identifier}');
-    print('actu repo 55 ${nouveau}');
+    //print('actu repo 54 ${actu.assetPictures[0].identifier}');
+    //print('actu repo 55 ${nouveau}');
     try {
-      Response a = await actuApi.createActu(nouveau);
+      Response a =
+      await actuApi.createActu(nouveau).timeout(Duration(seconds: 30));
       Response b;
 
-      print('actu repo 58 ${a.statusCode}');
-      print('actu repo 59 ${a.body}');
+      //print('actu repo 58 ${a.statusCode}');
+      //print('actu repo 59 ${a.body}');
       if (!a.isSuccessful)
         throw 'Impossible de traiter cette demande actuellement';
 
@@ -96,10 +95,10 @@ class ActuRepository {
       for (var item in images) {
         File(item).deleteSync();
       }
-      print('actu repo 67 ${b.statusCode}');
-      print('actu repo 68 ${b.body}');
+      //print('actu repo 67 ${b.statusCode}');
+      //print('actu repo 68 ${b.body}');
     } catch (e) {
-      print('actu repo 57 $e');
+      //print('actu repo 57 $e');
       throw 'e';
     }
 

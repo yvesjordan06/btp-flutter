@@ -36,6 +36,7 @@ class _AnnoncePageState extends State<AnnoncePage>
         if (this._searchIcon.icon == Icons.search) {
           this._searchIcon = Icon(Icons.close);
           this._appBar = TextField(
+            style: TextStyle(color: Colors.white),
             onChanged: (value) {
               bloc.add(FilterAnnonce(value));
             },

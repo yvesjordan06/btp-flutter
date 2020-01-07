@@ -219,23 +219,31 @@ Map<String, dynamic> _$CategorieTacheModelToJson(
 
 MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
   return MessageModel(
-    id: json['id'] as String,
+    id: _stringFromInt(json['id'] as int),
     text: json['text'] as String,
     image: json['image'] as String,
-    sender: json['sender'] as bool,
-    sentAt: json['sentAt'] == null
+    annonceur: json['annonceur'] == null
         ? null
-        : DateTime.parse(json['sentAt'] as String),
+        : UserModel.fromJson(json['annonceur'] as Map<String, dynamic>),
+    travailleur: json['travailleur'] == null
+        ? null
+        : UserModel.fromJson(json['travailleur'] as Map<String, dynamic>),
+    sentAt: json['datePost'] == null
+        ? (json['date_post'] == null
+            ? null
+            : DateTime.parse(json['date_post'] as String))
+        : DateTime.parse(json['datePost'] as String),
   );
 }
 
 Map<String, dynamic> _$MessageModelToJson(MessageModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'id': _stringToInt(instance.id),
       'text': instance.text,
+      'travailleur': instance.travailleur,
+      'annonceur': instance.annonceur,
       'image': instance.image,
-      'sender': instance.sender,
-      'sentAt': instance.sentAt?.toIso8601String(),
+      'datePost': instance.sentAt?.toIso8601String(),
     };
 
 NewMessageModel _$NewMessageModelFromJson(Map<String, dynamic> json) {
@@ -243,7 +251,7 @@ NewMessageModel _$NewMessageModelFromJson(Map<String, dynamic> json) {
     json['message'] == null
         ? null
         : MessageModel.fromJson(json['message'] as Map<String, dynamic>),
-    json['chatID'] as String,
+    json['chat_id'].toString(),
   );
 }
 
@@ -255,28 +263,30 @@ Map<String, dynamic> _$NewMessageModelToJson(NewMessageModel instance) =>
 
 ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
   return ChatModel(
-    id: json['id'] as String,
+    id: json['id'] as int,
     annonceur: json['annonceur'] == null
         ? null
         : UserModel.fromJson(json['annonceur'] as Map<String, dynamic>),
     travailleur: json['travailleur'] == null
         ? null
         : UserModel.fromJson(json['travailleur'] as Map<String, dynamic>),
-    annonceModel: json['annonceModel'] == null
+    annonceModel: json['annonce'] == null
         ? null
-        : AnnonceModel.fromJson(json['annonceModel'] as Map<String, dynamic>),
+        : AnnonceModel.fromJson(json['annonce'] as Map<String, dynamic>),
     messages: (json['messages'] as List)
         ?.map((e) =>
-            e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
+    e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-  )..unread = json['unread'] as int;
+  )
+    ..unread = json['unread'] ?? 0;
 }
 
-Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
+Map<String, dynamic> _$ChatModelToJson(ChatModel instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'annonceur': instance.annonceur,
       'travailleur': instance.travailleur,
-      'annonceModel': instance.annonceModel,
+      'annonce': instance.annonceModel,
       'messages': instance.messages,
       'unread': instance.unread,
     };
