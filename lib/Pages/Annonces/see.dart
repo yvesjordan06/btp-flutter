@@ -32,193 +32,201 @@ class SeeAnnonce extends StatelessWidget {
         SliverAppBar(
           title: Text(
             _annonce.intitule,
-                overflow: TextOverflow.ellipsis,
-              ),
-              expandedHeight: 200,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  padding: EdgeInsets.all(16),
-                  child: Stack(
+            overflow: TextOverflow.ellipsis,
+          ),
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Container(
+              padding: EdgeInsets.all(16),
+              child: Stack(
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            _annonce.intitule,
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            _annonce.lieu,
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Publié ' + timeAgo(_annonce.createdAt),
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                      Text(
+                        _annonce.intitule,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        _annonce.lieu,
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Publié ' + timeAgo(_annonce.createdAt),
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-              pinned: true,
-              actions: <Widget>[
-                PopupMenuButton(
-                    icon: Icon(Icons.more_vert),
-                    itemBuilder: (context) {
-                      return [
-                        PopupMenuItem(
-                          child: ListTile(
-                            title: Text('Modifier'),
-                            leading: Icon(Icons.mode_edit),
-                            onTap: () {
-                              Navigator.popAndPushNamed(context, 'annonce/edit',
-                                  arguments: annonce);
-                            },
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: ListTile(
-                            title: Text('Demandes'),
-                            leading: Icon(Icons.people),
-                            onTap: () {
-                              Navigator.popAndPushNamed(context, 'annonce/demandes',
-                                  arguments: annonce);
-                            },
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: ListTile(
-                            title: Text('Gerer'),
-                            leading: Icon(Icons.settings),
-                            onTap: () {
-                              Navigator.popAndPushNamed(context, 'annonce/demandes',
-                                  arguments: annonce);
-                            },
-                          ),
-                        ),
-                        PopupMenuItem(
-                          enabled: false,
-                          child: HorizontalDivider(
-                            margin: 0,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: ListTile(
-                            title: Text('Partager'),
-                            leading: Icon(Icons.share),
-                            onTap: () {
-                              Navigator.popAndPushNamed(context, 'annonce/demandes',
-                                  arguments: annonce);
-                            },
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: ListTile(
-                            title: Text('Supprimer'),
-                            leading: Icon(Icons.delete_forever),
-                            onTap: () {
-                              Navigator.pop(context);
-                              annoncesBloc.add(DeleteAnnonce(annonce));
-                            },
-                          ),
-                        ),
-                      ];
-                    }),
-              ],
             ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Container(
-                  color: AppColor.primaryColor,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: AppColor.background,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30))),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          child: annonceSummary(context, annonce),
+          ),
+          pinned: true,
+          actions: <Widget>[
+            PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (context) {
+                  return [
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      PopupMenuItem(
+                        child: ListTile(
+                          title: Text('Modifier'),
+                          leading: Icon(Icons.mode_edit),
+                          onTap: () {
+                            Navigator.popAndPushNamed(context, 'annonce/edit',
+                                arguments: _annonce);
+                          },
                         ),
-                        SizedBox(
-                          height: 20,
+                      ),
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      PopupMenuItem(
+                        child: ListTile(
+                          title: Text('Demandes'),
+                          leading: Icon(Icons.people),
+                          onTap: () {
+                            Navigator.popAndPushNamed(
+                                context, 'annonce/demandes',
+                                arguments: _annonce);
+                          },
                         ),
-                        HeaderText(
-                          text: 'Details',
+                      ),
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      PopupMenuItem(
+                        child: ListTile(
+                          title: Text('Gerer'),
+                          leading: Icon(Icons.settings),
+                          onTap: () {
+                            Navigator.popAndPushNamed(
+                                context, 'annonce/demandes',
+                                arguments: _annonce);
+                          },
                         ),
-                        SizedBox(
-                          height: 20,
+                      ),
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      PopupMenuItem(
+                        enabled: false,
+                        child: HorizontalDivider(
+                          margin: 0,
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(_annonce.description),
+                      ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        title: Text('Partager'),
+                        leading: Icon(Icons.share),
+                        onTap: () {
+                          Navigator.popAndPushNamed(context, 'annonce/demandes',
+                              arguments: _annonce);
+                        },
+                      ),
+                    ),
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      PopupMenuItem(
+                        child: ListTile(
+                          title: Text('Supprimer'),
+                          leading: Icon(Icons.delete_forever),
+                          onTap: () {
+                            Navigator.pop(context);
+                            annoncesBloc.add(DeleteAnnonce(_annonce));
+                          },
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        HeaderText(
-                          text: 'Taches',
-                        ),
-                        ...List<Widget>.generate(
-                          4,
-                              (index) =>
-                              Container(
-                                padding:
-                                EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 0),
-                                child: tacheTravailleur(),
-                              ),
-                        ),
-                        HeaderText(
-                          text: 'Plus d\info',
-                        ),
-                        AdditionalInfo(_annonce),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        /*  HeaderText(
+                      ),
+                  ];
+                }),
+          ],
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Container(
+              color: AppColor.primaryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: AppColor.background,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30))),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (authBloc.currentUser.userType == UserType.annonceur)
+                      Container(
+                        child: annonceSummary(context, _annonce),
+                      ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HeaderText(
+                      text: 'Details',
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(_annonce.description),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    HeaderText(
+                      text: 'Taches',
+                    ),
+                    ...List<Widget>.generate(
+                      _annonce.taches.length,
+                      (index) => Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                        child: tacheTravailleur(_annonce.taches[index]),
+                      ),
+                    ),
+                    HeaderText(
+                      text: 'Plus d\info',
+                    ),
+                    AdditionalInfo(_annonce),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    /*  HeaderText(
                       text: 'L\'annonceur',
                     ),
                     AboutClient(_annonce.annonceur), */
-                        /*  AnnonceSimilaire, */
-                        Container(
-                          width: double.infinity,
-                          child: RaisedButton(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Text('Postuler'),
-                            ),
-                            onPressed: _annonce.isExpired
-                                ? null
-                                : () {
-                              Navigator.pushNamed(context, 'annonce/postuler',
-                                  arguments: annonce);
-                            },
+                    /*  AnnonceSimilaire, */
+                    if (authBloc.currentUser.userType == UserType.travailleur)
+                      Container(
+                        width: double.infinity,
+                        child: RaisedButton(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text('Postuler'),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ]),
-            ),
-          ])),
+                          onPressed: _annonce.isExpired
+                              ? null
+                              : () {
+                                  Navigator.pushNamed(
+                                      context, 'annonce/postuler',
+                                      arguments: _annonce);
+                                },
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            )
+          ]),
+        ),
+      ])),
     );
   }
 }
@@ -313,7 +321,7 @@ Widget annonceSummary(context, AnnonceModel annonce) => Container(
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('10'),
+                        Text(annonce.taches.length.toString()),
                         SizedBox(
                           height: 5,
                         ),
@@ -356,19 +364,25 @@ Widget annonceSummary(context, AnnonceModel annonce) => Container(
       ),
     );
 
-Widget tacheTravailleur() {
-  return ListTile(
-    onTap: () {},
-    title: Text('Carrelage'),
-    leading: CircleAvatar(
-      child: Text(
-        'C',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: Colors.grey[300],
-      radius: 30,
+Widget tacheTravailleur(TacheModel tache) {
+  return Material(
+    child: ListTile(
+      onTap: () {},
+      title: Text(tache.intitule),
+      leading: authBloc.currentUser.userType == UserType.annonceur
+          ? CircleAvatar(
+              child: Text(
+                tache.intitule[0],
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.grey[300],
+              radius: 30,
+            )
+          : null,
+      subtitle: authBloc.currentUser.userType == UserType.annonceur
+          ? Text(('Pas encore attribuer'))
+          : null,
     ),
-    subtitle: Text(('Pas encore attribuer')),
   );
 }
 

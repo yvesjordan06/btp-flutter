@@ -34,6 +34,9 @@ abstract class AuthenticationApi extends ChopperService {
   @Get(path: 'annonceurs/particuliers/{id}')
   Future<Response> getAnnonceurParticulierById(@Path('id') int id);
 
+  @Get(path: 'metiers')
+  Future<Response> getMetiers();
+
   @Get(path: 'annonceurs/entreprises/{id}')
   Future<Response> getAnnonceurEntrepriseById(@Path('id') int id);
 
@@ -58,19 +61,19 @@ abstract class AuthenticationApi extends ChopperService {
     @Body() Map<String, dynamic> body,
   );
 
-  @Post(path: 'annonceurs/entreprises/modifier/clients/{id}')
+  @Post(path: 'annonceurs/entreprises/modifier/client/{id}')
   Future<Response> updateAnnonceurEntreprise(
     @Path('id') int annonceurID,
     @Body() Map<String, dynamic> body,
   );
 
-  @Post(path: 'annonceurs/particulier/modifier/clients/{id}')
+  @Post(path: 'annonceurs/particulier/modifier/client/{id}')
   Future<Response> updateAnnonceurParticulier(
     @Path('id') int annonceurID,
     @Body() Map<String, dynamic> body,
   );
 
-  @Post(path: 'travailleur/modifier/clients/{id}')
+  @Post(path: 'travailleurs/modifier/client/{id}')
   Future<Response> updateTravailleur(
     @Path('id') int travailleurID,
     @Body() Map<String, dynamic> body,
@@ -80,14 +83,14 @@ abstract class AuthenticationApi extends ChopperService {
   @multipart
   Future<Response> changeTravailleurPicture(
     @Path('id') int id,
-    @PartFile('image') List<int> bytes,
+    @PartFile('image') String bytes,
   );
 
   @Post(path: 'annonceurs/entreprises/image_profile/upload/{id}')
   @multipart
   Future<Response> changeAnnonceurEntreprisePicture(
     @Path('id') int id,
-    @PartFile('image') List<int> bytes,
+    @PartFile('image') String bytes,
   );
 
   @Post(path: 'annonceurs/particuliers/image_profile/upload/{id}')

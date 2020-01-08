@@ -12,7 +12,7 @@ import 'AnnoncesRepository.dart';
 
 List<ChatModel> exampleChatList = List<ChatModel>.generate(
   10,
-      (index1) => ChatModel(
+  (index1) => ChatModel(
     id: index1,
     annonceur: exampleUser[Random().nextInt(exampleUser.length)],
     annonceModel: annonces[Random().nextInt(annonces.length)],
@@ -28,11 +28,17 @@ List<ChatModel> exampleChatList = List<ChatModel>.generate(
 
 class ChatsRepository {
   Future<List<ChatModel>> fetchAll() async {
+    UserModel user = authBloc.currentUser;
     Response a;
     try {
-      a = await chatApi
-          .getChatsForAnnonceur(int.parse(authBloc.currentUser.id))
-          .timeout(Duration(seconds: 30));
+      if (user.userType == UserType.annonceur)
+        a = await chatApi
+            .getChatsForAnnonceur(user.idInt)
+            .timeout(Duration(seconds: 30));
+      else
+        a = await chatApi
+            .getChatsForTravailleur(user.idInt)
+            .timeout(Duration(seconds: 30));
     } catch (e) {
       print('chat repo 33 $e');
     }
@@ -65,9 +71,9 @@ class ChatsRepository {
       if (!isImage) "text": message.text,
       if (isImage)
         'id_annonce': int.parse(chatsBloc.list
-            .firstWhere((test) => test.id == chatID)
-            .annonceModel
-            ?.id ??
+                .firstWhere((test) => test.id == chatID)
+                .annonceModel
+                ?.id ??
             'a')
     };
     print(body);

@@ -60,12 +60,23 @@ List<AnnonceModel> annonces = [
 
 class AnnoncesRepository {
   /// Recupere toute les annonces
-  Response a;
+
   Future<List<AnnonceModel>> fetchAll() async {
+    Response a;
+    UserModel user = authBloc.currentUser;
     try {
-      a = await annonceApi
-          .getAnnonceByParticulier(int.parse(authBloc.currentUser.id))
-          .timeout(Duration(seconds: 30));
+      if (user.accountType == AccountType.entreprise)
+        a = await annonceApi
+            .getAnnonceByEntreprise(user.idInt)
+            .timeout(Duration(seconds: 30));
+      else if (user.userType == UserType.annonceur)
+        a = await annonceApi
+            .getAnnonceByParticulier(user.idInt)
+            .timeout(Duration(seconds: 30));
+      else
+        a = await annonceApi
+            .getAnnoncesForTravailleur(user.idInt)
+            .timeout(Duration(seconds: 30));
     } catch (e) {
       throw 'Erreur ';
     }
@@ -73,6 +84,14 @@ class AnnoncesRepository {
     AnnonceListModel b = AnnonceListModel(List<AnnonceModel>.generate(
         a.body.length,
         (index) => AnnonceModel.fromJson(a.body[index]['annonce'])));
+
+    int index = 0;
+    for (AnnonceModel annonce in b.list) {
+      List taches = a.body[index]['taches'];
+      annonce.taches = List<TacheModel>.generate(
+          taches.length, (index2) => TacheModel.fromJson(taches[index2]));
+      index++;
+    }
     // print(b);
     return b.list;
     return Future.delayed(
@@ -97,12 +116,20 @@ class AnnoncesRepository {
       print(e);
     }
 
-    Response body =
-        await annonceApi.postAnnonceParticulier(annonce.makeNew().toJson());
-    if (!body.isSuccessful)
+    Response body;
+    if (authBloc.currentUser.accountType == AccountType.entreprise)
+      body = await annonceApi.postAnnonceEntreprise(annonce.makeNew().toJson());
+    else
+      body =
+          await annonceApi.postAnnonceParticulier(annonce.makeNew().toJson());
+    if (!body.isSuccessful) {
+      print(body.error);
       throw ' Impossible d\'effectuer votre demande a cette instant';
+    }
 
-    return AnnonceModel.fromJson(body.body['annonce']);
+    return AnnonceModel.fromJson(body.body['annonce'])
+      ..taches = List<TacheModel>.generate(body.body['taches'].length,
+          (index2) => TacheModel.fromJson(body.body['taches'][index2]));
   }
 
   /// Retirer une annonces

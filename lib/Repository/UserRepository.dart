@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/api/chopper.dart';
+import 'package:btpp/bloc/bloc.dart';
+
 import 'package:chopper/chopper.dart';
 import 'package:meta/meta.dart';
 
@@ -99,28 +102,37 @@ class UserRepository {
     @required String motDePasse,
     String type,
   }) async {
-    if (type == null || type == 'annonceur') {
-      try {
-        Response a = await authApi.annonceurLogin(
+    Response a;
+
+    try {
+      if (type == null || type == 'annonceur')
+        a = await authApi.annonceurLogin(
             {'telephone': telephone.trim(), 'mot_de_passe': motDePasse});
 
-        if (!a.isSuccessful) throw json.decode(a.error);
-        UserModel user = UserModel.fromJson(a.body['annonceur']);
-
-        //print('User repo 121 error ${user}');
-
-        user.accountType = user.raisonSociale == null
-            ? AccountType.particulier
-            : AccountType.entreprise;
-        user.userType = UserType.annonceur;
-        user.pictureLink = mainUrl + user.pictureLink;
-        return user;
-      } catch (e) {
-        print('User repo 121 error $e');
-        throw e;
-        if (e['code'] == 'NotFound')
-          throw 'Telephone ou mot de passe incorrect';
+      if (type == 'travailleur' || a.statusCode == 404) {
+        type = 'travailleur';
+        a = await authApi.travailleurLogin(
+            {'telephone': telephone.trim(), 'mot_de_passe': motDePasse});
       }
+
+      if (!a.isSuccessful) throw 'json.decode(a.error)';
+      print(a.body['annonceur'] ?? a.body['travailleur']);
+      UserModel user =
+          UserModel.fromJson(a.body['annonceur'] ?? a.body['travailleur']);
+
+      user.accountType = user.raisonSociale == null
+          ? AccountType.particulier
+          : AccountType.entreprise;
+
+      user.userType =
+          type == 'travailleur' ? UserType.travailleur : UserType.annonceur;
+      //print('User repo 121 error ${user}');
+      user.pictureLink = mainUrl + (user.pictureLink ?? '');
+      return user;
+    } catch (e) {
+      print('User repo 121 error $e');
+      throw e;
+      if (e['code'] == 'NotFound') throw 'Telephone ou mot de passe incorrect';
     }
 
     /*  await Future.delayed(Duration(seconds: 1));
@@ -167,12 +179,79 @@ class UserRepository {
   Future<UserModel> create({
     @required UserModel user,
   }) async {
-    await Future.delayed(Duration(seconds: 3));
-    return user..id = Random().nextInt(500000).toString();
+    Response a;
+    Response b;
+
+    try {
+      print(user.accountType);
+      switch (user.userType) {
+        case UserType.travailleur:
+          a = await authApi.createTravailleur(user.toJson());
+
+          break;
+        case UserType.annonceur:
+          if (user.accountType == AccountType.particulier)
+            a = await authApi.createAnnonceurParticulier(user.toJson());
+          else
+            a = await authApi.createAnnonceurEntreprises(user.toJson());
+          break;
+      }
+      print(a.statusCode);
+      print(a.error);
+      print(a.body);
+      if (!a.isSuccessful) throw a.error;
+      if (a.body['result'] == 'exist') throw 'Ce compte existe deja';
+      UserModel temp =
+          UserModel.fromJson(a.body['travailleur'] ?? a.body['annonceur']);
+      user.id = temp.id;
+
+      if (user.localPicture != null) {
+        switch (user.userType) {
+          case UserType.travailleur:
+            b = await authApi.changeTravailleurPicture(
+                temp.idInt, user.localPicture.path);
+            break;
+          case UserType.annonceur:
+            if (user.accountType == AccountType.particulier)
+              b = await authApi.changeAnnonceurParticulierPicture(
+                  temp.idInt, user.localPicture.path);
+            else
+              b = await authApi.changeAnnonceurEntreprisePicture(
+                  temp.idInt, user.localPicture.path);
+            break;
+        }
+      }
+    } catch (e) {
+      print('long 176 $e');
+      throw e is String ? e : 'error';
+    }
+    //await Future.delayed(Duration(seconds: 3));
+    // return user..id = Random().nextInt(500000).toString();
+    return user;
   }
 
   Future<UserModel> editUser(UserModel user) async {
-    await Future.delayed(Duration(seconds: 2));
+    Response a;
+    //UserModel _user = authBloc.currentUser;
+
+    try {
+      if (user.accountType == AccountType.entreprise)
+        a = await authApi
+            .updateAnnonceurEntreprise(user.idInt, user.toJson())
+            .timeout(Duration(seconds: 30));
+      else if (user.userType == UserType.annonceur)
+        a = await authApi
+            .updateAnnonceurParticulier(user.idInt, user.toJson())
+            .timeout(Duration(seconds: 30));
+      else
+        a = await authApi
+            .updateTravailleur(user.idInt, user.toJson())
+            .timeout(Duration(seconds: 30));
+    } catch (e) {
+      throw 'Erreur ';
+    }
+    if (!a.isSuccessful) throw 'Error';
+    // await Future.delayed(Duration(seconds: 2));
     return user;
   }
 
@@ -198,5 +277,20 @@ class UserRepository {
     /// read from keystore/keychain
     await Future.delayed(Duration(seconds: 1));
     return null;
+  }
+
+  Future<List<MetierModel>> getMetiers() async {
+    try {
+      Response a = await authApi.getMetiers().timeout(Duration(seconds: 30));
+      if (!a.isSuccessful) throw 'Error';
+      return List<MetierModel>.generate(
+        a.body.length,
+        (index) {
+          return MetierModel.fromJson(a.body[index]);
+        },
+      );
+    } catch (e) {
+      print('Metier Fetching error : $e');
+    }
   }
 }

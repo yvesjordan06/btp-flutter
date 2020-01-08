@@ -20,7 +20,7 @@ class CreateAnnonce extends StatefulWidget {
 
 class _CreateAnnonceState extends State<CreateAnnonce> {
   _CreateAnnonceState({this.annonce});
-
+  final List<CategorieTacheModel> exampleCat = authBloc.categories;
   final AnnonceModel annonce;
   AnnonceModel data;
   DateTime debut;

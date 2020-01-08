@@ -39,6 +39,13 @@ class _$AuthenticationApi extends AuthenticationApi {
   }
 
   @override
+  Future<Response> getMetiers() {
+    final $url = '/metiers';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response> getAnnonceurEntrepriseById(int id) {
     final $url = '/annonceurs/entreprises/$id';
     final $request = Request('GET', $url, client.baseUrl);
@@ -87,7 +94,7 @@ class _$AuthenticationApi extends AuthenticationApi {
   @override
   Future<Response> updateAnnonceurEntreprise(
       int annonceurID, Map<String, dynamic> body) {
-    final $url = '/annonceurs/entreprises/modifier/clients/$annonceurID';
+    final $url = '/annonceurs/entreprises/modifier/client/$annonceurID';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
@@ -96,7 +103,7 @@ class _$AuthenticationApi extends AuthenticationApi {
   @override
   Future<Response> updateAnnonceurParticulier(
       int annonceurID, Map<String, dynamic> body) {
-    final $url = '/annonceurs/particulier/modifier/clients/$annonceurID';
+    final $url = '/annonceurs/particulier/modifier/client/$annonceurID';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
@@ -105,25 +112,25 @@ class _$AuthenticationApi extends AuthenticationApi {
   @override
   Future<Response> updateTravailleur(
       int travailleurID, Map<String, dynamic> body) {
-    final $url = '/travailleur/modifier/clients/$travailleurID';
+    final $url = '/travailleurs/modifier/client/$travailleurID';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
   }
 
   @override
-  Future<Response> changeTravailleurPicture(int id, List<int> bytes) {
+  Future<Response> changeTravailleurPicture(int id, String bytes) {
     final $url = '/travailleurs/image_profile/upload/$id';
-    final $parts = <PartValue>[PartValueFile<List<int>>('image', bytes)];
+    final $parts = <PartValue>[PartValueFile<String>('image', bytes)];
     final $request =
         Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
     return client.send<dynamic, dynamic>($request);
   }
 
   @override
-  Future<Response> changeAnnonceurEntreprisePicture(int id, List<int> bytes) {
+  Future<Response> changeAnnonceurEntreprisePicture(int id, String bytes) {
     final $url = '/annonceurs/entreprises/image_profile/upload/$id';
-    final $parts = <PartValue>[PartValueFile<List<int>>('image', bytes)];
+    final $parts = <PartValue>[PartValueFile<String>('image', bytes)];
     final $request =
         Request('POST', $url, client.baseUrl, parts: $parts, multipart: true);
     return client.send<dynamic, dynamic>($request);

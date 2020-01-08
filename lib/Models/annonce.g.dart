@@ -9,11 +9,12 @@ part of 'annonce.dart';
 TacheModel _$TacheModelFromJson(Map<String, dynamic> json) {
   return TacheModel(
     intitule: json['intitule'] as String,
-    metier: json['metier'] == null
-        ? null
-        : MetierModel.fromJson(json['metier'] as Map<String, dynamic>),
     description: json['description'] as String,
     id: json['id'] as int,
+    categorie: json['categorie_tache'] == null
+        ? null
+        : CategorieTacheModel.fromJson(
+            json['categorie_tache'] as Map<String, dynamic>),
   );
 }
 
@@ -21,12 +22,16 @@ Map<String, dynamic> _$TacheModelToJson(TacheModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'intitule': instance.intitule,
-      'metier': instance.metier,
       'description': instance.description,
+      'categorie_tache': instance.categorie,
     };
 
 MetierModel _$MetierModelFromJson(Map<String, dynamic> json) {
   return MetierModel(
+    (json['taches'] as List)
+        ?.map((e) =>
+            e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
     id: json['id'] as int,
     intitule: json['intitule'] as String,
     description: json['description'] as String,
@@ -38,6 +43,7 @@ Map<String, dynamic> _$MetierModelToJson(MetierModel instance) =>
       'id': instance.id,
       'intitule': instance.intitule,
       'description': instance.description,
+      'taches': instance.taches,
     };
 
 NewAnnonceModel _$NewAnnonceModelFromJson(Map<String, dynamic> json) {
@@ -76,6 +82,10 @@ AppStatusModel _$AppStatusModelFromJson(Map<String, dynamic> json) {
     currentUser: json['currentUser'] == null
         ? null
         : UserModel.fromJson(json['currentUser'] as Map<String, dynamic>),
+    appMetier: (json['appMetier'] as List)
+        ?.map((e) =>
+            e == null ? null : MetierModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -83,6 +93,7 @@ Map<String, dynamic> _$AppStatusModelToJson(AppStatusModel instance) =>
     <String, dynamic>{
       'isfirstTime': instance.isfirstTime,
       'currentUser': instance.currentUser,
+      'appMetier': instance.appMetier,
     };
 
 AnnonceModel _$AnnonceModelFromJson(Map<String, dynamic> json) {
@@ -148,7 +159,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
     dateDeNaissance: json['date_de_naissance'] == null
         ? null
         : DateTime.parse(json['date_de_naissance'] as String),
-    raisonSociale: json['raisonSociale'] as String,
+    raisonSociale: json['raison_sociale'] as String,
     status: json['status'] as String,
     accountType: json['accountType'] as String,
     userType: json['userType'] as String,
@@ -157,7 +168,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
     pays: json['pays'] as String ?? 'Cameroun',
     ville: json['ville'] as String,
     quartier: json['quartier'] as String,
-    boitePostal: json['boitePostal'] as String,
+    boitePostal: json['boite_postale'] as String,
   )..createdAt = json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String);
@@ -167,7 +178,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'id': _stringToInt(instance.id),
       'nom': instance.nom,
       'prenom': instance.prenom,
-      'raisonSociale': instance.raisonSociale,
+      'raison_sociale': instance.raisonSociale,
       'telephone': instance.telephone,
       'mot_de_passe': instance.motDePasse,
       'date_de_naissance': instance.dateDeNaissance?.toIso8601String(),
@@ -179,7 +190,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'pays': instance.pays,
       'ville': instance.ville,
       'quartier': instance.quartier,
-      'boitePostal': instance.boitePostal,
+      'boite_postale': instance.boitePostal,
     };
 
 AnnonceListModel _$AnnonceListModelFromJson(Map<String, dynamic> json) {
@@ -201,10 +212,6 @@ CategorieTacheModel _$CategorieTacheModelFromJson(Map<String, dynamic> json) {
     id: json['id'] as int,
     intitule: json['intitule'] as String,
     description: json['description'] as String,
-    taches: (json['taches'] as List)
-        ?.map((e) =>
-            e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
   );
 }
 
@@ -214,7 +221,6 @@ Map<String, dynamic> _$CategorieTacheModelToJson(
       'id': instance.id,
       'intitule': instance.intitule,
       'description': instance.description,
-      'taches': instance.taches,
     };
 
 MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
@@ -229,9 +235,7 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
         ? null
         : UserModel.fromJson(json['travailleur'] as Map<String, dynamic>),
     sentAt: json['datePost'] == null
-        ? (json['date_post'] == null
-            ? null
-            : DateTime.parse(json['date_post'] as String))
+        ? null
         : DateTime.parse(json['datePost'] as String),
   );
 }
@@ -251,7 +255,7 @@ NewMessageModel _$NewMessageModelFromJson(Map<String, dynamic> json) {
     json['message'] == null
         ? null
         : MessageModel.fromJson(json['message'] as Map<String, dynamic>),
-    json['chat_id'].toString(),
+    json['chatID'] as String,
   );
 }
 
@@ -275,14 +279,12 @@ ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
         : AnnonceModel.fromJson(json['annonce'] as Map<String, dynamic>),
     messages: (json['messages'] as List)
         ?.map((e) =>
-    e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
+            e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-  )
-    ..unread = json['unread'] ?? 0;
+  )..unread = json['unread'] as int ?? 0;
 }
 
-Map<String, dynamic> _$ChatModelToJson(ChatModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
       'id': instance.id,
       'annonceur': instance.annonceur,
       'travailleur': instance.travailleur,

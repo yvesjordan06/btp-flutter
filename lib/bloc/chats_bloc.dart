@@ -12,6 +12,7 @@ import 'bloc.dart';
 class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
   final ChatsRepository repo = ChatsRepository();
   final AuthenticationBloc authenticationBloc = authBloc;
+  StreamSubscription<Event> listener;
   List<ChatModel> list = [];
 
   ChatsBloc() {
@@ -24,7 +25,7 @@ class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
         hub_url: hubUrl);
     print('Mercure');
 
-    StreamSubscription<Event> listener = mercure.subscribeTopic(
+    listener = mercure.subscribeTopic(
         topic: topic,
         onData: (Event event) {
           print('Mercure event');
@@ -48,6 +49,10 @@ class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
           } catch (e) {
             print('Mercure error $e');
           }
+        },
+        onError: (e) {
+          print('Mercure listerner erro $e');
+          listener.pause();
         });
 
     authBloc.listen((event) {
@@ -91,12 +96,11 @@ class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
       yield ChatsSendingState();
       try {
         MessageModel a =
-        await repo.send(message: event.message, chatID: event.chatID);
+            await repo.send(message: event.message, chatID: event.chatID);
         list = list..firstWhere((c) => c.id == event.chatID).messages.add(a);
 
         list.sort(
-                (m, m1) =>
-                m1.lastMessage.sentAt.compareTo(m.lastMessage.sentAt));
+            (m, m1) => m1.lastMessage.sentAt.compareTo(m.lastMessage.sentAt));
         yield ChatsFetchingSuccess(list);
       } catch (e) {
         yield ChatsFetchingFailed('Impossible de joindre le serveur');

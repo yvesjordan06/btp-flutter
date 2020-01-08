@@ -51,6 +51,13 @@ class _$AnnonceApi extends AnnonceApi {
   }
 
   @override
+  Future<Response> getAnnonceByEntreprise(int id) {
+    final $url = '/annonces/annonceur/entreprise/$id';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response> getAnnoncesForTravailleur(int id) {
     final $url = '/annonces/travailleur/$id';
     final $request = Request('GET', $url, client.baseUrl);

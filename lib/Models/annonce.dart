@@ -11,10 +11,12 @@ part 'annonce.g.dart';
 class TacheModel {
   final int id;
   final String intitule;
-  final MetierModel metier;
+  MetierModel get metier => null;
   final String description;
+  @JsonKey(name: 'categorie_tache')
+  final CategorieTacheModel categorie;
 
-  TacheModel({this.intitule, this.metier, this.description, this.id});
+  TacheModel({this.intitule, this.description, this.id, this.categorie});
 
   factory TacheModel.fromJson(Map<String, dynamic> json) =>
       _$TacheModelFromJson(json);
@@ -27,8 +29,9 @@ class MetierModel {
   final int id;
   final String intitule;
   final String description;
+  final List<TacheModel> taches;
 
-  MetierModel({this.id, this.intitule, this.description});
+  MetierModel(this.taches, {this.id, this.intitule, this.description});
 
   factory MetierModel.fromJson(Map<String, dynamic> json) =>
       _$MetierModelFromJson(json);
@@ -87,9 +90,18 @@ class NewAnnonceModel {
 class AppStatusModel {
   @JsonKey(defaultValue: true)
   final bool isfirstTime;
-  UserModel currentUser;
+  final UserModel currentUser;
+  final List<MetierModel> appMetier;
 
-  AppStatusModel({this.isfirstTime = true, this.currentUser});
+  AppStatusModel({this.isfirstTime = true, this.currentUser, this.appMetier});
+
+  copyWith(
+      {bool isfirstTime, UserModel currentUser, List<MetierModel> appMetier}) {
+    return AppStatusModel(
+        isfirstTime: isfirstTime ?? this.isfirstTime,
+        currentUser: currentUser ?? this.currentUser,
+        appMetier: appMetier ?? this.appMetier);
+  }
 
   bool isLoggedin() {
     return (currentUser != null) && (currentUser.id != null);
@@ -180,9 +192,10 @@ class AuthenticationModel {
 class UserModel {
   @JsonKey(fromJson: _stringFromInt, toJson: _stringToInt)
   String id;
-
+  String email;
   String nom = '';
   String prenom = '';
+  @JsonKey(name: 'raison_sociale')
   String raisonSociale = '';
   String telephone = '';
   @JsonKey(name: 'mot_de_passe')
@@ -202,6 +215,7 @@ class UserModel {
   String pays = '';
   String ville = '';
   String quartier = '';
+  @JsonKey(name: 'boite_postale')
   String boitePostal = '';
 
   UserModel({
@@ -210,7 +224,7 @@ class UserModel {
     this.prenom = '',
     this.telephone = '',
     this.dateDeNaissance,
-    this.raisonSociale = '',
+    this.raisonSociale,
     this.status = '',
     this.accountType = '',
     this.userType = '',
@@ -221,6 +235,8 @@ class UserModel {
     this.ville = '',
     this.quartier = '',
     this.boitePostal = '',
+    this.createdAt,
+    this.email,
   });
 
   String get name => (raisonSociale) ?? (nom + ' ' + prenom);
@@ -228,6 +244,8 @@ class UserModel {
   String get address => ville + ',' + (boitePostal ?? quartier);
 
   String get type => (userType ?? 'No type') + ' ' + (accountType ?? 'No type');
+
+  int get idInt => int.tryParse(id);
 
   String get birthday => dateDeNaissance != null
       ? DateFormat.yMMMd().format(dateDeNaissance)
@@ -242,6 +260,48 @@ class UserModel {
       _$UserModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
+  UserModel copyWith({
+    String id,
+    String email,
+    String nom,
+    String prenom,
+    String raisonSociale,
+    String telephone,
+    String motDePasse,
+    DateTime dateDeNaissance,
+    DateTime createdAt,
+    String status,
+    String accountType,
+    String userType,
+    File localPicture,
+    String pictureLink,
+    String pays,
+    String ville,
+    String quartier,
+    String boitePostal,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      nom: nom ?? this.nom,
+      prenom: prenom ?? this.prenom,
+      raisonSociale: raisonSociale ?? this.raisonSociale,
+      telephone: telephone ?? this.telephone,
+      motDePasse: motDePasse ?? this.motDePasse,
+      dateDeNaissance: dateDeNaissance ?? this.dateDeNaissance,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      accountType: accountType ?? this.accountType,
+      userType: userType ?? this.userType,
+      localPicture: localPicture ?? this.localPicture,
+      pictureLink: pictureLink ?? this.pictureLink,
+      pays: pays ?? this.pays,
+      ville: ville ?? this.ville,
+      quartier: quartier ?? this.quartier,
+      boitePostal: boitePostal ?? this.boitePostal,
+      email: email ?? this.email,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -278,9 +338,9 @@ class CategorieTacheModel {
   final int id;
   final String intitule;
   final String description;
-  final List<TacheModel> taches;
+  List<TacheModel> taches = [];
 
-  CategorieTacheModel({this.id, this.intitule, this.description, this.taches});
+  CategorieTacheModel({this.id, this.intitule, this.description}) : taches = [];
 
   factory CategorieTacheModel.fromJson(Map<String, dynamic> json) =>
       _$CategorieTacheModelFromJson(json);
@@ -385,69 +445,20 @@ class ActuModel {
   @JsonKey(name: 'created_at')
   DateTime createdAt;
 
-  ActuModel({this.id,
-    this.intitule,
-    this.lieu,
-    this.pictures,
-    this.date,
-    this.description,
-    this.createdAt});
+  ActuModel(
+      {this.id,
+      this.intitule,
+      this.lieu,
+      this.pictures,
+      this.date,
+      this.description,
+      this.createdAt});
 
   factory ActuModel.fromJson(Map<String, dynamic> json) =>
       _$ActuModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ActuModelToJson(this);
 }
-
-MetierModel metier1 =
-    MetierModel(intitule: 'Macon', description: 'Metier de maconnerie', id: 1);
-MetierModel metier2 = MetierModel(
-    intitule: 'Acoustique', description: 'Metier de Acoustique', id: 2);
-MetierModel metier3 = MetierModel(
-    intitule: 'Carreleur', description: 'Metier de Carreleur', id: 3);
-MetierModel metier4 =
-    MetierModel(intitule: 'Peintre', description: 'Metier de Peintre', id: 4);
-
-TacheModel tache1 = TacheModel(
-    intitule: 'Tache1', description: 'Description de la tache une 1', id: 1);
-TacheModel tache2 = TacheModel(
-    intitule: 'Tache2', description: 'Description de la tache une 2', id: 2);
-TacheModel tache3 = TacheModel(
-    intitule: 'Tache3', description: 'Description de la tache une 3', id: 3);
-TacheModel tache4 = TacheModel(
-    intitule: 'Tache4', description: 'Description de la tache une 4', id: 4);
-TacheModel tache5 = TacheModel(
-    intitule: 'Tache5', description: 'Description de la tache une 5', id: 5);
-TacheModel tache6 = TacheModel(
-    intitule: 'Tache6', description: 'Description de la tache une 6', id: 6);
-TacheModel tache7 = TacheModel(
-    intitule: 'Tache7', description: 'Description de la tache une 7', id: 7);
-TacheModel tache8 = TacheModel(
-    intitule: 'Tache8', description: 'Description de la tache une 8', id: 8);
-
-CategorieTacheModel cat1 = CategorieTacheModel(
-    id: 1,
-    intitule: 'Gros oeuvre',
-    description: 'Ceci est une description',
-    taches: [tache1, tache2]);
-CategorieTacheModel cat2 = CategorieTacheModel(
-    id: 1,
-    intitule: 'Second oeuvre',
-    description: 'Ceci est une autre description',
-    taches: [tache3, tache4]);
-CategorieTacheModel cat3 = CategorieTacheModel(
-    id: 1,
-    intitule: 'Troisieme oeuvre',
-    description: 'Ceci est une chose final',
-    taches: [tache5, tache6]);
-CategorieTacheModel cat4 = CategorieTacheModel(
-    id: 1,
-    intitule: 'Final oeuvre',
-    description: 'Ceci est une autre',
-    taches: [tache7, tache8]);
-List<CategorieTacheModel> exampleCat = [cat1, cat2, cat3, cat4];
-
-List<TacheModel> exampleTache = [];
 
 @JsonSerializable()
 class ActuListModel {

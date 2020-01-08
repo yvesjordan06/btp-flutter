@@ -5,6 +5,8 @@ import 'package:btpp/Pages/Auth/passwordreset.dart';
 import 'package:btpp/Pages/Auth/signup.dart';
 import 'package:btpp/Pages/Chat/main.dart';
 import 'package:btpp/Pages/Chat/see.dart';
+import 'package:btpp/Pages/Metier/add.dart';
+import 'package:btpp/Pages/Metier/index.dart';
 import 'package:btpp/Pages/Settings/index.dart';
 import 'package:btpp/Pages/User/cv.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,10 @@ class RouteGenerator {
     switch (settings.name) {
       case 'loading':
         return MaterialPageRoute(builder: (_) => LoadingPage());
+      case 'metiers':
+        return MaterialPageRoute(builder: (_) => MetierPage());
+      case 'metiers/add':
+        return MaterialPageRoute(builder: (_) => AddMetierPage());
       case 'settings':
         return MaterialPageRoute(builder: (_) => UserSettingPage());
       case 'app':

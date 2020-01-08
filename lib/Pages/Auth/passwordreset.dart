@@ -159,6 +159,13 @@ class Password extends StatefulWidget {
 
 class _PasswordState extends State<Password> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,19 +189,33 @@ class _PasswordState extends State<Password> {
             child: ListView(
               shrinkWrap: true,
               children: <Widget>[
-                TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Ancient mot de passe',
-                    hintText: 'Ancient mot de passe',
+                if (widget.user.id.isNotEmpty)
+                  TextFormField(
+                    validator: (value) {
+                      if (value.length < 1) return 'Ce champ est neccessaire';
+                      if (value != widget.user.motDePasse)
+                        return 'Ce mot de passe ne correspond pas a l\'ancien';
+                      return null;
+                    },
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Ancient mot de passe',
+                      hintText: 'Ancient mot de passe',
+                    ),
                   ),
-                ),
                 SizedBox(
                   height: 20,
                 ),
                 TextFormField(
                   obscureText: true,
+                  validator: (value) {
+                    if (value.length < 1) return 'Ce champ est neccessaire';
+                    if (value.length < 6)
+                      return 'Un mot de passe doit contenir au moin 6 caractere';
+                    return null;
+                  },
+                  controller: _password,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Nouveau mot de passe',
@@ -209,6 +230,13 @@ class _PasswordState extends State<Password> {
                 ),
                 TextFormField(
                   obscureText: true,
+                  validator: (value) {
+                    if (value.length < 1) return 'Ce champ est neccessaire';
+                    if (value != _password.text)
+                      return 'Les mot de passe ne correspondent pas';
+                    return null;
+                  },
+                  autovalidate: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Confirmer',

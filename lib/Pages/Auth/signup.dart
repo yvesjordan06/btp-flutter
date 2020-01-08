@@ -21,7 +21,8 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  UserModel user = UserModel();
+  UserModel user = UserModel(
+      userType: UserType.annonceur, accountType: AccountType.particulier);
   final PageController controller = PageController(initialPage: 0);
   int previousPage;
   bool enterprise = false;
@@ -108,10 +109,11 @@ class _SignupPageState extends State<SignupPage> {
                           user,
                           onNext: _onNext,
                         ),
-                      _ChoixService(
-                        user,
-                        onNext: _onNext,
-                      ),
+                      if (!enterprise)
+                        _ChoixService(
+                          user,
+                          onNext: _onNext,
+                        ),
                       Password(user: user, onSubmit: _createUser)
                     ],
                   ),
@@ -545,9 +547,9 @@ class _ProfileState extends State<Profile> {
                   ] else ...[
                     TextFormField(
                       onSaved: (value) {
-                        widget.user.nom = value;
+                        widget.user.raisonSociale = value;
                       },
-                      initialValue: widget.user.nom,
+                      initialValue: widget.user.raisonSociale,
                       validator: (value) {
                         if (value.length < 1) {
                           return 'La Raison sociale est necessaire';
@@ -642,76 +644,77 @@ class __ChoixServiceState extends State<_ChoixService> {
           margin: EdgeInsets.all(16),
           child: Column(
             children: <Widget>[
-              Container(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: Card(
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              widget.user.userType = UserType.travailleur;
-                            });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ListView(
-                              // shrinkWrap: true,
-                              // crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Center(
-                                    child: Text(
-                                  'Travailleur',
-                                  style: Theme.of(context).textTheme.title,
-                                )),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  'Selectionez si :',
-                                  style: Theme.of(context).textTheme.subtitle,
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  '- Vous recherchez du travail',
-                                  style: Theme.of(context).textTheme.body1,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  '- Vous avez de la competence a revendre',
-                                  style: Theme.of(context).textTheme.body1,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  '- Vous voulez faire connaitre vos service',
-                                  style: Theme.of(context).textTheme.body1,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (widget.user.userType == UserType.travailleur)
+              if (widget.user.accountType != AccountType.entreprise)
+                Container(
+                  constraints: BoxConstraints(maxHeight: 200),
+                  child: Card(
+                    child: Stack(
+                      children: <Widget>[
                         Positioned.fill(
-                          child: Container(
-                            color: AppColor.primaryColorsOpacity(0.7),
-                            child: Icon(
-                              Icons.check,
-                              size: 200,
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                widget.user.userType = UserType.travailleur;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ListView(
+                                // shrinkWrap: true,
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Center(
+                                      child: Text(
+                                    'Travailleur',
+                                    style: Theme.of(context).textTheme.title,
+                                  )),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    'Selectionez si :',
+                                    style: Theme.of(context).textTheme.subtitle,
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    '- Vous recherchez du travail',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    '- Vous avez de la competence a revendre',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    '- Vous voulez faire connaitre vos service',
+                                    style: Theme.of(context).textTheme.body1,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                    ],
+                        if (widget.user.userType == UserType.travailleur)
+                          Positioned.fill(
+                            child: Container(
+                              color: AppColor.primaryColorsOpacity(0.7),
+                              child: Icon(
+                                Icons.check,
+                                size: 200,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               SizedBox(
                 height: 20,
               ),

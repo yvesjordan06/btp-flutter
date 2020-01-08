@@ -36,8 +36,13 @@ List<ActuModel> actuListExample = List<ActuModel>.generate(
 
 class ActuRepository {
   Future<List<ActuModel>> fetchAll() async {
+    Response a;
     try {
-      Response a = await actuApi.getActus().timeout(Duration(seconds: 30));
+      try {
+        a = await actuApi.getActus().timeout(Duration(seconds: 30));
+      } catch (e) {
+        throw e;
+      }
 
       if (!a.isSuccessful)
         throw 'Impossible de traiter cette demande actuellement';
@@ -69,7 +74,7 @@ class ActuRepository {
     //print('actu repo 55 ${nouveau}');
     try {
       Response a =
-      await actuApi.createActu(nouveau).timeout(Duration(seconds: 30));
+          await actuApi.createActu(nouveau).timeout(Duration(seconds: 30));
       Response b;
 
       //print('actu repo 58 ${a.statusCode}');

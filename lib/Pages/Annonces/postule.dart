@@ -1,3 +1,4 @@
+import 'package:btpp/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -14,11 +15,17 @@ class PostulerPage extends StatefulWidget {
 
 class _PostulerPageState extends State<PostulerPage> {
   final AnnonceModel annonce;
+  final List<int> selected = [];
 
   _PostulerPageState({this.annonce});
+  List<TacheModel> __alltache = authBloc.taches;
 
   @override
   Widget build(BuildContext context) {
+    List<TacheModel> taches = List<TacheModel>.generate(
+        annonce.taches.length,
+        (index) =>
+            __alltache.firstWhere((t) => t.id == annonce.taches[index].id));
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -40,7 +47,7 @@ class _PostulerPageState extends State<PostulerPage> {
           ),
           ListView.builder(
             physics: NeverScrollableScrollPhysics(),
-            itemCount: 7,
+            itemCount: taches.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
               return Column(
@@ -48,11 +55,18 @@ class _PostulerPageState extends State<PostulerPage> {
                   ListTile(
                     onTap: () {},
                     isThreeLine: true,
-                    subtitle: Text('Metier $index'),
-                    title: Text('Hiro'),
+                    subtitle: Text(taches[index].description),
+                    title: Text(taches[index].intitule),
                     leading: Checkbox(
-                      value: true,
-                      onChanged: null,
+                      value: selected.contains(taches[index].id),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value)
+                            selected.add(taches[index].id);
+                          else
+                            selected.remove(taches[index].id);
+                        });
+                      },
                     ),
                   ),
                   // horizontalDivider(margin: 0)
@@ -63,7 +77,7 @@ class _PostulerPageState extends State<PostulerPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: selected.isEmpty ? null : () {},
               child: Center(
                 child: Text('Postuler'),
               ),

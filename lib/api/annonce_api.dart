@@ -8,29 +8,31 @@ abstract class AnnonceApi extends ChopperService {
   @Get()
   Future<Response> getAnnonces();
 
-  @Get(path:'/{id}')
+  @Get(path: '/{id}')
   Future<Response> getAnnonce(@Path('id') int id);
 
-  @Get(path:'/particulier')
+  @Get(path: '/particulier')
   Future<Response> getAnnoncesParticulier();
 
-  @Get(path:'/entreprise')
+  @Get(path: '/entreprise')
   Future<Response> getAnnoncesEntreprise();
 
-  @Get(path:'/annonceur/particulier/{id}')
+  @Get(path: '/annonceur/particulier/{id}')
   Future<Response> getAnnonceByParticulier(@Path('id') int id);
 
-  @Get(path:'/travailleur/{id}')
+  @Get(path: '/annonceur/entreprise/{id}')
+  Future<Response> getAnnonceByEntreprise(@Path('id') int id);
+
+  @Get(path: '/travailleur/{id}')
   Future<Response> getAnnoncesForTravailleur(@Path('id') int id);
 
-  @Post(path:'/particulier/creer')
+  @Post(path: '/particulier/creer')
   Future<Response> postAnnonceParticulier(
-      @Body() Map<String, dynamic> body,
-      );
+    @Body() Map<String, dynamic> body,
+  );
 
-  @Post(path:'/entreprise/creer')
+  @Post(path: '/entreprise/creer')
   Future<Response> postAnnonceEntreprise(
-      @Body() Map<String, dynamic> body,
-      );
-
+    @Body() Map<String, dynamic> body,
+  );
 }

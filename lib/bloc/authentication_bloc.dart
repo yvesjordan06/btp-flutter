@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/UserRepository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import './bloc.dart';
@@ -11,7 +13,49 @@ class AuthenticationBloc
     extends HydratedBloc<AuthenticationEvent, AuthenticationState> {
   final UserRepository userRepository = UserRepository();
   UserModel currentUser;
+  List<MetierModel> appMetiers = [];
+  List<TacheModel> get taches {
+    Set<TacheModel> temp = Set<TacheModel>();
+    for (MetierModel m in appMetiers) {
+      // print(m.taches);
+      temp = temp.union(m.taches.toSet());
+    }
+    print(temp);
+    return temp.toList();
+  }
+
+  List<CategorieTacheModel> get categories {
+    List<CategorieTacheModel> temp = List<CategorieTacheModel>();
+
+    for (TacheModel t in taches) {
+      if (temp.contains((CategorieTacheModel c) => c.id == t.categorie.id)) {
+        int index =
+            temp.indexWhere((CategorieTacheModel c) => c.id == t.categorie.id);
+        temp[index].taches.add(t);
+      } else {
+        CategorieTacheModel x = CategorieTacheModel(
+            id: t.categorie.id,
+            intitule: t.categorie.intitule,
+            description: t.categorie.description);
+        x.taches.add(t);
+        temp.add(x);
+      }
+    }
+    return temp;
+  }
+
   AppStatusModel _status;
+
+  void loadAppMetier() {
+    try {
+      userRepository.getMetiers().then((metier) {
+        appMetiers = metier;
+        add(AppStarted());
+      });
+    } catch (e) {
+      print('Error auth bloc 22 $e');
+    }
+  }
 
   @override
   AuthenticationState get initialState {
@@ -26,6 +70,7 @@ class AuthenticationBloc
       print('error auth bloc line 29 $json');
       _status = AppStatusModel.fromJson(json);
       currentUser = _status.currentUser;
+      appMetiers = _status.appMetier;
       print('user ${_status.isfirstTime}');
       print('user ${_status.currentUser}');
       if (_status.isfirstTime) return AuthenticationUninitialized();
@@ -34,7 +79,7 @@ class AuthenticationBloc
       /* return currentUser.id != null
           ? AuthenticationAuthenticated(currentUser)
           : AuthenticationUnauthenticated(); */
-
+      loadAppMetier();
       return AuthenticationAuthenticated(currentUser);
     } catch (_) {
       print('error auth bloc line 39 $_');
@@ -45,14 +90,17 @@ class AuthenticationBloc
   @override
   Map<String, dynamic> toJson(AuthenticationState state) {
     if (state is AuthenticationAuthenticated) {
-      _status = AppStatusModel(isfirstTime: false, currentUser: state.user);
+      _status = AppStatusModel(
+          isfirstTime: false, currentUser: state.user, appMetier: appMetiers);
 
       return _status.toJson();
     } else if (state is AuthenticationUnauthenticated) {
       print("authBloc 53 I'm saving");
       try {
         return AppStatusModel(
-                isfirstTime: false, currentUser: _status?.currentUser)
+                isfirstTime: false,
+                currentUser: _status?.currentUser,
+                appMetier: appMetiers)
             .toJson();
       } catch (e) {
         print(e);
@@ -85,9 +133,10 @@ class AuthenticationBloc
           } catch (e) {
             print('error auth line 71 $e');
           }
+        } else {
+          print('Authbloc 82 this is null');
+          yield AuthenticationUnauthenticated();
         }
-        print('Authbloc 82 this is null');
-        yield AuthenticationUnauthenticated();
       }
 
       if (event is ChangePicture) {
@@ -110,7 +159,10 @@ class AuthenticationBloc
       if (event is LoggedOut) {
         yield AuthenticationUnauthenticated();
         currentUser = null;
-        _status.currentUser = null;
+        _status = AppStatusModel(
+            appMetier: _status.appMetier,
+            currentUser: null,
+            isfirstTime: _status.isfirstTime);
         (BlocSupervisor.delegate as HydratedBlocDelegate).storage.clear();
         this.add(AppStarted());
         await userRepository.logout();

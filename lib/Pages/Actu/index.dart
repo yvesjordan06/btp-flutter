@@ -73,7 +73,8 @@ class _ActuPageState extends State<ActuPage> {
                 ListView(
                   //crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    CreateActu(),
+                    if (authBloc.currentUser.userType == UserType.travailleur)
+                      CreateActu(),
                     Container(
                       child: Stack(
                         // fit: StackFit.passthrough,
@@ -317,8 +318,8 @@ class _CreateActuState extends State<CreateActu> {
                                                 child: InkWell(
                                                   onTap: () async {
                                                     var pic =
-                                                    await images[index]
-                                                        .getByteData();
+                                                        await images[index]
+                                                            .getByteData();
                                                     var mem = pic.buffer
                                                         .asUint8List();
                                                     showFullMemoryImage(
@@ -910,18 +911,18 @@ class _UserImageState extends State<UserImage>
         },
         child: widget.zoomable
             ? Hero(
-          tag: local == null ? link : local,
-          child: CircleAvatar(
-            radius: widget.radius,
-            backgroundImage: picture,
-            child: child,
-          ),
-        )
+                tag: local == null ? link : local,
+                child: CircleAvatar(
+                  radius: widget.radius,
+                  backgroundImage: picture,
+                  child: child,
+                ),
+              )
             : CircleAvatar(
-          radius: widget.radius,
-          backgroundImage: picture,
-          child: child,
-        ),
+                radius: widget.radius,
+                backgroundImage: picture,
+                child: child,
+              ),
       ),
     );
   }

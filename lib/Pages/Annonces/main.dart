@@ -147,16 +147,25 @@ class _AnnoncePageState extends State<AnnoncePage>
           return true;
         },
       ),
-      floatingActionButton: AnimatedOpacity(
-        opacity: isEnabled ? 1.0 : 0,
-        duration: Duration(milliseconds: 1000),
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'annonce/create');
-          },
-          tooltip: 'Ajouter une annonce',
-          child: new Icon(Icons.add),
-        ),
+      floatingActionButton:
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        bloc: authBloc,
+        builder: (context, state) {
+          if (authBloc.currentUser.userType == UserType.annonceur)
+            return AnimatedOpacity(
+              opacity: isEnabled ? 1.0 : 0,
+              duration: Duration(milliseconds: 1000),
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'annonce/create');
+                },
+                tooltip: 'Ajouter une annonce',
+                child: new Icon(Icons.add),
+              ),
+            );
+          else
+            return SizedBox();
+        },
       ),
     );
   }

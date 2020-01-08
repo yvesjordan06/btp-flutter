@@ -71,28 +71,43 @@ class _UserSettingPageState extends State<UserSettingPage> {
                             HeaderText(
                               text: 'Parametre Profiles',
                             ),
-                            MenuTile(
-                              text: 'Nom',
-                              value: currentUser.nom,
-                              onTap: () {
-                                _profileEdit(currentUser, context);
-                              },
-                            ),
-                            MenuTile(
-                              text: 'Prénom',
-                              value: currentUser.prenom,
-                              onTap: () {
-                                _profileEdit(currentUser, context);
-                              },
-                            ),
-                            MenuTile(
-                              text: 'Anniversaire',
-                              value: DateFormat.MMMEd()
-                                  .format(currentUser.dateDeNaissance),
-                              onTap: () {
-                                _profileEdit(currentUser, context);
-                              },
-                            ),
+                            if (currentUser.accountType ==
+                                AccountType.entreprise)
+                              MenuTile(
+                                text: 'Raison Sociale',
+                                value: currentUser.raisonSociale,
+                                onTap: () {
+                                  _profileEdit(currentUser, context);
+                                },
+                              ),
+                            if (currentUser.accountType !=
+                                AccountType.entreprise)
+                              MenuTile(
+                                text: 'Nom',
+                                value: currentUser.nom,
+                                onTap: () {
+                                  _profileEdit(currentUser, context);
+                                },
+                              ),
+                            if (currentUser.accountType !=
+                                AccountType.entreprise)
+                              MenuTile(
+                                text: 'Prénom',
+                                value: currentUser.prenom,
+                                onTap: () {
+                                  _profileEdit(currentUser, context);
+                                },
+                              ),
+                            if (currentUser.accountType !=
+                                AccountType.entreprise)
+                              MenuTile(
+                                text: 'Anniversaire',
+                                value: DateFormat.MMMEd()
+                                    .format(currentUser.dateDeNaissance),
+                                onTap: () {
+                                  _profileEdit(currentUser, context);
+                                },
+                              ),
                             MenuTile(
                               text: 'Télephone',
                               value: currentUser.telephone,
@@ -102,7 +117,7 @@ class _UserSettingPageState extends State<UserSettingPage> {
                             ),
                             MenuTile(
                               text: 'Email',
-                              value: 'Aucun',
+                              value: currentUser.email ?? 'Aucun',
                               onTap: () {
                                 basicInfoEdit(currentUser, context);
                               },
@@ -134,27 +149,38 @@ class _UserSettingPageState extends State<UserSettingPage> {
                             HeaderText(
                               text: 'Compte',
                             ),
-                            MenuToggle(
-                              text: 'Desactiver',
-                              value: true,
-                              onToggle: (value) {},
-                            ),
+                            if (currentUser.userType == UserType.travailleur)
+                              MenuTile(
+                                text: 'Metiers',
+                                value: '7',
+                                onTap: () {
+                                  Navigator.pushNamed(context, 'metiers');
+                                },
+                              ),
                             MenuTile(
                               text: 'Type',
-                              value: currentUser.userType,
+                              value: currentUser.accountType,
                               onTap: () {},
                             ),
-                            MenuTile(
-                              text: 'Abonnement',
-                              value: 'Gratuit',
-                              onTap: () {},
-                            ),
+                            if (currentUser.userType == UserType.travailleur)
+                              MenuTile(
+                                text: 'Abonnement',
+                                value: 'Gratuit',
+                                onTap: () {},
+                              ),
                             MenuTile(
                               text: 'Mot de passe',
                               onTap: () {
                                 _passwordEdit(currentUser, context);
                               },
                             ),
+                            if (currentUser.accountType !=
+                                AccountType.entreprise)
+                              MenuTile(
+                                text:
+                                    'Se Connecter comme ${UserType.toggleType(currentUser.userType)}',
+                                onTap: () {},
+                              ),
                             MenuTile(
                               text: 'Se deconnecter',
                               onTap: () {
@@ -188,12 +214,12 @@ class _UserSettingPageState extends State<UserSettingPage> {
                     elevation: 0,
                     title: Text('Parametres'),
                     backgroundColor: Colors.transparent,
-                    actions: <Widget>[
+                    /* actions: <Widget>[
                       IconButton(
                         icon: Icon(Icons.more_horiz),
                         onPressed: () {},
                       )
-                    ],
+                    ], */
                   ),
                 )
               ],
@@ -209,21 +235,21 @@ class _UserSettingPageState extends State<UserSettingPage> {
 
   Future basicInfoEdit(UserModel currentUser, BuildContext context) {
     return showDialog(
-      child: Dialog(child: BasicInfo(currentUser)),
+      child: Dialog(child: BasicInfo(currentUser.copyWith())),
       context: context,
     );
   }
 
   Future _profileEdit(UserModel currentUser, BuildContext context) {
     return showDialog(
-      child: Dialog(child: Profile(currentUser)),
+      child: Dialog(child: Profile(currentUser.copyWith())),
       context: context,
     );
   }
 
   Future _passwordEdit(UserModel currentUser, BuildContext context) {
     return showDialog(
-      child: Dialog(child: Password(user: currentUser)),
+      child: Dialog(child: Password(user: currentUser.copyWith())),
       context: context,
     );
   }
@@ -324,7 +350,7 @@ class SettingDecorationPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      (user.nom + ' ' + user.prenom).toUpperCase(),
+                      user.name.toUpperCase(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -344,7 +370,7 @@ class SettingDecorationPage extends StatelessWidget {
                           width: 5,
                         ),
                         Text(
-                          (user.pays + ' ' + user.ville).toUpperCase(),
+                          user.address.toUpperCase(),
                           style: TextStyle(fontSize: 10, color: Colors.grey),
                         ),
                       ],
