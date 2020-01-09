@@ -106,7 +106,10 @@ class AnnoncesRepository {
 
   /// Ajouter une annonces
   Future<AnnonceModel> create(AnnonceModel annonce) async {
-    annonce.annonceur = authBloc.currentUser;
+    if (authBloc.currentUser.accountType == AccountType.entreprise)
+      annonce.idAnnonceurEntreprise = authBloc.currentUser.idInt;
+    else
+      annonce.idAnnonceurParticulier = authBloc.currentUser.idInt;
     annonce.createdAt = DateTime.now();
     print(annonce.annonceur.id);
     try {
@@ -147,19 +150,43 @@ class AnnoncesRepository {
   }
 
   /// Postuler a une annonces
-  Future postule(UserModel user, AnnonceModel annonce, List<int> taches) async {
-    await Future.delayed(Duration(seconds: 4));
-    int index = annonces.indexWhere((ann) => ann.id == annonce.id);
-    annonces[index] = annonce;
-    return annonces;
+  Future<ChatModel> postule(
+      UserModel user, AnnonceModel annonce, List<int> taches) async {
+    Response a;
+
+    try {
+      a = await annonceApi.postuler({
+        "id_travailleur": user.idInt,
+        "id_annonceur": annonce.annonceur.idInt,
+        "id_annonce": int.parse(annonce.id),
+        "ids_taches": taches
+      });
+      if (!a.isSuccessful) throw 'Impossible de postuler';
+      ChatModel chat = ChatModel.fromJson(a.body);
+      chatsBloc.add(ChatsAddNew(chat));
+      return chat;
+    } catch (e) {
+      print("Annonce Repo 157 Error : $e");
+      throw 'Impossible de postuler';
+    }
   }
 
   /// Attribuer les taches d'une annonce a un travailleur
-  Future attribuer(
+  Future<void> attribuer(
       UserModel user, AnnonceModel annonce, List<int> taches) async {
-    await Future.delayed(Duration(seconds: 4));
-    int index = annonces.indexWhere((ann) => ann.id == annonce.id);
-    annonces[index] = annonce;
-    return annonces;
+    Response a;
+    try {
+      a = await annonceApi.attribuer({
+        "idannonce": int.parse(annonce.id),
+        "idtravailleur": user.idInt,
+        "date_attribution": DateTime.now().toIso8601String(),
+        "taches": taches
+      });
+      if (!a.isSuccessful)
+        throw 'Impossible d\'attribuer les taches actuellement';
+    } catch (e) {
+      print("Annonce Repo 157 Error : $e");
+      throw e is String ? e : 'Operation impossible actuellement';
+    }
   }
 }

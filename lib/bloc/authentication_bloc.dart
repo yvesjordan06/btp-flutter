@@ -1,26 +1,30 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/UserRepository.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import './bloc.dart';
 
 class AuthenticationBloc
     extends HydratedBloc<AuthenticationEvent, AuthenticationState> {
+  // Repository
   final UserRepository userRepository = UserRepository();
+
+  // Bloc Variables
   UserModel currentUser;
   List<MetierModel> appMetiers = [];
+  AppStatusModel _status;
+
+  // Bloc Methods
   List<TacheModel> get taches {
     Set<TacheModel> temp = Set<TacheModel>();
     for (MetierModel m in appMetiers) {
-      // print(m.taches);
       temp = temp.union(m.taches.toSet());
     }
-    print(temp);
+
     return temp.toList();
   }
 
@@ -44,8 +48,6 @@ class AuthenticationBloc
     return temp;
   }
 
-  AppStatusModel _status;
-
   void loadAppMetier() {
     try {
       userRepository.getMetiers().then((metier) {
@@ -57,13 +59,16 @@ class AuthenticationBloc
     }
   }
 
+  // Bloc Initial State
+
   @override
   AuthenticationState get initialState {
-    print('error auth bloc line 21 ');
-    print("error auth bloc line 22 ${super.initialState}");
+    //print('error auth bloc line 21 ');
+    //print("error auth bloc line 22 ${super.initialState}");
     return super.initialState ?? AuthenticationUninitialized();
   }
 
+  // Bloc load from storage
   @override
   AuthenticationState fromJson(Map<String, dynamic> json) {
     try {
@@ -87,6 +92,7 @@ class AuthenticationBloc
     }
   }
 
+  // Bloc save to storage
   @override
   Map<String, dynamic> toJson(AuthenticationState state) {
     if (state is AuthenticationAuthenticated) {
@@ -95,21 +101,17 @@ class AuthenticationBloc
 
       return _status.toJson();
     } else if (state is AuthenticationUnauthenticated) {
-      print("authBloc 53 I'm saving");
+      //print("authBloc 53 I'm saving");
       try {
         return AppStatusModel(
-                isfirstTime: false,
-                currentUser: _status?.currentUser,
-                appMetier: appMetiers)
-            .toJson();
+          isfirstTime: false,
+          currentUser: _status?.currentUser,
+          appMetier: appMetiers,
+        ).toJson();
       } catch (e) {
         print(e);
       }
     }
-    /* else if (state is AuthenticationUnauthenticated) {
-      return UserModel().toJson();
-    } */
-
     return null;
   }
 
@@ -119,22 +121,22 @@ class AuthenticationBloc
   ) async* {
     try {
       if (event is AppStarted) {
-        print('app started');
+        //print('app started');
         if (currentUser != null) {
           try {
-            print('authbloc 73 $currentUser');
+            //print('authbloc 73 $currentUser');
             currentUser = await userRepository.getUser(
               int.parse(currentUser.id),
               accounttype: currentUser.accountType,
               usertype: currentUser.userType,
             );
-            print('authbloc 75 $currentUser');
+            // print('authbloc 75 $currentUser');
             yield AuthenticationAuthenticated(currentUser);
           } catch (e) {
             print('error auth line 71 $e');
           }
         } else {
-          print('Authbloc 82 this is null');
+          //print('Authbloc 82 this is null');
           yield AuthenticationUnauthenticated();
         }
       }
@@ -150,17 +152,17 @@ class AuthenticationBloc
       if (event is LoggedIn) {
         // await userRepository.persist();
         currentUser = event.user;
-        print('user got authenticated authbloc 102');
+        //print('user got authenticated authbloc 102');
 
         yield AuthenticationAuthenticated(currentUser);
-        print('DONE0');
+        //print('DONE0');
       }
 
       if (event is LoggedOut) {
         yield AuthenticationUnauthenticated();
         currentUser = null;
         _status = AppStatusModel(
-            appMetier: _status.appMetier,
+            appMetier: appMetiers,
             currentUser: null,
             isfirstTime: _status.isfirstTime);
         (BlocSupervisor.delegate as HydratedBlocDelegate).storage.clear();
@@ -173,8 +175,25 @@ class AuthenticationBloc
         currentUser = await userRepository.editUser(event.user);
         yield UserEdited(currentUser);
       }
+
+      if (event is SwapUser) {
+        yield EditingUser(currentUser);
+
+        try {
+          currentUser = await userRepository.authenticate(
+              telephone: currentUser.telephone,
+              motDePasse: event.password,
+              type: UserType.toggleType(currentUser.userType).toLowerCase());
+          yield AuthenticationAuthenticated(currentUser);
+          annoncesBloc.add(FetchAnnonce());
+          chatsBloc.add(ChatsFetch());
+        } catch (e) {
+          yield AuthFailureState(currentUser,
+              error: "Impossible d'effectuer cette requette");
+        }
+      }
     } catch (e) {
-      print(e);
+      print("Auth Bloc error $e");
     }
   }
 }

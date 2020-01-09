@@ -100,7 +100,9 @@ class AnnoncesBloc extends HydratedBloc<AnnoncesEvent, AnnoncesState> {
     if (event is PostuleAnnonce) {
       yield AnnonceTaskDoing();
       try {
-        yield AnnonceTaskSuccess(annonces);
+        ChatModel a = await repository.postule(
+            authBloc.currentUser, event.annonce, event.taches);
+        yield AnnoncePostuleSuccess(annonces, a);
       } catch (error) {
         yield AnnonceTaskFailed(error);
       }
@@ -108,6 +110,8 @@ class AnnoncesBloc extends HydratedBloc<AnnoncesEvent, AnnoncesState> {
     if (event is AttribuerAnnonce) {
       yield AnnonceTaskDoing();
       try {
+        await repository.attribuer(
+            event.travailleur, event.annonce, event.taches);
         yield AnnonceTaskSuccess(annonces);
       } catch (error) {
         yield AnnonceTaskFailed(error);

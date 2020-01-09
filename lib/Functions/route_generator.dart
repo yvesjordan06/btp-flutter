@@ -9,6 +9,7 @@ import 'package:btpp/Pages/Metier/add.dart';
 import 'package:btpp/Pages/Metier/index.dart';
 import 'package:btpp/Pages/Settings/index.dart';
 import 'package:btpp/Pages/User/cv.dart';
+import 'package:btpp/Pages/User/profile.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/annonce.dart';
@@ -29,6 +30,17 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => LoadingPage());
       case 'metiers':
         return MaterialPageRoute(builder: (_) => MetierPage());
+      case 'profile':
+        if (args is UserModel) {
+          return MaterialPageRoute(
+            builder: (_) => ProfilePage(
+              user: args,
+            ),
+          );
+        }
+        // If args is not of the correct type, return an error page.
+        // You can also throw an exception while in development.
+        return _errorRoute();
       case 'metiers/add':
         return MaterialPageRoute(builder: (_) => AddMetierPage());
       case 'settings':
@@ -90,10 +102,10 @@ class RouteGenerator {
         return _errorRoute();
       case 'annonce/demandes':
         // Validation of correct data typ
-        if (args is AnnonceModel) {
+        if (args is ChatModel) {
           return MaterialPageRoute(
             builder: (_) => DemandesAnnoncePage(
-              annonce: args,
+              chat: args,
             ),
           );
         }

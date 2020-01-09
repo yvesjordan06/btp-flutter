@@ -85,10 +85,22 @@ class _SingleChatPageState extends State<SingleChatPage> {
                       arguments: widget.chat.annonceModel);
                 },
               ),
-              IconButton(
-                icon: Icon(Icons.more_vert),
-                onPressed: () {},
-              )
+              if (authBloc.currentUser.userType == UserType.annonceur)
+                PopupMenuButton(
+                  onSelected: (value) {
+                    if (value == 'attribuer')
+                      Navigator.pushNamed(context, 'annonce/demandes',
+                          arguments: widget.chat);
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return <PopupMenuEntry>[
+                      PopupMenuItem(
+                        child: Text('Attribuer des taches'),
+                        value: 'attribuer',
+                      )
+                    ];
+                  },
+                )
             ],
             title: ListTile(
               contentPadding: EdgeInsets.all(0),
@@ -110,14 +122,19 @@ class _SingleChatPageState extends State<SingleChatPage> {
                 tag: 'nom' + widget.chat.hashCode.toString(),
               ),
               subtitle: Text('Construction'),
+              onTap: () {
+                if (authBloc.currentUser.userType == UserType.annonceur)
+                  Navigator.pushNamed(context, 'profile',
+                      arguments: widget.chat.contact);
+              },
             ),
           ),
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage('images/background1.jpg'),
-                )),
+              fit: BoxFit.cover,
+              image: AssetImage('images/background1.jpg'),
+            )),
             child: Column(
               children: <Widget>[
                 Expanded(
@@ -153,14 +170,13 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                           ImageDisplay.file(
                                             messages[index].localImage,
                                           )
+                                        else if (messages[index].image != null)
+                                          ImageDisplay.network(
+                                            messages[index].image,
+                                          )
                                         else
-                                          if (messages[index].image != null)
-                                            ImageDisplay.network(
-                                              messages[index].image,
-                                            )
-                                          else
-                                            Text(messages[index].text?.trim() ??
-                                                'Message supprimé'),
+                                          Text(messages[index].text?.trim() ??
+                                              'Message supprimé'),
                                         SizedBox(
                                           height: 5,
                                         ),
@@ -192,20 +208,20 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                       ? BubbleEdges.only(top: 10, right: 30)
                                       : BubbleEdges.only(top: 10, left: 30),
                                   nip: (!messages[index].hasImage &&
-                                      messages[index].text == null)
+                                          messages[index].text == null)
                                       ? BubbleNip.no
                                       : messages[index].sender
-                                      ? BubbleNip.leftTop
-                                      : BubbleNip.rightTop,
+                                          ? BubbleNip.leftTop
+                                          : BubbleNip.rightTop,
                                   alignment: messages[index].sender
                                       ? Alignment.topLeft
                                       : Alignment.topRight,
                                   color: (!messages[index].hasImage &&
-                                      messages[index].text == null)
+                                          messages[index].text == null)
                                       ? Colors.grey[400]
                                       : messages[index].sender
-                                      ? Colors.lightBlue[200]
-                                      : ThemeData().accentColor,
+                                          ? Colors.lightBlue[200]
+                                          : ThemeData().accentColor,
                                 ),
                                 key: GlobalKey(),
                               ),
@@ -219,28 +235,30 @@ class _SingleChatPageState extends State<SingleChatPage> {
                             children: <Widget>[
                               Bubble(
                                 color: Colors.indigo[300],
-                                child: Text('Hiro a postuler aux taches'),
+                                child: Text(
+                                    '${widget.chat.travailleur?.name ?? authBloc.currentUser.name} a postuler aux taches'),
                                 alignment: Alignment.center,
                                 margin: BubbleEdges.all(8),
                               ),
                               Wrap(
                                 children: List<Widget>.generate(
-                                    4,
-                                        (index) => Container(
-                                      margin: EdgeInsets.all(4),
-                                      child: Chip(
-                                        avatar: Icon(
-                                          Icons.done,
-                                          size: 12,
-                                          color: Colors.lime,
-                                        ),
-                                        backgroundColor: Colors.lightBlue,
-                                        label: Text(
-                                          'macon',
-                                          style: TextStyle(fontSize: 11),
-                                        ),
-                                      ),
-                                    )),
+                                    widget.chat.taches.length,
+                                    (index) => Container(
+                                          margin: EdgeInsets.all(4),
+                                          child: Chip(
+                                            avatar: Icon(
+                                              Icons.done,
+                                              size: 12,
+                                              color: Colors.lime,
+                                            ),
+                                            backgroundColor: Colors.lightBlue,
+                                            label: Text(
+                                              widget
+                                                  .chat.taches[index].intitule,
+                                              style: TextStyle(fontSize: 11),
+                                            ),
+                                          ),
+                                        )),
                               ),
                             ],
                           ),
@@ -262,7 +280,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               for (var asset in value) {
                                 File img = await assetImageToFile(asset);
                                 MessageModel msg =
-                                MessageModel(sentAt: DateTime.now());
+                                    MessageModel(sentAt: DateTime.now());
                                 msg.localImage = img;
                                 if (authBloc.currentUser.userType ==
                                     UserType.annonceur)

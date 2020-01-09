@@ -8,10 +8,10 @@ import 'authentication_api.dart';
 export './authentication_api.dart';
 
 String token =
-    '1yn7AJhkNX0ItrSnYrA/wzIMnIOIve+a99x4ZTKlJc6SLdCIwdrnpGcCzT02UCYytCk=';
+    'Y6lF5Ap+QzMyDAL2++1VwD+IrVSuVdfciNHDyBHSNXInNkC9LpA87f2501Kz674ZtWM=s';
 
 const String mainUrl = 'https://btp-partnership.herokuapp.com';
-ChopperClient chopper = ChopperClient(
+ChopperClient get chopper => ChopperClient(
     baseUrl: mainUrl,
     services: [
       AuthenticationApi.create(),
@@ -39,8 +39,9 @@ ChopperClient chopper = ChopperClient(
       }
     ]);
 
-final authApi = AuthenticationApi.create(chopper);
+AuthenticationApi get authApi => AuthenticationApi.create(chopper);
 Request lastRequest;
-final annonceApi = AnnonceApi.create(chopper);
-final actuApi = ActuApi.create(chopper);
-final chatApi = ChatApi.create(chopper);
+AnnonceApi get annonceApi => AnnonceApi.create(chopper);
+ActuApi get actuApi => ActuApi.create(chopper);
+ChatApi get chatApi => ChatApi.create(chopper);
+TachesApi get tachesApi => TachesApi.create(chopper);

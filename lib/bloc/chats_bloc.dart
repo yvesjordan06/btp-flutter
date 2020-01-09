@@ -85,6 +85,11 @@ class ChatsBloc extends HydratedBloc<ChatsEvent, ChatsState> {
       }
     }
 
+    if (event is ChatsAddNew) {
+      list = [event.chat, ...list];
+      yield ChatsFetchingSuccess(list);
+    }
+
     if (event is ChatsMessageRecieving) {
       yield ChatsMessageRecieved(event.newMessage);
       list.sort(

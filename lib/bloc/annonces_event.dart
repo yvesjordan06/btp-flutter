@@ -13,12 +13,13 @@ class FetchAnnonce extends AnnoncesEvent {
 }
 
 class PostuleAnnonce extends AnnoncesEvent {
-  final dynamic payload;
+  final AnnonceModel annonce;
+  final List<int> taches;
 
-  const PostuleAnnonce(this.payload);
+  const PostuleAnnonce(this.annonce, this.taches);
 
   @override
-  List<Object> get props => [payload];
+  List<Object> get props => [annonce, taches];
 }
 
 class ClearAnnonce extends AnnoncesEvent {

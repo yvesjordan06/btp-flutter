@@ -15,6 +15,12 @@ class AppStarted extends AuthenticationEvent {}
 
 class ReloadUser extends AuthenticationEvent {}
 
+class SwapUser extends AuthenticationEvent {
+  final String password;
+
+  SwapUser(this.password) : assert(password != null && password.isNotEmpty);
+}
+
 class LoggedIn extends AuthenticationEvent {
   final UserModel user;
 

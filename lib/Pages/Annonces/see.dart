@@ -90,7 +90,8 @@ class SeeAnnonce extends StatelessWidget {
                           },
                         ),
                       ),
-                    if (authBloc.currentUser.userType == UserType.annonceur)
+                    if (authBloc.currentUser.userType == UserType.annonceur &&
+                        false)
                       PopupMenuItem(
                         child: ListTile(
                           title: Text('Demandes'),
@@ -102,7 +103,8 @@ class SeeAnnonce extends StatelessWidget {
                           },
                         ),
                       ),
-                    if (authBloc.currentUser.userType == UserType.annonceur)
+                    if (authBloc.currentUser.userType == UserType.annonceur &&
+                        false)
                       PopupMenuItem(
                         child: ListTile(
                           title: Text('Gerer'),
@@ -271,15 +273,74 @@ Widget annonceSummary(context, AnnonceModel annonce) => Container(
                     )
                   ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, 'annonce/demandes',
-                        arguments: annonce);
-                  },
-                  child: Row(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.format_paint,
+                          size: 50,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(annonce.taches.length.toString()),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              'Taches',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                if (false)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, 'annonce/demandes',
+                          arguments: annonce);
+                    },
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.people_outline,
+                          size: 50,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('0'),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              'Demandes',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                if (false)
+                  Row(
                     children: <Widget>[
                       Icon(
-                        Icons.people_outline,
+                        Icons.done_outline,
                         size: 50,
                       ),
                       SizedBox(
@@ -293,70 +354,13 @@ Widget annonceSummary(context, AnnonceModel annonce) => Container(
                             height: 5,
                           ),
                           Text(
-                            'Demandes',
+                            'Terminées',
                             style: TextStyle(color: Colors.grey),
                           ),
                         ],
                       )
                     ],
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.format_paint,
-                      size: 50,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(annonce.taches.length.toString()),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          'Taches',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.done_outline,
-                      size: 50,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('0'),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          'Terminées',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
               ],
             ),
           ],

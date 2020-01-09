@@ -80,3 +80,21 @@ class _$AnnonceApi extends AnnonceApi {
     return client.send<dynamic, dynamic>($request);
   }
 }
+
+class _$TachesApi extends TachesApi {
+  _$TachesApi([ChopperClient client]) {
+    if (client == null) return;
+    this.client = client;
+  }
+
+  @override
+  final definitionType = TachesApi;
+
+  @override
+  Future<Response> attribuerTache(Map<String, dynamic> body) {
+    final $url = '/taches/annonce/attribuer';
+    final $body = body;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+}

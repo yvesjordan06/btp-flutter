@@ -126,8 +126,20 @@ class AnnonceModel {
   DateTime dateDebut;
   @JsonKey(name: 'date_fin')
   DateTime dateFin;
+  @JsonKey(name: 'id_annonceur_entreprise')
+  int idAnnonceurEntreprise;
+  @JsonKey(name: 'id_annonceur_particulier')
+  int idAnnonceurParticulier;
   List<TacheModel> taches;
-  UserModel annonceur;
+  UserModel get annonceur => idAnnonceurEntreprise != null
+      ? UserModel(
+          userType: UserType.annonceur,
+          accountType: AccountType.entreprise,
+          id: idAnnonceurEntreprise.toString())
+      : UserModel(
+          userType: UserType.annonceur,
+          accountType: AccountType.particulier,
+          id: idAnnonceurParticulier.toString());
 
   AnnonceModel({
     this.intitule = '',
@@ -138,7 +150,9 @@ class AnnonceModel {
     this.dateFin,
     this.taches,
     this.id = '',
-    this.annonceur,
+    //this.annonceur,
+    this.idAnnonceurEntreprise,
+    this.idAnnonceurParticulier,
   });
 
   NewAnnonceModel makeNew() {
@@ -407,6 +421,9 @@ class ChatModel {
   final UserModel travailleur;
   @JsonKey(name: 'annonce')
   final AnnonceModel annonceModel;
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
+  final List<TacheModel> taches;
 
   //final MessageModel lastMessage;
   final List<MessageModel> messages;
@@ -415,12 +432,16 @@ class ChatModel {
 
   ChatModel(
       {this.id,
+      this.taches,
       this.annonceur,
       this.travailleur,
       this.annonceModel,
-      this.messages});
+      this.messages,
+      this.createdAt});
 
-  MessageModel get lastMessage => messages.last;
+  MessageModel get lastMessage => (messages != null && messages.length > 0)
+      ? messages.last
+      : MessageModel(sentAt: DateTime(1990), text: 'Aucun Echage');
 
   UserModel get contact => annonceur ?? travailleur;
 

@@ -70,3 +70,11 @@ class AnnonceDeleted extends AnnoncesFetched {
   @override
   List<Object> get props => [];
 }
+
+class AnnoncePostuleSuccess extends AnnoncesFetched {
+  final ChatModel chat;
+  AnnoncePostuleSuccess(List<AnnonceModel> annonce, this.chat) : super(annonce);
+
+  @override
+  List<Object> get props => [chat];
+}

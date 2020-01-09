@@ -19,6 +19,15 @@ class ChatsMessageRecieving extends ChatsEvent {
   List<Object> get props => null;
 }
 
+class ChatsAddNew extends ChatsEvent {
+  final ChatModel chat;
+
+  ChatsAddNew(this.chat);
+
+  @override
+  List<Object> get props => [chat];
+}
+
 class ChatsMessageSend extends ChatsEvent {
   final MessageModel message;
   final int chatID;

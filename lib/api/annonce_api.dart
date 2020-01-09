@@ -1,3 +1,4 @@
+import 'package:btpp/api/chopper.dart';
 import 'package:chopper/chopper.dart';
 
 part 'annonce_api.chopper.dart';
@@ -33,6 +34,23 @@ abstract class AnnonceApi extends ChopperService {
 
   @Post(path: '/entreprise/creer')
   Future<Response> postAnnonceEntreprise(
+    @Body() Map<String, dynamic> body,
+  );
+
+  Future<Response> postuler(Map<String, dynamic> body) {
+    return chatApi.createChat(body);
+  }
+
+  Future<Response> attribuer(Map<String, dynamic> body) {
+    return tachesApi.attribuerTache(body);
+  }
+}
+
+@ChopperApi(baseUrl: '/taches')
+abstract class TachesApi extends ChopperService {
+  static TachesApi create([ChopperClient client]) => _$TachesApi(client);
+  @Post(path: '/annonce/attribuer')
+  Future<Response> attribuerTache(
     @Body() Map<String, dynamic> body,
   );
 }

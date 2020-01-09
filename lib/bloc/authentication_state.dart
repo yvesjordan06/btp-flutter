@@ -1,5 +1,6 @@
 import 'package:btpp/Models/annonce.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 abstract class AuthenticationState extends Equatable {
   @override
@@ -31,6 +32,14 @@ class UserEdited extends AuthenticationAuthenticated {
 
 class PictureChanged extends AuthenticationAuthenticated {
   PictureChanged(UserModel user) : super(user);
+}
+
+class AuthFailureState extends AuthenticationAuthenticated {
+  final String error;
+
+  AuthFailureState(UserModel user, {@required this.error})
+      : assert(error != null && error.isNotEmpty),
+        super(user);
 }
 
 class AuthenticationUnauthenticated extends AuthenticationState {}
