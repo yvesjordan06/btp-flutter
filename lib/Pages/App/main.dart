@@ -34,7 +34,7 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
       });
 
     var initializationSettingsAndroid =
-        new AndroidInitializationSettings('favicon');
+        new AndroidInitializationSettings('favicon.png');
     var initializationSettingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: (
       id,
@@ -133,76 +133,74 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
               }
               return bloc != null
                   ? StreamBuilder(
-                stream: bloc.asBroadcastStream(),
-                builder: (context, state) {
-                  //print('main 113 $state.');
-                  if ((index == 0 && state.data is AnnoncesError) ||
-                      (index == 1 &&
-                          state.data is ActuFetchedFailedState) ||
-                      (index == 2 && state.data is ChatsFetchingFailed))
-                    return InkWell(
+                      stream: bloc.asBroadcastStream(),
+                      builder: (context, state) {
+                        //print('main 113 $state.');
+                        if ((index == 0 && state.data is AnnoncesError) ||
+                            (index == 1 &&
+                                state.data is ActuFetchedFailedState) ||
+                            (index == 2 && state.data is ChatsFetchingFailed))
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = index;
+                              });
+                              tabController.animateTo(index,
+                                  duration: Duration(milliseconds: 300));
+                              if (index == 0) annoncesBloc.add(FetchAnnonce());
+                              if (index == 1) actuBloc.add(ActuFetch());
+                              if (index == 2) chatsBloc.add(ChatsFetch());
+                            },
+                            child: ItemWidget(
+                              animationDuration: Duration(milliseconds: 300),
+                              backgroundColor:
+                                  Theme.of(context).bottomAppBarColor,
+                              iconSize: 24,
+                              isSelected: _selectedIndex == index,
+                              item: items[index],
+                              itemCornerRadius: 50,
+                              error: true,
+                            ),
+                          );
+                        else
+                          return InkWell(
+                            onTap: () {
+                              tabController.animateTo(index,
+                                  duration: Duration(milliseconds: 277));
+                            },
+                            child: ItemWidget(
+                              animationDuration: Duration(milliseconds: 277),
+                              backgroundColor:
+                                  Theme.of(context).bottomAppBarColor,
+                              iconSize: 24,
+                              isSelected: _selectedIndex == index,
+                              item: items[index],
+                              itemCornerRadius: 50,
+                              badgeContent:
+                                  (index == 2 && chatsBloc.list != null)
+                                      ? chatsBloc.list
+                                          .where((t) => t.unread > 0)
+                                          .length
+                                          .toString()
+                                      : '',
+                            ),
+                          );
+                      },
+                    )
+                  : InkWell(
                       onTap: () {
-                        setState(() {
-                          _selectedIndex = index;
-                        });
                         tabController.animateTo(index,
                             duration: Duration(milliseconds: 300));
-                        if (index == 0) annoncesBloc.add(FetchAnnonce());
-                        if (index == 1) actuBloc.add(ActuFetch());
-                        if (index == 2) chatsBloc.add(ChatsFetch());
-                      },
-                      child: ItemWidget(
-                        animationDuration: Duration(milliseconds: 300),
-                        backgroundColor:
-                        Theme.of(context).bottomAppBarColor,
-                        iconSize: 24,
-                        isSelected: _selectedIndex == index,
-                        item: items[index],
-                        itemCornerRadius: 50,
-                        error: true,
-                      ),
-                    );
-                  else
-                    return InkWell(
-                      onTap: () {
-                        tabController.animateTo(index,
-                            duration: Duration(milliseconds: 277));
                       },
                       child: ItemWidget(
                         animationDuration: Duration(milliseconds: 277),
-                        backgroundColor:
-                        Theme.of(context).bottomAppBarColor,
+                        backgroundColor: Theme.of(context).bottomAppBarColor,
                         iconSize: 24,
                         isSelected: _selectedIndex == index,
                         item: items[index],
                         itemCornerRadius: 50,
-                        badgeContent:
-                        (index == 2 && chatsBloc.list != null)
-                            ? chatsBloc.list
-                            .where((t) => t.unread > 0)
-                            .length
-                            .toString()
-                            : '',
                       ),
                     );
-                },
-              )
-                  : InkWell(
-                onTap: () {
-                  tabController.animateTo(index,
-                      duration: Duration(milliseconds: 300));
-                },
-                child: ItemWidget(
-                  animationDuration: Duration(milliseconds: 277),
-                  backgroundColor: Theme
-                      .of(context)
-                      .bottomAppBarColor,
-                  iconSize: 24,
-                  isSelected: _selectedIndex == index,
-                  item: items[index],
-                  itemCornerRadius: 50,
-                ),
-              );
             }),
           ),
         ),

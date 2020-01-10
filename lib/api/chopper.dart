@@ -33,7 +33,8 @@ ChopperClient get chopper => ChopperClient(
         if (r.statusCode == 401) {
           Request r2 = lastRequest;
           token = await authApi.authenticateApi();
-          return await chopper.send(r2);
+          return await chopper
+              .send(r2.replace(headers: {'X-Auth-Token': token}));
         }
         return r;
       }

@@ -16,7 +16,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     if (event is ChatNotificationClicked) {
       try {
         yield NotificationOpenChat(
-            chatsBloc.list.firstWhere((f) => f.id == event.chatID));
+            chatsBloc.list.firstWhere((f) => f.id.toString() == event.chatID));
       } catch (e) {}
     }
   }

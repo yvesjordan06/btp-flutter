@@ -48,6 +48,7 @@ dependencies:
   intro_slider: ^2.2.8
 
   bottom_navy_bar: ^5.2.0
+  permission_handler: '^4.0.0'
 
   #sqflite: any
   # path_provider: any
