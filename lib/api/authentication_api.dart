@@ -37,6 +37,32 @@ abstract class AuthenticationApi extends ChopperService {
   @Get(path: 'metiers')
   Future<Response> getMetiers();
 
+  @Post(path: 'travailleurs/lierTravailleurMetiers')
+  Future<Response> addMetierToTravailleur(@Body() Map<String, dynamic> body);
+
+  @Post(path: 'travailleurs/delier-tavailleur-metiers')
+  Future<Response> removeMetierToTravailleur(@Body() Map<String, dynamic> body);
+
+  @Post(path: 'CVs/comptence/ajouter/{id}')
+  Future<Response> addCompetenceToCv(@Path('id') int travailleurID,
+      @Body() Map<String, dynamic> body);
+
+  @Post(path: 'CVs/cursus/ajouter/{id}')
+  Future<Response> addCursusToCv(@Path('id') int travailleurID,
+      @Body() Map<String, dynamic> body);
+
+  @Post(path: 'CVs/comptence/delete/{id}')
+  Future<Response> deleteCompetenceToCv(@Path('id') int travailleurID,
+      @Body() Map<String, dynamic> body);
+
+  @Post(path: 'CVs/cursus/delete/{id}')
+  Future<Response> deleteCursusToCv(@Path('id') int travailleurID,
+      @Body() Map<String, dynamic> body);
+
+  @Post(path: 'CVs/biographie/modifier/{id}')
+  Future<Response> addBiographyToCv(@Path('id') int travailleurID,
+      @Body() Map<String, dynamic> body);
+
   @Get(path: 'annonceurs/entreprises/{id}')
   Future<Response> getAnnonceurEntrepriseById(@Path('id') int id);
 

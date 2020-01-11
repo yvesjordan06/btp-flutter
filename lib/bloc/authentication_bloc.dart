@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/Repository/UserRepository.dart';
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import './bloc.dart';
@@ -120,6 +119,51 @@ class AuthenticationBloc
     AuthenticationEvent event,
   ) async* {
     try {
+      if (event is AddMetierEvent) {
+        yield AuthDoingState(currentUser);
+
+        try {
+          yield AuthDoingSuccessState(currentUser);
+        } catch (e) {
+          yield AuthDoingFailedState(currentUser, error: e);
+        }
+      }
+      if (event is RemoveMetierEvent) {
+        yield AuthDoingState(currentUser);
+
+        try {
+          yield AuthDoingSuccessState(currentUser);
+        } catch (e) {
+          yield AuthDoingFailedState(currentUser, error: e);
+        }
+      }
+      if (event is AddCursusEvent) {
+        yield AuthDoingState(currentUser);
+
+        try {
+          yield AuthDoingSuccessState(currentUser);
+        } catch (e) {
+          yield AuthDoingFailedState(currentUser, error: e);
+        }
+      }
+      if (event is AddCompetenceEvent) {
+        yield AuthDoingState(currentUser);
+
+        try {
+          yield AuthDoingSuccessState(currentUser);
+        } catch (e) {
+          yield AuthDoingFailedState(currentUser, error: e);
+        }
+      }
+      if (event is AddBioEvent) {
+        yield AuthDoingState(currentUser);
+
+        try {
+          yield AuthDoingSuccessState(currentUser);
+        } catch (e) {
+          yield AuthDoingFailedState(currentUser, error: e);
+        }
+      }
       if (event is AppStarted) {
         //print('app started');
         if (currentUser != null) {

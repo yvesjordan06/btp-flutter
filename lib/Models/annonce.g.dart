@@ -178,7 +178,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
         : CVModel.fromJson(json['cv'] as Map<String, dynamic>),
     metiers: (json['metiers'] as List)
         ?.map((e) =>
-    e == null ? null : MetierModel.fromJson(e as Map<String, dynamic>))
+            e == null ? null : MetierModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
   );
 }
@@ -201,8 +201,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'ville': instance.ville,
       'quartier': instance.quartier,
       'boite_postale': instance.boitePostal,
-  'cv': instance.cv,
-  'metiers': instance.metiers,
+      'cv': instance.cv,
+      'metiers': instance.metiers,
     };
 
 AnnonceListModel _$AnnonceListModelFromJson(Map<String, dynamic> json) {
@@ -288,7 +288,7 @@ ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
     id: json['id'] as int,
     taches: (json['taches'] as List)
         ?.map((e) =>
-    e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
+            e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     annonceur: json['annonceur'] == null
         ? null
@@ -314,8 +314,8 @@ Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
       'annonceur': instance.annonceur,
       'travailleur': instance.travailleur,
       'annonce': instance.annonceModel,
-  'created_at': instance.createdAt?.toIso8601String(),
-  'taches': instance.taches,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'taches': instance.taches,
       'messages': instance.messages,
       'unread': instance.unread,
     };

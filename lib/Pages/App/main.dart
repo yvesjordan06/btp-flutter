@@ -34,7 +34,7 @@ class _MainAppState extends State<MainApp> with TickerProviderStateMixin {
       });
 
     var initializationSettingsAndroid =
-        new AndroidInitializationSettings('favicon.png');
+    new AndroidInitializationSettings('favicon');
     var initializationSettingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: (
       id,
