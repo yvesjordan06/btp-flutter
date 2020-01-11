@@ -1,11 +1,5 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/api/chopper.dart';
-import 'package:btpp/bloc/bloc.dart';
-
 import 'package:chopper/chopper.dart';
 import 'package:meta/meta.dart';
 
@@ -117,8 +111,19 @@ class UserRepository {
 
       if (!a.isSuccessful) throw 'json.decode(a.error)';
       print(a.body['annonceur'] ?? a.body['travailleur']);
+      bool isTravailleur = a.body['travailleur'] != null;
+
       UserModel user =
           UserModel.fromJson(a.body['annonceur'] ?? a.body['travailleur']);
+
+      if (isTravailleur)
+        user = user.copyWith(
+            metiers: List<MetierModel>.generate(a.body['metiers'].length,
+                    (index) => MetierModel.fromJson(a.body['metiers'][index])));
+
+      print('!!!! ${a.body['travailleur']}');
+      print('!!!! ${user.cv}');
+      print('!!!! ${user.metiers}');
 
       user.accountType = user.raisonSociale == null
           ? AccountType.particulier

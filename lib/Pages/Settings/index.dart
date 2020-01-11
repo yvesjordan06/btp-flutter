@@ -154,10 +154,18 @@ class _UserSettingPageState extends State<UserSettingPage> {
                                 if (currentUser.userType ==
                                     UserType.travailleur)
                                   MenuTile(
-                                    text: 'Metiers',
-                                    value: '7',
+                                    text: currentUser.metiers != null
+                                        ? 'Metiers'
+                                        : 'Ajouter des metier',
+                                    value: currentUser.metiers?.length
+                                        ?.toString() ??
+                                        '',
                                     onTap: () {
-                                      Navigator.pushNamed(context, 'metiers');
+                                      if (currentUser.metiers != null)
+                                        Navigator.pushNamed(context, 'metiers');
+                                      else
+                                        Navigator.pushNamed(
+                                            context, 'metiers/add');
                                     },
                                   ),
                                 MenuTile(

@@ -2,6 +2,7 @@ import 'package:btpp/Models/annonce.dart';
 import 'package:btpp/api/chopper.dart';
 import 'package:btpp/bloc/bloc.dart';
 import 'package:chopper/chopper.dart';
+import 'package:flutter/cupertino.dart';
 
 List<AnnonceModel> annonces = [
   AnnonceModel(
@@ -78,8 +79,11 @@ class AnnoncesRepository {
             .getAnnoncesForTravailleur(user.idInt)
             .timeout(Duration(seconds: 30));
     } catch (e) {
+      debugPrint(
+          '!!! Annonce repository: FetchAll Status in Error : ${a.statusCode}');
       throw 'Erreur ';
     }
+    debugPrint('!!! Annonce repository: FetchAll Status : ${a.statusCode}');
     if (!a.isSuccessful) throw 'Error';
     AnnonceListModel b = AnnonceListModel(List<AnnonceModel>.generate(
         a.body.length,

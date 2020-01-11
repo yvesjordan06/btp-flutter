@@ -24,7 +24,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder(
         bloc: _bloc,
         builder: (BuildContext context, AuthenticationState state) {
@@ -144,6 +143,7 @@ class ProfilePage extends StatelessWidget {
                           child: user != null
                               ? RaisedButton(
                                   onPressed: () {
+                                    print(_user.metiers);
                                     Navigator.pushNamed(context, 'cv',
                                         arguments: _user);
                                   },
@@ -154,6 +154,7 @@ class ProfilePage extends StatelessWidget {
                                 )
                               : RaisedButton(
                                   onPressed: () {
+                                    print(_user.metiers);
                                     Navigator.pushNamed(context, 'cv',
                                         arguments: _user);
                                   },

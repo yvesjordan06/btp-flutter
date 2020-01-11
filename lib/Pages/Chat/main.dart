@@ -16,48 +16,31 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin {
   UserState userState = AppState.userState;
-  AnimationController controller;
 
   UserModel currentUser = AppState.userState.currentUser;
 
   List<ChatModel> list = [];
 
-  final ChatsBloc bloc = chatsBloc..add(ChatsFetch());
+  final ChatsBloc bloc = chatsBloc;
 
   bool hasInit = false;
 
   double top = 0;
   double left = 0;
 
-  Animation<double> b;
-
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
-    controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 3));
-
-    controller.forward();
-
-    b = Tween<double>(begin: 0.3, end: 1).animate(CurvedAnimation(
-        curve: Curves.bounceIn,
-        reverseCurve: Curves.easeOut,
-        parent: controller))
-      ..addStatusListener((l) {
-        if (l == AnimationStatus.completed) controller.reverse();
-        if (l == AnimationStatus.dismissed) controller.forward();
-      });
-
     super.initState();
+    bloc.add(ChatsFetch());
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -84,30 +67,8 @@ class _ChatListScreenState extends State<ChatListScreen>
         bloc: bloc,
         builder: (context, state) {
           if (state is ChatsFetchingState)
-            return AnimatedBuilder(
-              animation: controller,
-              builder: (BuildContext context, Widget child) {
-                return Container(
-                  color: Colors.transparent,
-                  margin: EdgeInsets.all(Tween<double>(begin: 0, end: 34)
-                      .animate(controller)
-                      .value),
-                  child: Center(
-                    child: Transform.scale(
-                      scale: b.value,
-                      child: Transform.rotate(
-                        angle: Tween<double>(begin: -0.5, end: 0.5)
-                            .animate(controller)
-                            .value,
-                        child: Text(
-                          'Chargement ...',
-                          style: TextStyle(fontSize: 32),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
+            return Center(
+              child: Text('Chargement..'),
             );
 
           return Container(

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
+import 'cv.model.dart';
+
 part 'annonce.g.dart';
 
 @JsonSerializable()
@@ -231,9 +233,12 @@ class UserModel {
   String quartier = '';
   @JsonKey(name: 'boite_postale')
   String boitePostal = '';
+  @JsonKey(nullable: true)
+  final CVModel cv;
+  @JsonKey(nullable: true)
+  final List<MetierModel> metiers;
 
-  UserModel({
-    this.id = '',
+  UserModel({this.id = '',
     this.nom = '',
     this.prenom = '',
     this.telephone = '',
@@ -251,7 +256,8 @@ class UserModel {
     this.boitePostal = '',
     this.createdAt,
     this.email,
-  });
+    this.cv,
+    this.metiers});
 
   String get name => (raisonSociale) ?? (nom + ' ' + prenom);
 
@@ -294,6 +300,8 @@ class UserModel {
     String ville,
     String quartier,
     String boitePostal,
+    CVModel cv,
+    List<MetierModel> metiers,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -314,6 +322,8 @@ class UserModel {
       quartier: quartier ?? this.quartier,
       boitePostal: boitePostal ?? this.boitePostal,
       email: email ?? this.email,
+      metiers: metiers ?? this.metiers,
+      cv: cv ?? this.cv,
     );
   }
 }

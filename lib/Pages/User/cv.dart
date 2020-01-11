@@ -56,9 +56,7 @@ class _CVPageState extends State<CVPage> {
                   SizedBox(
                     height: 5,
                   ),
-                  Text(
-                    'Lorem Ipsum test test test test test test Lorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test testLorem Ipsum test test test test test test',
-                  ),
+                  Text(widget.user.cv.biographie),
                   SizedBox(
                     height: 15,
                   ),
@@ -68,18 +66,11 @@ class _CVPageState extends State<CVPage> {
                   SizedBox(
                     height: 5,
                   ),
-                  CompetenceTile(
-                    type: 'Langues',
-                    value: 'Français',
-                  ),
-                  CompetenceTile(
-                    type: 'Secretariat',
-                    value: 'Word',
-                  ),
-                  CompetenceTile(
-                    type: 'Eglise',
-                    value: 'Pasteur',
-                  ),
+                  ...widget.user.cv.competences
+                      .map((f) =>
+                      CompetenceTile(
+                          value: f.intitule, type: f.value.join(",")))
+                      .toList(),
                   Material(
                       child: ListTile(
                     title: Text('Ajouter'),

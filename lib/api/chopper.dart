@@ -1,14 +1,14 @@
 import 'package:btpp/api/annonce_api.dart';
 import 'package:btpp/api/chat_api.dart';
 import 'package:chopper/chopper.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'actu_api.dart';
 import 'authentication_api.dart';
 
 export './authentication_api.dart';
 
-String token =
-    'Y6lF5Ap+QzMyDAL2++1VwD+IrVSuVdfciNHDyBHSNXInNkC9LpA87f2501Kz674ZtWM=s';
+String token = '';
 
 const String mainUrl = 'https://btp-partnership.herokuapp.com';
 ChopperClient get chopper => ChopperClient(
@@ -21,20 +21,21 @@ ChopperClient get chopper => ChopperClient(
     interceptors: [
       HeadersInterceptor({'X-Auth-Token': token}),
       HttpLoggingInterceptor(),
-      (Request r) {
-        print(r.headers);
-        print(r.parts);
-        print(r.baseUrl);
-        print(r.url);
-        return r;
+          (Request r) async {
+        if (r.url != "/auth-tokens" && token.isEmpty) {
+          debugPrint("!!! Token is Empty ${r.url} ");
+          token = await authApi.authenticateApi();
+        }
+
+        print("!!! CHOPPER HEADERS  ${r.headers} ");
+        print("!!! CHOPPER BODY  ${r.body} ");
+        print("!!! CHOPPER URL  ${r.url} ");
+        //print("r.url");
+        return r.replace(headers: {'X-Auth-Token': token});
       },
       (Response r) async {
-        print(r.error);
         if (r.statusCode == 401) {
-          Request r2 = lastRequest;
           token = await authApi.authenticateApi();
-          return await chopper
-              .send(r2.replace(headers: {'X-Auth-Token': token}));
         }
         return r;
       }

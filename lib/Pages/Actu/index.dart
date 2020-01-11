@@ -12,6 +12,7 @@ import 'package:btpp/Pages/User/profile.dart';
 import 'package:btpp/State/user.dart';
 import 'package:btpp/api/chopper.dart';
 import 'package:btpp/bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
@@ -42,6 +43,81 @@ class _ActuPageState extends State<ActuPage> {
   Widget build(BuildContext context) {
     // super.build(context);
     return Scaffold(
+      body: BlocListener<ActuBloc, ActuState>(
+        bloc: actuBloc,
+        listener: (context, state) {
+          print(state);
+          if (state is ActuFetchedState) {
+            list = state.list;
+          }
+          if (state is ActuCreatedFailedState) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content:
+              Text("Impossible d'effectuer cette demande actuellement"),
+              action: SnackBarAction(
+                label: "fermer",
+                onPressed: () {
+                  Scaffold.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ));
+          }
+        },
+        child: BlocBuilder<ActuBloc, ActuState>(
+            bloc: bloc,
+            builder: (context, state) {
+              return Stack(
+                children: <Widget>[
+                  CustomScrollView(
+                    slivers: <Widget>[
+                      SliverAppBar(
+                        title: Text('Actualités'),
+                        snap: true,
+                        floating: true,
+                      ),
+                      SliverToBoxAdapter(
+                        child: CreateActu(),
+                      ),
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                                (context, index) =>
+                                ActuTile(bloc.actus.isNotEmpty
+                                    ? bloc.actus[index]
+                                    : bloc.actus[index]),
+                            childCount: bloc.actus.length,
+                            addAutomaticKeepAlives: false),
+                        // CreateActu(),
+                      )
+                    ],
+                  ),
+                  if (bloc.actus.length < 1)
+                    Container(
+                      //color: Colors.white54,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height - 200,
+                      child: Center(
+                        child: FittedBox(
+                          child: Text('Aucune Realisation'),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  if (state is ActuFetchingState &&
+                      (list.isNotEmpty || bloc.actus != null))
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                            margin: EdgeInsets.only(top: 100),
+                            child: RefreshProgressIndicator()))
+                ],
+              );
+            }),
+      ),
+    );
+
+    return Scaffold(
       appBar: AppBar(
         title: Text('Actualités'),
       ),
@@ -55,7 +131,7 @@ class _ActuPageState extends State<ActuPage> {
           if (state is ActuCreatedFailedState) {
             Scaffold.of(context).showSnackBar(SnackBar(
               content:
-                  Text("Impossible d'effectuer cette demande actuellement"),
+              Text("Impossible d'effectuer cette demande actuellement"),
               action: SnackBarAction(
                 label: "fermer",
                 onPressed: () {
@@ -68,6 +144,13 @@ class _ActuPageState extends State<ActuPage> {
         child: BlocBuilder<ActuBloc, ActuState>(
           bloc: bloc,
           builder: (context, state) {
+            return CustomScrollView(
+              slivers: <Widget>[
+                // if (authBloc.currentUser.userType == UserType.travailleur)
+                CreateActu(),
+              ],
+            );
+
             return Stack(
               children: <Widget>[
                 ListView(
@@ -203,196 +286,220 @@ class _CreateActuState extends State<CreateActu> {
                 child: Row(
                   children: <Widget>[
                     //if (!createMode)
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 300),
-                      switchInCurve: Curves.bounceIn,
-                      child: !createMode
-                          ? CurrentUserImage(
-                              radius: 15,
-                            )
-                          : SizedBox.shrink(),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Form(
-                          key: formKey,
-                          child: ListView(
-                            shrinkWrap: true,
+                    !createMode
+                        ? Material(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            createMode = true;
+                          });
+                        },
+                        child: Container(
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width - 32,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
-                              if (createMode)
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text('Nouvelle Realisation'),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          createMode = false;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              if (createMode)
-                                TextFormField(
-                                  onSaved: (val) {
-                                    actu.intitule = val;
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Titre',
-                                    // border: InputBorder.none,
-                                  ),
-                                ),
-                              if (createMode)
-                                TextFormField(
-                                  onSaved: (val) {
-                                    actu.lieu = val;
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Lieu ex:Cameroun, Douala',
-
-                                    // border: InputBorder.none,
-                                  ),
-                                ),
-                              TextFormField(
-                                onSaved: (val) {
-                                  actu.description = val;
-                                },
-                                onTap: () {
-                                  setState(() {
-                                    createMode = true;
-                                  });
-                                },
-                                showCursor: createMode,
-                                decoration: InputDecoration(
-                                  hintText: 'Nouvelle Réalisation',
-                                  border: createMode
-                                      ? UnderlineInputBorder()
-                                      : InputBorder.none,
-                                ),
-                                maxLines: 3,
-                                minLines: 1,
+                              CurrentUserImage(
+                                radius: 15,
                               ),
-                              if (createMode)
-                                TextField(
-                                  controller: dateController,
-                                  showCursor: false,
-                                  readOnly: true,
-                                  onTap: () {
-                                    showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1820),
-                                            lastDate: DateTime.now())
-                                        .then((v) {
-                                      setState(() {
-                                        actu.date = v;
-                                        if (v != null) {
-                                          dateController.text =
-                                              DateFormat.yMMMMd().format(v);
-                                        }
-                                      });
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Date',
-                                    suffixIcon: Icon(Icons.arrow_drop_down),
-                                  ),
-                                ),
-                              if (createMode)
-                                Wrap(
-                                  children: List<Widget>.generate(
-                                      images.length,
-                                      (index) => Stack(
-                                            children: <Widget>[
-                                              Container(
-                                                width: 60,
-                                                height: 80,
-                                                margin: EdgeInsets.all(8),
-                                                child: InkWell(
-                                                  onTap: () async {
-                                                    var pic =
-                                                        await images[index]
-                                                            .getByteData();
-                                                    var mem = pic.buffer
-                                                        .asUint8List();
-                                                    showFullMemoryImage(
-                                                        context, mem,
-                                                        key: images[index]
-                                                            .hashCode);
-                                                    //.memory(mem));
-                                                  },
-                                                  child: Hero(
-                                                    tag: images[index].hashCode,
-                                                    child: AssetThumb(
-                                                      //key: GlobalKey(),
-                                                      asset: images[index],
-                                                      height: 80,
-                                                      width: 80,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Positioned(
-                                                top: 5,
-                                                right: 5,
-                                                child: InkWell(
-                                                  child: Icon(
-                                                    Icons.delete_outline,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  ),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      images.removeAt(index);
-                                                    });
-                                                  },
-                                                ),
-                                              )
-                                            ],
-                                          )),
-                                ),
-                              if (createMode)
-                                FlatButton.icon(
-                                  icon: Icon(Icons.add_a_photo),
-                                  onPressed: () {
-                                    multiImagePicker().then((assets) {
-                                      if (assets.length > 0)
-                                        setState(() {
-                                          images = assets;
-                                        });
-                                    });
-                                  },
-                                  label: Text('Ajoutez des images'),
-                                ),
-                              if (createMode)
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: FlatButton.icon(
-                                    icon: Icon(Icons.create),
-                                    label: Text('Create'),
-                                    onPressed: () {
-                                      if (formKey.currentState.validate() &&
-                                          images.length > 0) {
-                                        setState(() {});
-                                        actu.assetPictures = List.from(images);
-                                        formKey.currentState.save();
-                                        actuBloc.add(ActuAdd(actu));
-                                      }
-                                    },
-                                  ),
-                                ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text('Nouvelle Realisation')
                             ],
                           ),
                         ),
                       ),
                     )
+                        : SizedBox.shrink(),
+                    if (createMode)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Form(
+                            key: formKey,
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: <Widget>[
+                                if (createMode)
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text('Nouvelle Realisation'),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            createMode = false;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                if (createMode)
+                                  TextFormField(
+                                    onSaved: (val) {
+                                      actu.intitule = val;
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: 'Titre',
+                                      // border: InputBorder.none,
+                                    ),
+                                  ),
+                                if (createMode)
+                                  TextFormField(
+                                    onSaved: (val) {
+                                      actu.lieu = val;
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: 'Lieu ex:Cameroun, Douala',
+
+                                      // border: InputBorder.none,
+                                    ),
+                                  ),
+                                TextFormField(
+                                  onSaved: (val) {
+                                    actu.description = val;
+                                  },
+                                  onTap: () {
+                                    setState(() {
+                                      createMode = true;
+                                    });
+                                  },
+                                  showCursor: createMode,
+                                  decoration: InputDecoration(
+                                    hintText: 'Nouvelle Réalisation',
+                                    border: createMode
+                                        ? UnderlineInputBorder()
+                                        : InputBorder.none,
+                                  ),
+                                  maxLines: 3,
+                                  minLines: 1,
+                                ),
+                                if (createMode)
+                                  TextField(
+                                    controller: dateController,
+                                    showCursor: false,
+                                    readOnly: true,
+                                    onTap: () {
+                                      showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1820),
+                                          lastDate: DateTime.now())
+                                          .then((v) {
+                                        setState(() {
+                                          actu.date = v;
+                                          if (v != null) {
+                                            dateController.text =
+                                                DateFormat.yMMMMd().format(v);
+                                          }
+                                        });
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: 'Date',
+                                      suffixIcon: Icon(Icons.arrow_drop_down),
+                                    ),
+                                  ),
+                                if (createMode)
+                                  Wrap(
+                                    children: List<Widget>.generate(
+                                        images.length,
+                                            (index) =>
+                                            Stack(
+                                              children: <Widget>[
+                                                Container(
+                                                  width: 60,
+                                                  height: 80,
+                                                  margin: EdgeInsets.all(8),
+                                                  child: InkWell(
+                                                    onTap: () async {
+                                                      var pic =
+                                                      await images[index]
+                                                          .getByteData();
+                                                      var mem = pic.buffer
+                                                          .asUint8List();
+                                                      showFullMemoryImage(
+                                                          context, mem,
+                                                          key: images[index]
+                                                              .hashCode);
+                                                      //.memory(mem));
+                                                    },
+                                                    child: Hero(
+                                                      tag: images[index]
+                                                          .hashCode,
+                                                      child: AssetThumb(
+                                                        //key: GlobalKey(),
+                                                        asset: images[index],
+                                                        height: 80,
+                                                        width: 80,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  top: 5,
+                                                  right: 5,
+                                                  child: InkWell(
+                                                    child: Icon(
+                                                      Icons.delete_outline,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        images.removeAt(index);
+                                                      });
+                                                    },
+                                                  ),
+                                                )
+                                              ],
+                                            )),
+                                  ),
+                                if (createMode)
+                                  FlatButton.icon(
+                                    icon: Icon(Icons.add_a_photo),
+                                    onPressed: () {
+                                      multiImagePicker().then((assets) {
+                                        if (assets.length > 0)
+                                          setState(() {
+                                            images = assets;
+                                          });
+                                      });
+                                    },
+                                    label: Text('Ajoutez des images'),
+                                  ),
+                                if (createMode)
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: FlatButton.icon(
+                                      icon: Icon(Icons.create),
+                                      label: Text('Create'),
+                                      onPressed: () {
+                                        if (formKey.currentState.validate() &&
+                                            images.length > 0) {
+                                          setState(() {});
+                                          actu.assetPictures =
+                                              List.from(images);
+                                          formKey.currentState.save();
+                                          actuBloc.add(ActuAdd(actu));
+                                        }
+                                      },
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
                   ],
                 ),
               ),
@@ -464,7 +571,8 @@ class _ActuTileState extends State<ActuTile> {
               constraints: BoxConstraints(maxHeight: 300),
               width: double.infinity,
               child: ListView.builder(
-                shrinkWrap: true,
+                addAutomaticKeepAlives: false,
+                // shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: actu.assetPictures == null
                     ? actu.pictures.length
@@ -484,7 +592,9 @@ class _ActuTileState extends State<ActuTile> {
                       child: actu.assetPictures != null
                           ? ImageDisplay.asset2(actu.assetPictures[index])
                           : ImageDisplay.network(
-                              mainUrl + '/' + actu.pictures[index]),
+                        mainUrl + '/' + actu.pictures[index],
+                        useCache: false,
+                      ),
                     ),
                   ],
                 ),
@@ -826,57 +936,89 @@ class UserImage extends StatefulWidget {
   _UserImageState createState() => _UserImageState();
 }
 
-class _UserImageState extends State<UserImage>
-    with AutomaticKeepAliveClientMixin {
+class _UserImageState extends State<UserImage> {
   Widget child;
+  UserModel user;
+  ImageProvider picture;
+  String link;
+  File local;
+
+  @override
+  void didUpdateWidget(UserImage oldWidget) {
+    if (oldWidget.user != widget.user) {
+      user = widget.user;
+      link = widget.user.pictureLink;
+      local = widget.user.localPicture;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void initState() {
+    user = widget.user;
+    link = widget.user.pictureLink;
+    local = widget.user.localPicture;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    String link = widget.user.pictureLink;
-    File local = widget.user.localPicture;
-    ImageProvider picture;
+    //super.build(context);
+    child = null;
     if (local != null) {
       picture = FileImage(local);
     } else {
       if (link.isNotEmpty) {
+        child = IconButton(
+          onPressed: () {
+            print('need to realoda');
+            setState(() {
+              authBloc.add(ReloadUser());
+            });
+          },
+          iconSize: widget.radius,
+          icon: Icon(
+            Icons.person,
+            //size: widget.radius,
+          ),
+        );
         picture = AdvancedNetworkImage(link, useDiskCache: false,
             loadingProgress: (p, u) {
-          print('loading $p');
-          setState(() {
-            child = Stack(
-              children: <Widget>[
-                Center(child: CircularProgressIndicator()),
-                Center(
-                  child: Text(
-                    '${(p * 100).toInt()} %',
-                    style: TextStyle(fontSize: 8),
+              print('loading $p');
+              setState(() {
+                child = Stack(
+                  children: <Widget>[
+                    Center(child: CircularProgressIndicator()),
+                    Center(
+                      child: Text(
+                        '${(p * 100).toInt()} %',
+                        style: TextStyle(fontSize: 8),
+                      ),
+                    )
+                  ],
+                );
+              });
+            }, loadFailedCallback: () {
+              setState(() {
+                child = IconButton(
+                  onPressed: () {
+                    print('need to realoda');
+                    setState(() {
+                      authBloc.add(ReloadUser());
+                    });
+                  },
+                  iconSize: widget.radius,
+                  icon: Icon(
+                    Icons.person,
+                    //size: widget.radius,
                   ),
-                )
-              ],
-            );
-          });
-        }, loadFailedCallback: () {
-          setState(() {
-            child = IconButton(
-              onPressed: () {
-                print('need to realoda');
-                setState(() {
-                  authBloc.add(ReloadUser());
-                });
-              },
-              iconSize: widget.radius,
-              icon: Icon(
-                Icons.person,
-                //size: widget.radius,
-              ),
-            );
-          });
-        }, loadedCallback: () {
-          setState(() {
-            child = null;
-          });
-        });
+                );
+              });
+            }, loadedCallback: () {
+              setState(() {
+                child = null;
+              });
+            });
       } else {
         return Material(
           color: Colors.transparent,
@@ -927,11 +1069,11 @@ class _UserImageState extends State<UserImage>
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
+/* @override
+  bool get wantKeepAlive => true;*/
 }
 
-class CurrentUserImage extends StatelessWidget {
+class CurrentUserImage extends StatefulWidget {
   final double radius;
   final bool editable;
   final bool zoomable;
@@ -940,6 +1082,11 @@ class CurrentUserImage extends StatelessWidget {
       {Key key, this.radius = 30, this.editable = false, this.zoomable = false})
       : super(key: key);
 
+  @override
+  _CurrentUserImageState createState() => _CurrentUserImageState();
+}
+
+class _CurrentUserImageState extends State<CurrentUserImage> {
   @override
   Widget build(BuildContext context) {
     AuthenticationBloc bloc = authBloc;
@@ -955,9 +1102,10 @@ class CurrentUserImage extends StatelessWidget {
               child: Stack(
                 children: <Widget>[
                   UserImage(
+                    key: GlobalKey(),
                     user: state.user,
-                    radius: radius,
-                    zoomable: zoomable,
+                    radius: widget.radius,
+                    zoomable: widget.zoomable,
                   ),
                   if (state is ChangingPicture)
                     Positioned.fill(
@@ -970,16 +1118,16 @@ class CurrentUserImage extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (editable)
+                  if (widget.editable)
                     Positioned(
                       bottom: 0,
                       right: 0,
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
-                        radius: radius / 10 + 2,
+                        radius: widget.radius / 10 + 2,
                         child: CircleAvatar(
                           backgroundColor: Colors.black,
-                          radius: radius / 10,
+                          radius: widget.radius / 10,
                           child: Center(
                             child: IconButton(
                               padding: EdgeInsets.all(2),
@@ -997,7 +1145,7 @@ class CurrentUserImage extends StatelessWidget {
                               },
                               icon: Icon(
                                 Icons.edit,
-                                size: radius / 10 + 2,
+                                size: widget.radius / 10 + 2,
                                 color: Colors.white,
                               ),
                             ),
@@ -1012,7 +1160,7 @@ class CurrentUserImage extends StatelessWidget {
 
           return CircleAvatar(
             child: Text('No user'),
-            radius: radius,
+            radius: widget.radius,
           );
         });
   }

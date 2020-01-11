@@ -173,6 +173,13 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['created_at'] as String),
     email: json['email'] as String,
+    cv: json['cv'] == null
+        ? null
+        : CVModel.fromJson(json['cv'] as Map<String, dynamic>),
+    metiers: (json['metiers'] as List)
+        ?.map((e) =>
+    e == null ? null : MetierModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
   );
 }
 
@@ -194,6 +201,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'ville': instance.ville,
       'quartier': instance.quartier,
       'boite_postale': instance.boitePostal,
+  'cv': instance.cv,
+  'metiers': instance.metiers,
     };
 
 AnnonceListModel _$AnnonceListModelFromJson(Map<String, dynamic> json) {
@@ -277,9 +286,10 @@ Map<String, dynamic> _$NewMessageModelToJson(NewMessageModel instance) =>
 ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
   return ChatModel(
     id: json['id'] as int,
-    createdAt: json['created_at'] == null
-        ? null
-        : DateTime.parse(json['created_at'] as String),
+    taches: (json['taches'] as List)
+        ?.map((e) =>
+    e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
     annonceur: json['annonceur'] == null
         ? null
         : UserModel.fromJson(json['annonceur'] as Map<String, dynamic>),
@@ -293,10 +303,9 @@ ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : MessageModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    taches: (json['taches'] as List)
-        ?.map((e) =>
-            e == null ? null : TacheModel.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    createdAt: json['created_at'] == null
+        ? null
+        : DateTime.parse(json['created_at'] as String),
   )..unread = json['unread'] as int ?? 0;
 }
 
@@ -305,6 +314,8 @@ Map<String, dynamic> _$ChatModelToJson(ChatModel instance) => <String, dynamic>{
       'annonceur': instance.annonceur,
       'travailleur': instance.travailleur,
       'annonce': instance.annonceModel,
+  'created_at': instance.createdAt?.toIso8601String(),
+  'taches': instance.taches,
       'messages': instance.messages,
       'unread': instance.unread,
     };

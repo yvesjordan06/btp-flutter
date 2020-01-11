@@ -26,7 +26,8 @@ export 'notification_event.dart';
 export 'notification_state.dart';
 
 AnnoncesBloc annoncesBloc = AnnoncesBloc();
-AuthenticationBloc authBloc = AuthenticationBloc();
+AuthenticationBloc authBloc = AuthenticationBloc()
+  ..loadAppMetier();
 LoginBloc loginBloc = LoginBloc(authenticationBloc: authBloc);
 ActuBloc actuBloc = ActuBloc();
 ChatsBloc chatsBloc = ChatsBloc();
